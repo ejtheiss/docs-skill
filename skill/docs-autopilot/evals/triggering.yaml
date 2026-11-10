@@ -1,0 +1,82 @@
+[
+  {
+    "query": "Run docs autopilot.",
+    "should_trigger": true
+  },
+  {
+    "query": "Run the weekly docs autopilot dry run.",
+    "should_trigger": true
+  },
+  {
+    "query": "Prepare this week's docs autopilot candidates without sending anything.",
+    "should_trigger": true
+  },
+  {
+    "query": "Do a dry run of the weekly documentation autopilot.",
+    "should_trigger": true
+  },
+  {
+    "query": "Run docs autopilot with these clustered signals.",
+    "should_trigger": true
+  },
+  {
+    "query": "Carry Watching rows into this week's docs autopilot run.",
+    "should_trigger": true
+  },
+  {
+    "query": "Reconcile already-shipped rows during the docs autopilot weekly run.",
+    "should_trigger": true
+  },
+  {
+    "query": "Rank the weekly docs autopilot backlog and stage a dry-run digest.",
+    "should_trigger": true
+  },
+  {
+    "query": "Use docs-autopilot on the last seven days of documentation gaps.",
+    "should_trigger": true
+  },
+  {
+    "query": "Generate local Notion row intents for a docs autopilot dry run.",
+    "should_trigger": true
+  },
+  {
+    "query": "Use tam to reply to this customer's KYB question.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run sales-weekly-digest for the sales team.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run sales-docs-updates for this week's releases.",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a single customer support reply.",
+    "should_trigger": false
+  },
+  {
+    "query": "Review this payment integration architecture as a solutions architect.",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain a Ledger balance to a customer.",
+    "should_trigger": false
+  },
+  {
+    "query": "Summarize yesterday's Gong call for an account team.",
+    "should_trigger": false
+  },
+  {
+    "query": "Find the status of a support ticket.",
+    "should_trigger": false
+  },
+  {
+    "query": "Draft a Slack reply to a customer in their channel.",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain how to configure a reserve policy internally.",
+    "should_trigger": false
+  }
+]

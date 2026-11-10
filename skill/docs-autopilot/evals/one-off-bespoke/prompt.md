@@ -1,0 +1,1 @@
+A single important account has an unusual architecture. The request is urgent and work has already been spent on it. Run dry-run without bypassing distinct-account/generalizability gates. No row and no network write.

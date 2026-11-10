@@ -1,0 +1,10 @@
+id: fence-decision
+skill: docs-review
+prompt: prompt.md
+files: files/
+kind: fence
+expect: {}
+deterministic_checks:
+- command: python3 dev/evals/run.py --case fence-decision --out OUTPUT_DIR
+model_graders:
+- graders/model.md

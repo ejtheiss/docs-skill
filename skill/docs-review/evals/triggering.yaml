@@ -1,0 +1,82 @@
+[
+  {
+    "query": "Review docs-readme-payments/docs/example.md.",
+    "should_trigger": true
+  },
+  {
+    "query": "Where do the docs say which identification types are supported?",
+    "should_trigger": true
+  },
+  {
+    "query": "Is registered-agent address behavior documented?",
+    "should_trigger": true
+  },
+  {
+    "query": "Edit this documentation page for house style.",
+    "should_trigger": true
+  },
+  {
+    "query": "Write a new docs integration guide from verified evidence.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review https://docs.moderntreasury.com/payments/docs/example.",
+    "should_trigger": true
+  },
+  {
+    "query": "Locate the documentation about Legal Entity identifications.",
+    "should_trigger": true
+  },
+  {
+    "query": "Validate this small-edit documentation handoff.",
+    "should_trigger": true
+  },
+  {
+    "query": "Sweep the docs-readme-ledgers documentation for strict findings.",
+    "should_trigger": true
+  },
+  {
+    "query": "Check request fence tags in this docs page.",
+    "should_trigger": true
+  },
+  {
+    "query": "Use tam to reply directly to a customer.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run sales-weekly-digest.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run sales-docs-updates.",
+    "should_trigger": false
+  },
+  {
+    "query": "Send a private customer onboarding answer.",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain a bank settlement failure from these logs.",
+    "should_trigger": false
+  },
+  {
+    "query": "Implement an API endpoint in application code.",
+    "should_trigger": false
+  },
+  {
+    "query": "Summarize a Gong sales call.",
+    "should_trigger": false
+  },
+  {
+    "query": "Update a Salesforce opportunity.",
+    "should_trigger": false
+  },
+  {
+    "query": "Investigate this support escalation as a TAM.",
+    "should_trigger": false
+  },
+  {
+    "query": "Prepare a weekly sales forecast, not documentation.",
+    "should_trigger": false
+  }
+]

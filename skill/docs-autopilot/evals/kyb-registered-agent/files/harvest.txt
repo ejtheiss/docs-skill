@@ -1,0 +1,3 @@
+FIXTURE DATA ONLY
+Slack, ext-customer-fixture-a: Juniper Example Holdings LLC KYB-EXAMPLE-0042 uses an address in Fremont, Wyoming. Staff: docs are wrong; this manual review could have auto-approved.
+Gong, fixture-account-b: Fractional asked the same registered-agent address question. Staff: undocumented; manual review adds operational cost.

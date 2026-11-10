@@ -1,0 +1,10 @@
+id: draft-loop
+skill: docs-review
+prompt: prompt.md
+files: files/
+kind: draft
+expect: {}
+deterministic_checks:
+- command: python3 dev/evals/run.py --case draft-loop --out OUTPUT_DIR
+model_graders:
+- graders/model.md

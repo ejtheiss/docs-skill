@@ -1,0 +1,67 @@
+{
+  "run_date": "2026-11-10",
+  "candidates": [
+    {
+      "id": "bespoke",
+      "question": "Can one unusual private architecture be generalized?",
+      "topics": [
+        "KYB",
+        "registered agent"
+      ],
+      "operational_cost": 10,
+      "cost_to_fix": 1,
+      "checks": {
+        "signal": {
+          "accounts": [
+            "one-fixture-account"
+          ],
+          "staff_conceded": false,
+          "bespoke": true
+        },
+        "locate": {
+          "searched": true,
+          "judgment": "not_answered"
+        },
+        "in_flight": {
+          "repos": [
+            "docs-readme-payments",
+            "docs-readme-ledgers",
+            "docs-readme-platform"
+          ],
+          "notion_checked": true,
+          "open_prs": [],
+          "recent_merged_prs": [],
+          "notion_past_harvested": []
+        },
+        "answer": {
+          "complexity": "A1 Known",
+          "evidence": [
+            {
+              "label": "VERIFIED",
+              "claim": "FIXTURE EVIDENCE ONLY: A registered-agent Legal Entity submits the agent's address as the business registered address.",
+              "source": "fixture-evidence.md"
+            }
+          ]
+        }
+      },
+      "fixture_evidence_only": true,
+      "model_generalization_passed": true,
+      "sources": [],
+      "target_path": "",
+      "open_questions": [
+        "Publishing policy is undecided; a human answer is required."
+      ],
+      "evidence_summary": "",
+      "validation": {
+        "strict_failures": 0
+      },
+      "review": {
+        "strict_failures": 0,
+        "rubric_passed": true,
+        "money_losing_mistake": false,
+        "fresh_reviewer": true,
+        "passes": 1
+      }
+    }
+  ]
+}

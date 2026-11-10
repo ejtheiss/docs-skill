@@ -1,0 +1,10 @@
+id: kyb-registered-agent
+skill: docs-autopilot
+prompt: prompt.md
+files: files/
+kind: autopilot
+expect: {"stage":"Needs SME Review","rows":1,"admitted":"registered-agent","banned":["Juniper Example Holdings LLC","KYB-EXAMPLE-0042","Fremont","Wyoming","Fractional"],"required":["required-fields-for-businesses.md","onboard-a-business/index.md","business_registeredprimary","SME confirmation","agent's address"],"validate_edits":["required","onboard"]}
+deterministic_checks:
+- command: python3 dev/evals/run.py --case kyb-registered-agent --out OUTPUT_DIR
+model_graders:
+- graders/model.md

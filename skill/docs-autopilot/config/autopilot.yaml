@@ -1,0 +1,26 @@
+window_days: 7
+draft_cap: 3
+watching_cap: 5
+slack:
+  limit: 20
+  sort: timestamp
+  channel_prefix: ext-customer-
+customer_phrases: [how do, how does, can we, where is, documentation, registered agent]
+staff_concession_phrases: [docs are wrong, undocumented, manual review, could have auto-approved]
+topic_weights:
+  onboarding: 2
+  KYB: 3
+  legal entity: 2
+  registered agent: 3
+  beneficial owner: 2
+min_distinct_accounts: 2
+recent_pr_window_days: 90
+revision_limit: 1
+pylon:
+  enabled: false
+sweep:
+  enabled: false
+notion:
+  data_source_id: collection://3b2d6bfc-2683-80db-8f9c-000b634abb1a
+slack_dm_recipient: REQUIRED-unset
+repositories: [docs-readme-payments, docs-readme-ledgers, docs-readme-platform]
