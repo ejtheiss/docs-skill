@@ -1,0 +1,316 @@
+# docs-lint: the rules this checker emits, and the tables only it reads.
+#
+# Merged over `docs-review/config/policy.yaml`, which holds severities, projects and the Modern
+# Treasury terminology tables. Anything referenced but not defined here comes from there.
+#
+# `reported` is the grade a run prints; `guide` is the grade a reviewer applies. They differ where a
+# rule is stricter as advice than its measured precision lets it be as a verdict - see the provenance
+# on `sentence-length`, `acronym-undefined` and `link-absolute-internal`.
+
+schema: 1
+rules:
+  acronym-undefined:
+    reported: flexible
+    guide: strict
+    provenance: 'Modern Treasury policy: expand an industry acronym on first use'
+    message: '''{acronym}'' is used before it is expanded.'
+  body-h1:
+    reported: strict
+    guide: strict
+    provenance: ReadMe renders the frontmatter title as h1; a body h1 duplicates it (markdownlint MD025)
+    message: Body heading is h1; ReadMe renders the frontmatter title as h1.
+  callout-emoji:
+    reported: strict
+    guide: strict
+    provenance: Modern Treasury policy over ReadMe's callout emoji set (rdmd themes map)
+    message: Callout uses {emoji}; use {sanctioned}.
+  contractions:
+    reported: flexible
+    guide: flexible
+    scope:
+    - platform
+    provenance: Modern Treasury policy for platform guides
+    message: Platform guides avoid contractions.
+  currency-mixed:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: one currency notation per page'
+    message: Page mixes $ and ISO currency codes; pick one for the whole page.
+  fence-language:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: one canonical tag per language'
+    message: Fence tagged `{lang}`; use `{target}`.
+  fence-language-unknown:
+    reported: flexible
+    guide: flexible
+    provenance: 'Modern Treasury policy: prefer the tags the guide lists'
+    message: Fence tagged `{lang}`, which is not a tag the guide lists.
+  fence-untagged:
+    reported: strict
+    guide: strict
+    provenance: markdownlint MD040
+    message: Code fence declares no language.
+  filler:
+    reported: flexible
+    guide: flexible
+    provenance: Google style guide word list, Vale Microsoft.Adverbs, proselint greylist
+    message: Cut '{word}'.
+  filler-please:
+    reported: flexible
+    guide: flexible
+    provenance: 'Google style guide: do not use please when explaining how to use a product'
+    message: '''{word}'' belongs only in a direct request to contact someone.'
+  frontmatter-excerpt:
+    reported: flexible
+    guide: flexible
+    provenance: 'Modern Treasury decision D7: excerpts are not used'
+    message: Page has an excerpt; delete it, we do not use them.
+  frontmatter-title:
+    reported: strict
+    guide: strict
+    provenance: ReadMe frontmatter supplies the page title (rendered as the page h1)
+    message: Page has no frontmatter title.
+  heading-formatting:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: headings carry no bold, italics or underline'
+    message: Heading uses bold, italics or underline.
+  heading-repeats-title:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: a heading may not restate the page title'
+    message: Heading restates the page title.
+  heading-skip:
+    reported: strict
+    guide: strict
+    provenance: markdownlint MD001, counting the rendered title as h1
+    message: Heading jumps h{previous} to h{level}.
+  image-alt:
+    reported: strict
+    guide: strict
+    provenance: markdownlint MD045; WAI decorative-image exemption honoured
+    message: Image has no alt text.
+  json-parse:
+    reported: strict
+    guide: strict
+    provenance: A reader copies the example; 18 bodies in the corpus parse in no JSON dialect, and every
+      field, type and schema check silently skips them
+    message: 'JSON body does not parse: {reason}.'
+  link-absolute-internal:
+    reported: flexible
+    guide: strict
+    provenance: 'Modern Treasury policy: relative links inside a repo'
+    message: Absolute URL to a page in this repo; use a relative path.
+  link-anchor-empty:
+    reported: strict
+    guide: strict
+    provenance: markdownlint MD042
+    message: Link has no anchor text or no destination.
+  link-anchor-vague:
+    reported: strict
+    guide: strict
+    provenance: WCAG 2.4.4 link purpose; Google style guide link-text guidance
+    messages:
+      vague: Anchor text '{text}' does not name the destination.
+      url: Anchor text is a URL; name the page instead.
+  link-bare-url:
+    reported: strict
+    guide: strict
+    provenance: markdownlint MD034
+    message: Bare URL printed as a link.
+  list-depth:
+    reported: strict
+    guide: strict
+    threshold: 3
+    provenance: 'Modern Treasury policy: at most three levels of nesting'
+    message: List nests {depth} levels; the limit is {limit}.
+  mt-shorthand:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: never abbreviate the company name'
+    message: Write '{full}', never '{short}'.
+  no-ordered-lists:
+    reported: flexible
+    guide: flexible
+    scope:
+    - reference
+    provenance: 'Modern Treasury policy: reference pages are descriptive, not procedural'
+    message: Reference page uses a numbered list; procedures belong in a guide.
+  object-capitalization:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: objects are capitalised'
+    message: '''{found}'' should be ''{obj}''.'
+  object-shorthand:
+    reported: strict
+    guide: strict
+    provenance: 'Modern Treasury policy: never abbreviate object names'
+    message: '''{short}'' shorthand; write the full object name.'
+  passive-voice:
+    reported: flexible
+    guide: flexible
+    provenance: Vale Google.Passive / write-good passive (suggestion), plus the constructions the spaCy
+      comparison exposed
+    message: Passive construction; name the actor unless it is the bank.
+  reference-no-shell:
+    reported: flexible
+    guide: flexible
+    scope:
+    - reference
+    provenance: 'Modern Treasury policy: reference pages show json bodies'
+    message: Reference pages show `json` bodies; leave request snippets to guides.
+  sentence-length:
+    reported: flexible
+    guide: strict
+    threshold: 30
+    provenance: Vale Microsoft.SentenceLength (suggestion, 30 words)
+    message: Sentence runs {words} words; split it.
+  url-query-separator:
+    reported: strict
+    guide: strict
+    provenance: A documented URL whose query string opens with & requests a different path; both instances
+      in the corpus 404
+    message: Query string opens with `&`; the first parameter needs `?`.
+tables:
+  filler_words:
+    why: Words and phrases we cut. A value maps to its replacement, to `""` when the phrase is simply
+      deleted, or to nothing when there is no single replacement.
+    map:
+      easily: null
+      in order to: to
+      just: null
+      note that: ''
+      obviously: null
+      of course: null
+      simply: null
+    exceptions:
+      just: just (as|like|in time)
+  filler_please:
+    why: '`please` belongs only in a direct request to contact someone.'
+    values:
+    - please
+    exceptions:
+      please: contact
+  vague_anchors:
+    why: Anchor text that names no destination.
+    values:
+    - click here
+    - here
+    - learn more
+    - link
+    - read more
+    - this link
+    - this page
+  get_idioms:
+    why: The senses of 'get' that are idiomatic English rather than the vague verb the rule looks for.
+      English does not add idioms on a docs team's schedule.
+    values:
+    - connected
+    - going
+    - set up
+    - started
+    - stuck
+  non_agent_by:
+    why: 'A `by`-phrase whose head is one of these names a means, a time or a manner rather than an actor,
+      so it does not satisfy passive-voice''s ''name the actor'' exemption. Not chosen: Phase 4 derived
+      it from where `agent_span()` disagreed with spaCy''s `agent` dependency across the frozen corpus,
+      and passive-voice''s measured precision rests on exactly these words.'
+    values:
+    - accident
+    - amount
+    - card
+    - check
+    - close
+    - comparison
+    - contrast
+    - convention
+    - currency
+    - cutoff
+    - date
+    - day
+    - default
+    - definition
+    - delay
+    - design
+    - email
+    - end
+    - example
+    - fax
+    - hand
+    - law
+    - letter
+    - mail
+    - mistake
+    - month
+    - phone
+    - start
+    - step
+    - then
+    - time
+    - total
+    - way
+    - week
+    - when
+    - which
+    - whom
+    - wire
+    - year
+  fence_languages:
+    why: The fence tags we allow. Modern Treasury policy, not ReadMe's supported set, which is far larger.
+    values:
+    - csv
+    - diff
+    - go
+    - html
+    - http
+    - java
+    - javascript
+    - json
+    - python
+    - ruby
+    - shell
+    - sql
+    - text
+    - typescript
+    - xml
+    - yaml
+  fence_language_fixes:
+    why: Conventional aliases every highlighter carries. Which alias means which language is not a Modern
+      Treasury decision; the allowlist they map into, above, is.
+    map:
+      bash: shell
+      curl: shell
+      js: javascript
+      sh: shell
+      ts: typescript
+  json_fence_languages:
+    why: Fence tags that mean 'this body is JSON', so the JSON rules know what to parse.
+    values:
+    - json
+    - json5
+  non_json_fence_prefixes:
+    why: How a shell or package-manager command opens. This decides which fences the JSON rules look at,
+      so a strict rule depends on it.
+    values:
+    - '#'
+    - $
+    - DELETE
+    - GET
+    - PATCH
+    - POST
+    - PUT
+    - curl
+    - node
+    - npm
+    - python
+    - ruby
+    - yarn
+  callout_emoji:
+    why: The three of ReadMe's callout emoji that are ours.
+    values:
+    - 💡
+    - 📘
+    - 🚧
+includes:
+- language.yaml

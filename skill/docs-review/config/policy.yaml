@@ -1,0 +1,97 @@
+# Shared policy: the vocabulary every subskill speaks and the Modern Treasury facts they all need.
+#
+# What belongs here is domain, not mechanics. `object_names` is what our objects are called - a fact
+# about the product that docs-content will need as much as docs-lint. `filler_words` is how one
+# checker decides one rule, and lives with that checker.
+#
+# Each subskill's own `config/rules.yaml` is merged over this. A table may be defined in one place
+# only; `policy.py` refuses a name defined in both, because two definitions of the same list is the
+# duplication this file exists to end.
+
+schema: 1
+severities:
+  strict: Not a preference. A page that breaks it is wrong and gets corrected.
+  moderate: A measured convention. Departing from it needs a reason in review; it does not fail a page
+    on its own.
+  flexible: Deliberate latitude. Choose per page or per section, then stay consistent.
+projects:
+  ledgers:
+    repo: docs-readme-ledgers
+    url_prefix: /ledgers/
+  payments:
+    repo: docs-readme-payments
+    url_prefix: /payments/
+  platform:
+    repo: docs-readme-platform/docs
+    url_prefix: /platform/
+  reference:
+    repo: docs-readme-platform/reference
+    url_prefix: /platform/
+tables:
+  object_names:
+    why: Modern Treasury objects, capitalised in prose. The everyday concept stays lowercase and the API
+      field is inline code, so all three readings of the same words stay distinguishable.
+    values:
+    - Balance Report
+    - Expected Payment
+    - External Account
+    - Incoming Payment Detail
+    - Internal Account
+    - Ledger Account
+    - Ledger Account Category
+    - Ledger Account Settlement
+    - Ledger Entry
+    - Ledger Event Handler
+    - Ledger Transaction
+    - Legal Entity
+    - Payment Order
+    - Virtual Account
+  object_shorthand:
+    why: Abbreviations banned in prose. They collide across objects, which is the confusion capitalisation
+      exists to prevent.
+    values:
+    - EP
+    - IPD
+    - LA
+    - LAC
+    - LAS
+    - LT
+    - PO
+  mt_shorthand:
+    why: Never `MT` in prose.
+    map:
+      MT: Modern Treasury
+  acronym_expansions:
+    why: 'Industry acronyms that need expanding on first use per page. The value is a regex matched against
+      the prose, not the initials: several of these are not initialisms of their expansion (FX, IAT, KYC),
+      so deriving the pattern from the letters reported ''Foreign Exchange (FX)'' as undefined.'
+    map:
+      ACH: automated clearing house
+      BACS: bankers.{0,2} automated clearing (system|services)
+      EFT: electronic funds? transfer
+      FX: foreign exchange
+      IAT: international ach transaction
+      KYC: know your customer
+      NACHA: national automated clearing house association
+      RTP: real[- ]?time payments
+      SDK: software development kit
+      SEPA: single euro payments area
+  currency_codes:
+    why: Codes the currency-mixing rule watches for, interpolated into a regex that requires a number
+      before them. A curated subset rather than ISO 4217, and the one list here with no measurement behind
+      it - worth revisiting.
+    values:
+    - AUD
+    - CAD
+    - CHF
+    - DKK
+    - EUR
+    - GBP
+    - HKD
+    - JPY
+    - MXN
+    - NOK
+    - NZD
+    - SEK
+    - SGD
+    - USD

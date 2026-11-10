@@ -1,0 +1,732 @@
+# Facts about English, Unicode, and ReadMe's renderer. Not Modern Treasury decisions, and not things
+# anyone will edit on a docs team's schedule.
+#
+# Included by `rules.yaml`, and merged into the same policy under the same one-owner rule. They live
+# in a separate file only so that 180 irregular participles and 900 codepoints do not sit between two
+# rules in the file a reader opens to change a severity.
+#
+# What is NOT here, deliberately: the regexes assembled from these lists. A regex in YAML is code in
+# a string - escaping doubles up, a malformed one fails on a real run rather than at parse, and it
+# cannot carry the comment explaining why it is right. The list is data; the pattern built from it is
+# code, and `lint.py` keeps it.
+schema: 1
+tables:
+  irregular_participles:
+    why: English past participles that are not formed with -ed. `lint.py` joins them into the participle
+      pattern the passive rules match; a prefixed form (pre-filled, re-issued) is handled by the pattern,
+      not listed here.
+    values:
+    - awoken
+    - beat
+    - become
+    - been
+    - begun
+    - bent
+    - beset
+    - bet
+    - bid
+    - bidden
+    - bitten
+    - bled
+    - blown
+    - born
+    - bought
+    - bound
+    - bred
+    - broadcast
+    - broken
+    - brought
+    - built
+    - burnt
+    - burst
+    - cast
+    - caught
+    - chosen
+    - clung
+    - come
+    - cost
+    - crept
+    - cut
+    - dealt
+    - dived
+    - done
+    - drawn
+    - dreamt
+    - driven
+    - drunk
+    - dug
+    - eaten
+    - fallen
+    - fed
+    - felt
+    - fit
+    - fled
+    - flown
+    - flung
+    - forbidden
+    - forgiven
+    - forgone
+    - forgotten
+    - forsaken
+    - fought
+    - found
+    - frozen
+    - given
+    - gone
+    - gotten
+    - ground
+    - grown
+    - heard
+    - held
+    - hidden
+    - hit
+    - hung
+    - hurt
+    - kept
+    - knelt
+    - knit
+    - known
+    - laid
+    - lain
+    - leapt
+    - learned
+    - led
+    - left
+    - lent
+    - let
+    - lighted
+    - lost
+    - made
+    - meant
+    - met
+    - misspelt
+    - mistaken
+    - mown
+    - overcome
+    - overdone
+    - overtaken
+    - overthrown
+    - paid
+    - pled
+    - proven
+    - put
+    - quit
+    - read
+    - rid
+    - ridden
+    - risen
+    - run
+    - rung
+    - said
+    - sat
+    - sawn
+    - seen
+    - sent
+    - set
+    - sewn
+    - shaken
+    - shaven
+    - shed
+    - shod
+    - shone
+    - shorn
+    - shot
+    - shown
+    - shrunk
+    - shut
+    - slain
+    - slept
+    - slid
+    - slit
+    - slung
+    - smitten
+    - sold
+    - sought
+    - sown
+    - sped
+    - spent
+    - spilt
+    - spit
+    - split
+    - spoken
+    - spread
+    - sprung
+    - spun
+    - stolen
+    - stood
+    - stridden
+    - striven
+    - struck
+    - strung
+    - stuck
+    - stung
+    - stunk
+    - sung
+    - sunk
+    - swept
+    - swollen
+    - sworn
+    - swum
+    - swung
+    - taken
+    - taught
+    - thought
+    - thrived
+    - thrown
+    - thrust
+    - told
+    - torn
+    - trodden
+    - understood
+    - upheld
+    - upset
+    - wed
+    - wept
+    - withheld
+    - withstood
+    - woken
+    - won
+    - worn
+    - wound
+    - woven
+    - written
+    - wrung
+  contracted_s_hosts:
+    why: The words after which `'s` is a contracted `is` rather than a possessive. Anywhere else, `'s`
+      is possessive and not a contraction.
+    values:
+    - everything
+    - he
+    - here
+    - how
+    - it
+    - let
+    - nothing
+    - one
+    - she
+    - something
+    - that
+    - there
+    - what
+    - when
+    - where
+    - who
+  intervening_adverbs:
+    why: The non-ly adverbs that stand between an auxiliary and its participle, plus the coordinations
+      the corpus uses. Any -ly adverb is matched by the pattern instead of being listed.
+    values:
+    - already
+    - also
+    - always
+    - and
+    - best
+    - ever
+    - first
+    - itself
+    - just
+    - later
+    - never
+    - no longer
+    - not
+    - now
+    - often
+    - only
+    - or
+    - sometimes
+    - still
+    - then
+    - typically
+  abbreviations:
+    why: Abbreviations whose trailing period does not end a sentence. Without them the sentence splitter
+      reports `e.g.` as two sentences and mismeasures length.
+    values:
+    - a.m
+    - approx
+    - cf
+    - co
+    - corp
+    - dept
+    - dr
+    - e.g
+    - est
+    - etc
+    - fig
+    - i.e
+    - inc
+    - jr
+    - llc
+    - ltd
+    - mr
+    - mrs
+    - ms
+    - 'no'
+    - p.m
+    - sec
+    - sr
+    - st
+    - u.k
+    - u.s
+    - vs
+  readme_callout_emoji:
+    why: Every emoji rdmd turns a blockquote into a callout for, mapped to the theme it selects (@readme/markdown,
+      components/Callout `themes`). Mirrors their renderer, so it changes when they change.
+    values:
+    - 📘
+    - 🚧
+    - ⚠️
+    - ⚠
+    - 👍
+    - ✅
+    - ❗️
+    - ❗
+    - 🛑
+    - ⁉️
+    - ‼️
+    - ℹ️
+  callout_roles:
+    why: 'What each sanctioned emoji is for, in the phrasing a finding uses. Only the ones we have wording
+      for: a newly sanctioned emoji is listed without a role rather than described wrongly.'
+    map:
+      📘: for information
+      🚧: for limitations
+      💡: in a tutorial
+    ordered: true
+  emoji_presentation:
+    why: 'Codepoints that are emoji on their own (UTS #51 Emoji_Presentation), generated from Unicode
+      emoji-data.txt by dev/experiments/gen_emoji_ranges.py and checked against the emoji-regex package
+      rdmd uses by dev/experiments/emoji_ranges.py.'
+    ranges:
+    - - 8986
+      - 8987
+    - - 9193
+      - 9196
+    - - 9200
+      - 9200
+    - - 9203
+      - 9203
+    - - 9725
+      - 9726
+    - - 9748
+      - 9749
+    - - 9800
+      - 9811
+    - - 9855
+      - 9855
+    - - 9875
+      - 9875
+    - - 9889
+      - 9889
+    - - 9898
+      - 9899
+    - - 9917
+      - 9918
+    - - 9924
+      - 9925
+    - - 9934
+      - 9934
+    - - 9940
+      - 9940
+    - - 9962
+      - 9962
+    - - 9970
+      - 9971
+    - - 9973
+      - 9973
+    - - 9978
+      - 9978
+    - - 9981
+      - 9981
+    - - 9989
+      - 9989
+    - - 9994
+      - 9995
+    - - 10024
+      - 10024
+    - - 10060
+      - 10060
+    - - 10062
+      - 10062
+    - - 10067
+      - 10069
+    - - 10071
+      - 10071
+    - - 10133
+      - 10135
+    - - 10160
+      - 10160
+    - - 10175
+      - 10175
+    - - 11035
+      - 11036
+    - - 11088
+      - 11088
+    - - 11093
+      - 11093
+    - - 126980
+      - 126980
+    - - 127183
+      - 127183
+    - - 127374
+      - 127374
+    - - 127377
+      - 127386
+    - - 127462
+      - 127487
+    - - 127489
+      - 127489
+    - - 127514
+      - 127514
+    - - 127535
+      - 127535
+    - - 127538
+      - 127542
+    - - 127544
+      - 127546
+    - - 127568
+      - 127569
+    - - 127744
+      - 127776
+    - - 127789
+      - 127797
+    - - 127799
+      - 127868
+    - - 127870
+      - 127891
+    - - 127904
+      - 127946
+    - - 127951
+      - 127955
+    - - 127968
+      - 127984
+    - - 127988
+      - 127988
+    - - 127992
+      - 128062
+    - - 128064
+      - 128064
+    - - 128066
+      - 128252
+    - - 128255
+      - 128317
+    - - 128331
+      - 128334
+    - - 128336
+      - 128359
+    - - 128378
+      - 128378
+    - - 128405
+      - 128406
+    - - 128420
+      - 128420
+    - - 128507
+      - 128591
+    - - 128640
+      - 128709
+    - - 128716
+      - 128716
+    - - 128720
+      - 128722
+    - - 128725
+      - 128728
+    - - 128732
+      - 128735
+    - - 128747
+      - 128748
+    - - 128756
+      - 128764
+    - - 128992
+      - 129003
+    - - 129008
+      - 129008
+    - - 129292
+      - 129338
+    - - 129340
+      - 129349
+    - - 129351
+      - 129535
+    - - 129648
+      - 129660
+    - - 129664
+      - 129674
+    - - 129678
+      - 129734
+    - - 129736
+      - 129736
+    - - 129741
+      - 129756
+    - - 129759
+      - 129770
+    - - 129775
+      - 129784
+  emoji_text:
+    why: 'Codepoints that are emoji only when U+FE0F follows (Emoji but not Emoji_Presentation, UTS #51
+      ED-9/ED-10). Same generator and same check.'
+    ranges:
+    - - 35
+      - 35
+    - - 42
+      - 42
+    - - 48
+      - 57
+    - - 169
+      - 169
+    - - 174
+      - 174
+    - - 8252
+      - 8252
+    - - 8265
+      - 8265
+    - - 8482
+      - 8482
+    - - 8505
+      - 8505
+    - - 8596
+      - 8601
+    - - 8617
+      - 8618
+    - - 9000
+      - 9000
+    - - 9167
+      - 9167
+    - - 9197
+      - 9199
+    - - 9201
+      - 9202
+    - - 9208
+      - 9210
+    - - 9410
+      - 9410
+    - - 9642
+      - 9643
+    - - 9654
+      - 9654
+    - - 9664
+      - 9664
+    - - 9723
+      - 9724
+    - - 9728
+      - 9732
+    - - 9742
+      - 9742
+    - - 9745
+      - 9745
+    - - 9752
+      - 9752
+    - - 9757
+      - 9757
+    - - 9760
+      - 9760
+    - - 9762
+      - 9763
+    - - 9766
+      - 9766
+    - - 9770
+      - 9770
+    - - 9774
+      - 9775
+    - - 9784
+      - 9786
+    - - 9792
+      - 9792
+    - - 9794
+      - 9794
+    - - 9823
+      - 9824
+    - - 9827
+      - 9827
+    - - 9829
+      - 9830
+    - - 9832
+      - 9832
+    - - 9851
+      - 9851
+    - - 9854
+      - 9854
+    - - 9874
+      - 9874
+    - - 9876
+      - 9879
+    - - 9881
+      - 9881
+    - - 9883
+      - 9884
+    - - 9888
+      - 9888
+    - - 9895
+      - 9895
+    - - 9904
+      - 9905
+    - - 9928
+      - 9928
+    - - 9935
+      - 9935
+    - - 9937
+      - 9937
+    - - 9939
+      - 9939
+    - - 9961
+      - 9961
+    - - 9968
+      - 9969
+    - - 9972
+      - 9972
+    - - 9975
+      - 9977
+    - - 9986
+      - 9986
+    - - 9992
+      - 9993
+    - - 9996
+      - 9997
+    - - 9999
+      - 9999
+    - - 10002
+      - 10002
+    - - 10004
+      - 10004
+    - - 10006
+      - 10006
+    - - 10013
+      - 10013
+    - - 10017
+      - 10017
+    - - 10035
+      - 10036
+    - - 10052
+      - 10052
+    - - 10055
+      - 10055
+    - - 10083
+      - 10084
+    - - 10145
+      - 10145
+    - - 10548
+      - 10549
+    - - 11013
+      - 11015
+    - - 12336
+      - 12336
+    - - 12349
+      - 12349
+    - - 12951
+      - 12951
+    - - 12953
+      - 12953
+    - - 127344
+      - 127345
+    - - 127358
+      - 127359
+    - - 127490
+      - 127490
+    - - 127543
+      - 127543
+    - - 127777
+      - 127777
+    - - 127780
+      - 127788
+    - - 127798
+      - 127798
+    - - 127869
+      - 127869
+    - - 127894
+      - 127895
+    - - 127897
+      - 127899
+    - - 127902
+      - 127903
+    - - 127947
+      - 127950
+    - - 127956
+      - 127967
+    - - 127987
+      - 127987
+    - - 127989
+      - 127989
+    - - 127991
+      - 127991
+    - - 128063
+      - 128063
+    - - 128065
+      - 128065
+    - - 128253
+      - 128253
+    - - 128329
+      - 128330
+    - - 128367
+      - 128368
+    - - 128371
+      - 128377
+    - - 128391
+      - 128391
+    - - 128394
+      - 128397
+    - - 128400
+      - 128400
+    - - 128421
+      - 128421
+    - - 128424
+      - 128424
+    - - 128433
+      - 128434
+    - - 128444
+      - 128444
+    - - 128450
+      - 128452
+    - - 128465
+      - 128467
+    - - 128476
+      - 128478
+    - - 128481
+      - 128481
+    - - 128483
+      - 128483
+    - - 128488
+      - 128488
+    - - 128495
+      - 128495
+    - - 128499
+      - 128499
+    - - 128506
+      - 128506
+    - - 128715
+      - 128715
+    - - 128717
+      - 128719
+    - - 128736
+      - 128741
+    - - 128745
+      - 128745
+    - - 128752
+      - 128752
+    - - 128755
+      - 128755
+  regional_indicators:
+    why: The pair of regional indicator letters that makes a flag.
+    ranges:
+    - - 127462
+      - 127487
+  skin_tones:
+    why: Fitzpatrick modifiers, which attach to a preceding emoji.
+    ranges:
+    - - 127995
+      - 127999
+  tag_characters:
+    why: Tag characters, used by subdivision flags.
+    ranges:
+    - - 917536
+      - 917631
+  keycap_bases:
+    why: The characters that can carry a keycap (U+20E3).
+    values:
+    - '#'
+    - '*'
+    - '0'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+    - '7'
+    - '8'
+    - '9'
