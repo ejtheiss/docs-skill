@@ -62,9 +62,16 @@ rules:
     message: Cut '{word}'.
   em-dash:
     reported: flexible
+    reported_by_mode: {draft: strict, review: flexible}
     guide: strict
     provenance: 'Eric 2026-11-10 decision 9: no em dashes in prose'
     message: Replace the em dash with a comma, colon or separate sentence.
+  marketing-words:
+    reported: flexible
+    reported_by_mode: {draft: strict, review: flexible}
+    guide: strict
+    provenance: 'Eric 2026-11-10 decision 9: no marketing language in authored documentation'
+    message: Cut '{word}'.
   filler-please:
     reported: flexible
     guide: flexible
@@ -194,6 +201,11 @@ tables:
       obviously: null
       of course: null
       simply: null
+    exceptions:
+      just: just (as|like|in time)
+  marketing_words:
+    why: Decision 9 marketing additions, separate from the original flexible filler list.
+    map:
       seamlessly: null
       powerful: null
       robust: null
@@ -202,7 +214,6 @@ tables:
       leverage: use
       our SE team: null
     exceptions:
-      just: just (as|like|in time)
       leverage: '\b(?:leverage\s+ratio|(?:the|financial)\s+leverage)\b'
   filler_please:
     why: '`please` belongs only in a direct request to contact someone.'

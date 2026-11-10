@@ -19,7 +19,7 @@ runnable:
 
 | Subskill | Needs | Decides | Status |
 |---|---|---|---|
-| `docs-lint` | the file only | frontmatter, headings, fences, JSON bodies, links, object names, currency, prose mechanics | 31 rules |
+| `docs-lint` | the file only | frontmatter, headings, fences, JSON bodies, links, object names, currency, prose mechanics | 32 rules |
 | `docs-content` | corpus norms | continuity, teaching pattern, structure, coverage | no rules yet |
 | `docs-maintain` | all three repos | reuse, duplication, block references, wording drift | no rules yet |
 | `docs-test` | monorepo, network or sandbox | schemas, enums, endpoints, events, states, links | no rules yet |
@@ -100,7 +100,7 @@ fixes are in **07 — Review & Correction**.
 
 `sentence-length`, `passive-voice`, `filler`, `filler-please`, `fence-language-unknown`,
 `link-absolute-internal`, `acronym-undefined`, `contractions`, `reference-no-shell`,
-`no-ordered-lists`, `frontmatter-excerpt`, `em-dash` are reported for a human to decide. Fix when the alternative reads better; leave
+`no-ordered-lists`, `frontmatter-excerpt` are reported for a human to decide. `em-dash` and `marketing-words` are strict in draft mode and flexible in review mode. Fix flexible findings when the alternative reads better; leave
 otherwise. Do not bulk-apply.
 
 ### 5. Review what no checker sees
@@ -131,7 +131,7 @@ read at import from two YAML files, and each has one owner:
   acronym expansions, currency codes. Shared, because a fact about what our objects are called is as
   useful to `docs-content` as to `docs-lint`.
 - **`<subskill>/config/rules.yaml`** — the rules that subskill emits, plus the tables only it reads.
-  For `docs-lint` that is 31 rules plus policy tables of prose mechanics: filler words, vague
+  For `docs-lint` that is 32 rules plus policy tables of prose mechanics: filler words, vague
   anchors, fence tags, callout emoji, the grammar lists behind `passive-voice`.
 
 A table defined in both files is a refusal, and so is one rule id claimed by two subskills. Every
@@ -143,7 +143,7 @@ The id covers what decides a verdict — reported and guide severity, scope, thr
 the exemptions and applicability contexts — and nothing else. Provenance and each table's `why` ride in the files and outside
 the id, because `--list-rules` prints them and no rule reads them. So the stamp answers "would this
 policy have decided my findings differently?" rather than "has anyone touched the guide", and
-rewording an explanation does not re-open the admission gate for 31 rules.
+rewording an explanation does not re-open the admission gate for 32 rules.
 
 Until 2026-09-03 the policy came from Notion through an 832-line sync, with a snapshot captured out
 of band, staleness and tamper detection around the seam. That machinery existed because a database

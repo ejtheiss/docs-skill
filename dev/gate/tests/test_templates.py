@@ -65,7 +65,7 @@ def test_destination_templates_and_integration_gate():
 def test_guide_rule_ids_and_housekeeping():
     import yaml
     rules = yaml.safe_load((ROOT / 'skill/docs-lint/config/rules.yaml').read_text())['rules']
-    assert len(rules) == 31
+    assert len(rules) == 32
     for page in (ROOT / 'skill/docs-review/style').glob('*.md'):
         text = page.read_text()
         assert 'Compiled from Notion' not in text

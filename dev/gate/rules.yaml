@@ -5,7 +5,11 @@ fence-language:
 filler:
   source: docs-lint/scripts/lint.py
   functions: [check_filler, _exempt]
-  boundaries: [exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion, leverage-noun-verb, each-new-phrase]
+  boundaries: [exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion]
+marketing-words:
+  source: docs-lint/scripts/lint.py
+  functions: [check_marketing, _exempt]
+  boundaries: [leverage-noun-verb, each-new-phrase, word-boundaries, code-exclusion, draft-strict-review-flexible]
 reference-no-shell:
   source: docs-lint/scripts/lint.py
   functions: [check_fences, is_request]

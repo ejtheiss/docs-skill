@@ -35,8 +35,15 @@ def test_own_project_and_relative_links(tmp_path):
 
 
 def test_filler_leverage_and_phrases(tmp_path):
-    assert len(review(tmp_path, 'Leverage robust tools seamlessly with our SE team.\n', 'filler')) == 4
-    assert not review(tmp_path, 'The leverage ratio measures financial leverage.\n', 'filler')
+    assert len(review(tmp_path, 'Leverage robust tools seamlessly with our SE team.\n', 'marketing-words')) == 4
+    assert not review(tmp_path, 'The leverage ratio measures financial leverage.\n', 'marketing-words')
+    assert not review(tmp_path, 'Leverage robust tools seamlessly with our SE team.\n', 'filler')
+
+
+@pytest.mark.parametrize('rule,text', [('em-dash', 'Text — text.'), ('marketing-words', 'Use robust tools.')])
+def test_authored_bans_are_strict_only_in_draft(tmp_path, rule, text):
+    assert [f['strict'] for f in review(tmp_path, text, rule, 'review')] == [False]
+    assert [f['strict'] for f in review(tmp_path, text, rule, 'draft')] == [True]
 
 
 def test_em_dash_prose_not_code_or_tables(tmp_path):

@@ -40,6 +40,10 @@ Long sentences are almost always two facts joined by a comma. Split them.
 ### No filler, no hedging — **Flexible** (`filler`, `filler-please`)
 Banned: `simply`, `just` (as a minimizer), `easily`, `obviously`, `of course`. Both filler rules are reported flexible. `just` is exempt in the senses that are not minimizers: `just as`, `just like`, `just in time`.
 
+### No marketing language — **Strict in draft, flexible in review** (`marketing-words`)
+
+The decision 9 additions are separate from the original flexible filler list.
+
 | Banned wording | Correction |
 |---|---|
 | `seamlessly`, `powerful`, `robust` | State the specific capability, or delete |
@@ -92,7 +96,7 @@ ACH, RTP, EFT, FX, KYC, SDK, IAT, SEPA, BACS, NACHA: *Real-Time Payments (RTP)*,
 ### Endpoints, fields, events and values are inline code — **Strict**, reviewer judgment
 Write `POST /ledger_transactions`, `normal_balance`, `pending` and the exact event name in inline code. Never use bold, quotes or backslash escapes in place of inline code.
 
-### No em dashes in prose — **Strict** (`em-dash`, reported flexible)
+### No em dashes in prose — **Strict in draft, flexible in review** (`em-dash`)
 Use a comma, colon or separate sentence. Paragraphs, headings and component prose count; frontmatter, code and Markdown or HTML tables do not.
 ---
 ## Structure
