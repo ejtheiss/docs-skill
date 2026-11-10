@@ -1,0 +1,158 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ],
+    "edge": "",
+    "edges": [],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'easily'.",
+        "evidence": "Easily create a record.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 6,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'in order to'.",
+        "evidence": "Use this in order to create a record.",
+        "fix": "replace with 'to'",
+        "col": 10,
+        "end_col": 20
+      },
+      {
+        "line": 8,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'just'.",
+        "evidence": "Just create a record.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 4
+      },
+      {
+        "line": 10,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'note that'.",
+        "evidence": "Note that records exist.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 9
+      },
+      {
+        "line": 12,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'obviously'.",
+        "evidence": "Obviously records exist.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 9
+      },
+      {
+        "line": 14,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'of course'.",
+        "evidence": "Of course records exist.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 9
+      },
+      {
+        "line": 16,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'simply'.",
+        "evidence": "Simply create a record.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 6
+      }
+    ]
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "edge": "",
+    "edges": [],
+    "findings": []
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      22,
+      22,
+      24
+    ],
+    "edge": "exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion",
+    "edges": [
+      "exception-phrases",
+      "word-boundaries",
+      "code-exclusion",
+      "replacement-and-deletion"
+    ],
+    "findings": [
+      {
+        "line": 20,
+        "rule": "filler-please",
+        "strict": false,
+        "message": "'please' belongs only in a direct request to contact someone.",
+        "evidence": "Please create a record.",
+        "fix": "",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 22,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'in order to'.",
+        "evidence": "Simply create a record in order to proceed.",
+        "fix": "replace with 'to'",
+        "col": 24,
+        "end_col": 34
+      },
+      {
+        "line": 22,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'simply'.",
+        "evidence": "Simply create a record in order to proceed.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 24,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'just'.",
+        "evidence": "Run just in case.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 8
+      }
+    ]
+  }
+]

@@ -1,0 +1,175 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "reference",
+    "lines": [
+      4,
+      7,
+      10,
+      13,
+      16
+    ],
+    "edge": "",
+    "edges": [],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `bash`; use `shell`.",
+        "evidence": "bash",
+        "fix": "```shell",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 4,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "bash",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `curl`; use `shell`.",
+        "evidence": "curl",
+        "fix": "```shell",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "curl",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `js`; use `javascript`.",
+        "evidence": "js",
+        "fix": "```javascript",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 13,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `sh`; use `shell`.",
+        "evidence": "sh",
+        "fix": "```shell",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 13,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "sh",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 16,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `ts`; use `typescript`.",
+        "evidence": "ts",
+        "fix": "```typescript",
+        "col": 0,
+        "end_col": 0
+      }
+    ]
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "reference",
+    "lines": [],
+    "edge": "",
+    "edges": [],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "shell",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ]
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "reference",
+    "lines": [
+      4
+    ],
+    "edge": "empty-tag, canonical-tag, unknown-tag, alias-case-and-info",
+    "edges": [
+      "empty-tag",
+      "canonical-tag",
+      "unknown-tag",
+      "alias-case-and-info"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `bash`; use `shell`.",
+        "evidence": "BASH title",
+        "fix": "```shell",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 4,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "BASH title",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "fence-untagged",
+        "strict": true,
+        "message": "Code fence declares no language.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "fence-language-unknown",
+        "strict": false,
+        "message": "Fence tagged `unknownlang`, which is not a tag the guide lists.",
+        "evidence": "unknownlang",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ]
+  }
+]

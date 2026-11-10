@@ -1,0 +1,8 @@
+fence-language:
+  source: docs-lint/scripts/lint.py
+  functions: [check_fences]
+  boundaries: [empty-tag, canonical-tag, unknown-tag, alias-case-and-info]
+filler:
+  source: docs-lint/scripts/lint.py
+  functions: [check_filler, _exempt]
+  boundaries: [exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion]
