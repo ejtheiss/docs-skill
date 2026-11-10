@@ -3,11 +3,13 @@
 ## Phase C
 
 ```sh
+export DOCS_CORPUS_ROOT=/path/to/materialized-corpus
 PYTHONDONTWRITEBYTECODE=1 python3 dev/gate/gate.py \
   --rule openapi-field-exists --rule reuse-undefined-block \
   --rule leak-names --rule leak-internal \
   --corpus-mode review --corpus-mode draft \
   --checker-arg=--names --checker-arg=dev/gate/fixtures/customer-names.txt \
+  --checker-arg=--spec --checker-arg="$DOCS_CORPUS_ROOT/docs-readme-platform/reference/modern-treasury-api.json" \
   --out dev/gate/evidence/phase-c.md --jobs 8
 PYTHONDONTWRITEBYTECODE=1 python3 dev/gate/phase_c.py dev/gate/evidence/phase-c.md
 ```
@@ -15,6 +17,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 dev/gate/phase_c.py dev/gate/evidence/phase-c.
 The supplement independently checks raw spec keys and enum arrays, measures empty
 and fixture names lists, confirms undefined-block counts, and measures the
 development-only adjacent-code-span candidate. It records the spec SHA256.
+Both commands require an explicit corpus root. Ordinary pytest uses only
+vendored fixtures and does not run these corpus-scale measurements.
 Mutation mappings cover verdict functions; direct/integration tests cover the
 extractors and inventory loaders. Neither oracle agreement nor the strict grade
 establishes runtime API correctness or blind-adjudicated precision. A zero-rate
@@ -34,7 +38,9 @@ python3 dev/gate/gate.py --rule fence-language --rule filler --out dev/gate/evid
 python3 dev/gate/gate.py --rule image-alt --rule body-h1 --corpus-mode review --corpus-mode draft --out dev/gate/evidence/contexts.md
 ```
 
-`DOCS_GATE_CORPUS` defaults to `~/work/corpus-head`. Keep the three repo names in
+Corpus evidence is opt-in: set `DOCS_CORPUS_ROOT` to a materialized corpus
+directory (`DOCS_GATE_CORPUS` is an explicit compatibility alias). There is no
+home-directory default. Keep the three repo names in
 its paths for project inference; `reference/` is a fourth project, matching the
 checker. The manifest is included in evidence. Add mode/names-file tokens using
 `--checker-arg=--mode --checker-arg=value --checker-arg=--names-file --checker-arg=/path`.

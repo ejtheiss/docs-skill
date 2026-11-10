@@ -10,7 +10,7 @@ This is the only tier that needs anything outside the docs - the monorepo, the n
 organization - which is what separates it from `docs-lint`'s JSON syntax check: that a body parses is a
 property of the file, that its fields are real is a property of the API.
 
-The shipped check compares the global field and enum vocabulary with a configured offline snapshot.
+The shipped check compares the global field and enum vocabulary with a supplied offline snapshot.
 It does not prove endpoint-specific validity, runtime behavior or completeness of the snapshot.
 
     python3 apicheck.py docs/ --spec reference/modern-treasury-api.json
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shlex
 import sys
@@ -56,11 +57,25 @@ RULES = {name: (rule.strict, rule.provenance) for name, rule in POLICY.rules.ite
 PROJECTS = POLICY.projects()
 
 
+def resolve_spec(spec: Path | None = None) -> Path | None:
+    value = spec if spec is not None else os.environ.get('DOCS_REVIEW_SPEC')
+    return Path(value).expanduser() if value else None
+
+
+def spec_notes(spec: Path | None = None, rules: list[str] | None = None) -> list[str]:
+    if rules and not EMITS.intersection(rules):
+        return []
+    path = resolve_spec(spec)
+    return ['openapi-field-exists not run: no spec snapshot'] if path is None or not path.exists() else []
+
+
 def run(files: list[Path], project: str | None, rules: list[str] | None,
         mode: str = 'review', base: str | None = None, spec: Path | None = None) -> list[Finding]:
     if rules and not EMITS.intersection(rules):
         return []
-    spec = (spec or Path(POLICY.values['openapi_source']['path'])).expanduser()
+    if spec_notes(spec, rules):
+        return []
+    spec = resolve_spec(spec)
     try:
         schema = json.loads(spec.read_text())
     except (OSError, ValueError) as exc:
@@ -220,9 +235,12 @@ def main(argv: list[str] | None = None) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     card = scorecard(findings, len(files))
+    card['notes'] = spec_notes(args.spec, args.rule)
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))
     else:
+        for note in card['notes']:
+            print('note: ' + note)
         print(render_text(findings, card, show_flexible=not args.strict_only))
     return 1 if card["strict_failures"] else 0
 

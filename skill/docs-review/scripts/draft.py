@@ -14,7 +14,7 @@ import tempfile
 
 import yaml
 
-from mode_support import CONFIG, HERE, PROJECTS, review, revision, source
+from mode_support import CONFIG, HERE, PROJECTS, review, revision, source, read_snapshot, snapshot_source
 
 TEMPLATES = HERE.parent / 'references/templates'
 DESTINATIONS = tuple(sorted(p.stem for p in TEMPLATES.glob('*.md')))
@@ -65,10 +65,13 @@ def write_json(path: Path, value: dict) -> None:
     temporary.replace(path)
 
 
-def scaffold(brief_path: Path, out: Path, maximum: int) -> dict:
+def scaffold(brief_path: Path, out: Path, maximum: int, snapshot_dir: Path | None = None) -> dict:
     if maximum < 1:
         raise ValueError('max iterations must be positive')
     brief = brief_data(brief_path)
+    if snapshot_dir is not None:
+        read_snapshot(snapshot_dir)
+        brief['snapshot'] = str(snapshot_dir.resolve())
     if out.exists() and any(out.iterdir()):
         raise ValueError('output directory must be empty; existing work is never overwritten')
     out.mkdir(parents=True, exist_ok=True)
@@ -111,7 +114,7 @@ def section_span(text: str, heading: str) -> tuple[int, int]:
     return next(span for span in ends if span[0] == matches[0])
 
 
-def small_edit(text: str, brief: dict, out: Path) -> dict:
+def small_edit(text: str, brief: dict, out: Path, snapshot_dir: Path | None = None) -> dict:
     match = SMALL_EDIT.fullmatch(text)
     if not match:
         raise ValueError('small-edit must contain only Path, Heading, Quote and Replacement in template format')
@@ -123,8 +126,15 @@ def small_edit(text: str, brief: dict, out: Path) -> dict:
         raise ValueError('quote and replacement must be nonempty and different')
     repo = Path(target['repo']).expanduser()
     ref = target.get('ref', 'origin/v2.0')
-    sha = revision(repo, ref)
-    original = source(repo, sha, path)
+    provenance = {}
+    snapshot_dir = snapshot_dir or brief.get('snapshot')
+    if snapshot_dir:
+        original, entry = snapshot_source(Path(snapshot_dir), repo.name, path)
+        sha, ref = entry['sha'], 'snapshot'
+        provenance = dict(source_url=entry['url'])
+    else:
+        sha = revision(repo, ref)
+        original = source(repo, sha, path)
     start, end = section_span(original, heading)
     section = original[start:end]
     if section.count(quoted) != 1:
@@ -143,7 +153,7 @@ def small_edit(text: str, brief: dict, out: Path) -> dict:
     findings = [f for f in report['findings'] if f['line'] in touched]
     return dict(strict_failures=sum(f['strict'] for f in findings), findings=findings,
                 changed_lines=sorted(touched), repo=str(repo), ref=ref, sha=sha,
-                policy=report['scorecard']['policy'], scope='changed lines only; existing findings outside them excluded')
+                policy=report['scorecard']['policy'], scope='changed lines only; existing findings outside them excluded', **provenance)
 
 
 def spec_patch(text: str) -> dict:
@@ -164,7 +174,7 @@ def spec_patch(text: str) -> dict:
     return dict(strict_failures=0, findings=[], scope='spec patch structure only; product correctness is reviewer judgment')
 
 
-def validate(out: Path, maximum: int | None = None) -> dict:
+def validate(out: Path, maximum: int | None = None, snapshot_dir: Path | None = None) -> dict:
     brief = brief_data(out / 'brief.yaml')
     state = json.loads((out / 'state.json').read_text())
     if (not isinstance(state, dict) or not isinstance(state.get('brief_hash'), str) or
@@ -186,7 +196,7 @@ def validate(out: Path, maximum: int | None = None) -> dict:
         if '{{' in text or '}}' in text:
             raise ValueError('candidate still contains unfilled placeholders')
         if brief['destination'] == 'small-edit':
-            result = small_edit(text, brief, out)
+            result = small_edit(text, brief, out, snapshot_dir)
         elif brief['destination'] == 'api-reference-change':
             result = spec_patch(text)
         else:
@@ -208,13 +218,14 @@ def main(argv=None):
     parser.add_argument('input', type=Path, help='draft directory for validate, otherwise a YAML brief')
     parser.add_argument('--out', type=Path)
     parser.add_argument('--max-iterations', type=int)
+    parser.add_argument('--snapshot', type=Path, help='plain-directory snapshot for small-edit quote validation')
     args = parser.parse_args(argv[1:] if validating else argv)
     if args.max_iterations is not None and args.max_iterations < 1:
         parser.error('--max-iterations must be positive')
     if not validating and args.out is None:
         parser.error('scaffolding requires --out')
     try:
-        result = validate(args.input, args.max_iterations) if validating else scaffold(args.input, args.out, args.max_iterations or DEFAULT_MAX)
+        result = validate(args.input, args.max_iterations, args.snapshot) if validating else scaffold(args.input, args.out, args.max_iterations or DEFAULT_MAX, args.snapshot)
     except (OSError, ValueError, KeyError, subprocess.TimeoutExpired) as exc:
         print(f'draft error: {exc}', file=sys.stderr)
         return 2
