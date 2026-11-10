@@ -1,185 +1,210 @@
 ---
 name: docs-review
-description: Review Modern Treasury documentation against the docs style guide (base style plus per-project overlays for ledgers, payments, platform guides and API reference). Runs four subskills as one log — docs-lint, docs-content, docs-maintain, docs-test. Use when writing a new docs page, reviewing or editing pages in docs-readme-ledgers / docs-readme-payments / docs-readme-platform, or auditing a set of pages.
+description: Use when writing, editing or reviewing a docs page; answering "is X documented" or "where do the docs say"; or handling any docs-readme-* path or docs.moderntreasury.com URL.
 ---
 
-# Modern Treasury docs review
+# Modern Treasury documentation
 
-Applies the Modern Treasury documentation style guide to markdown pages in the three ReadMe repos:
-`docs-readme-ledgers`, `docs-readme-payments`, `docs-readme-platform` (guides in `docs/**`, API
-reference in `reference/**`).
+Choose **review**, **locate**, **draft** or **sweep**. Commands are relative to
+this skill directory. Existing dependencies are `markdown-it-py` and `PyYAML`.
+Git is needed for ref-based modes; `gh` and network access are optional for locate.
 
-The style guide lives in `style/`, and those files are the source of truth. This skill carries the
-guide, the procedure, and runnable checkers for the rules that can be checked mechanically.
+The three documentation repositories remain read-only during evidence gathering.
+Locate, small-edit validation and sweep use refs, never checkout, branch, commit
+or push in them. Draft writes only to its explicit output directory. Temporary
+snapshots and validation copies do not change source repositories.
 
-## The four subskills
+## Project and style references
 
-They split by dependency tier, not topic — which is why the seam holds, and why each is separately
-runnable:
-
-| Subskill | Needs | Decides | Status |
-|---|---|---|---|
-| `docs-lint` | the file only | frontmatter, headings, fences, JSON bodies, links, object names, currency, prose mechanics | 31 rules |
-| `docs-content` | corpus norms | continuity, teaching pattern, structure, coverage | no rules yet |
-| `docs-maintain` | all three repos | reuse, duplication, block references, wording drift | no rules yet |
-| `docs-test` | monorepo, network or sandbox | schemas, enums, endpoints, events, states, links | no rules yet |
-
-An empty subskill loads its policy and reports nothing. That is the honest state: a candidate rule
-there has a measured base rate but no threshold, and a rule fired without one describes the corpus
-rather than diagnosing a page. Each subskill's `SKILL.md` says what it measured and what it is waiting
-on.
-
-They report as one log: one findings format, one severity vocabulary, one scorecard, one policy stamp.
-
-## Style guide pages
-
-Read the base style plus the ONE overlay for the project you are working in.
-
-| Page | What it covers |
+| Destination | Project |
 |---|---|
-| `style/00-index.md` | How to use the guide, and what the two grades mean |
-| `style/01-base-style.md` | Voice, tense, terminology, structure, formatting, links, callouts, images |
-| `style/02-overlay-ledgers.md` | Teaching voice for ledger guides and tutorials |
-| `style/03-overlay-payments.md` | Operational voice for rails, returns and reconciliation |
-| `style/04-overlay-platform-guides.md` | Task voice for dashboard and configuration procedures |
-| `style/05-overlay-api-reference.md` | Conventions for spec-derived reference pages |
-| `style/06-flexible-conventions.md` | Where we allow variation on purpose |
-| `style/07-review-and-correction.md` | How to validate, verify and correct a page |
-| `style/08-readme-conventions.md` | Corpus-backed ReadMe frontmatter, components, code tabs and links |
+| `docs-readme-ledgers/docs/**` | `ledgers` |
+| `docs-readme-payments/docs/**` | `payments` |
+| `docs-readme-platform/docs/**` | `platform` |
+| `reference/**` | `reference` |
 
-These were rendered from Notion until 2026-09-03 and are now edited directly. A rule change is an
-edit here plus the matching edit to a policy file, in one change: the prose explains the rule and the
-policy compiles it, and a reviewer applying one while a run applies the other is the drift this skill
-exists to prevent.
+Read the base and one overlay. An overlay wins where it differs. The guide, not
+a corpus majority, decides person: Ledgers walkthroughs use `we`; Payments and
+platform tasks address `you`.
 
+| Reference | Purpose |
+|---|---|
+| [00 — Index](style/00-index.md) | Grades, policy ownership, projects |
+| [01 — Base style](style/01-base-style.md) | Voice, terminology, formatting, links, images |
+| [02 — Ledgers](style/02-overlay-ledgers.md) | Worked accounting examples |
+| [03 — Payments](style/03-overlay-payments.md) | Operational workflows and failure paths |
+| [04 — Platform](style/04-overlay-platform-guides.md) | Setup and UI labels |
+| [05 — API reference](style/05-overlay-api-reference.md) | Spec-derived descriptions |
+| [06 — Flexibility](style/06-flexible-conventions.md) | Latitude and no-backfill decisions |
+| [07 — Review](style/07-review-and-correction.md) | Correction scope and order |
+| [08 — ReadMe conventions](style/08-readme-conventions.md) | Corpus-cited components, frontmatter, tabs and links |
 
-## Procedure
+## Review mode
 
-### 1. Identify the project
-
-| Path | Project | Checker value |
-|---|---|---|
-| `docs-readme-ledgers/**` | Ledgers | `ledgers` |
-| `docs-readme-payments/**` | Payments | `payments` |
-| `docs-readme-platform/docs/**` | Platform guides | `platform` |
-| `docs-readme-platform/reference/**` | API reference | `reference` |
-
-Inferred from the path; pass `--project` when running outside a repo checkout.
-
-### 2. Run
-
-```bash
-pip install markdown-it-py PyYAML                       # once
-python3 scripts/review.py <path>                        # all four subskills, one log
-python3 scripts/review.py <path> --only lint            # one tier (pre-commit path)
-python3 scripts/review.py <path> --only lint --only test
-python3 scripts/review.py <path> --strict-only          # only what must be fixed
-python3 scripts/review.py <path> --format json          # machine-readable
-python3 scripts/review.py <path> --mode draft           # every file is new
-python3 scripts/review.py <path> --base <git-ref>        # review new files and touched images
-python3 scripts/review.py <path> --rule filler --rule mt-shorthand
-python3 scripts/review.py --list-rules                  # every rule, severity, source, policy hash
+```shell
+python3 scripts/review.py <path>
+python3 scripts/review.py <path> --base <git-ref>
+python3 scripts/review.py <path> --mode draft --project payments
+python3 scripts/review.py <path> --format json
+python3 scripts/review.py <path> --strict-only
+python3 scripts/review.py <path> --only lint
+python3 scripts/review.py --list-rules
 ```
 
-Default is all four, because a reviewer who has to remember which tier catches which defect has been
-handed the tool's problem. `--only` is repeatable; the JSON scorecard names the subskills that ran.
-Review is the default mode. Without `--base`, review does not infer new/touched content: `body-h1` and `image-alt` do not fire. Draft checks the first body heading and every image. Existing pages do not require an h1 backfill.
+1. Identify the project and read its guide pages.
+2. Fix mechanical strict findings in scope. Weigh flexible notes individually.
+3. Apply **reviewer judgment** to tense, person, imperative steps, accuracy and
+   the [rubric](references/rubric.md). These judgments are never rule findings.
+4. Verify claims against cited contracts/specs, not model memory. A clean score
+   does not establish product correctness.
+5. Report mechanical findings separately from reviewer judgment, with evidence
+   and any unresolved gaps. Never enforce an unwritten preference.
 
-Exit status: 1 when a strict rule fails (so it can gate a commit), 2 for a bad invocation — an unknown
-`--rule`, or a path whose project cannot be inferred with no `--project` given.
+Review is default. Without `--base`, `body-h1` and `image-alt` are inactive. With
+a base, absent files are new and added/replaced lines are touched. New pages
+require their first body heading to be h1; existing pages are not backfilled.
+Alt text applies to new/touched images. Draft treats every file as new.
+`heading-skip` stays active independently.
 
-Each subskill is also directly runnable (`../docs-lint/scripts/lint.py` and so on) with the same flags
-minus `--only`; findings are identical either way.
+Reported flexible: `sentence-length`, `passive-voice`, `filler`, `filler-please`,
+`fence-language-unknown`, `link-absolute-internal`, `acronym-undefined`,
+`contractions`, `reference-no-shell`, `no-ordered-lists`, `frontmatter-excerpt`,
+`em-dash`. Guide grades may be stricter. Requests use `curl`, with ReadMe labels
+allowed; `shell` is for non-request commands. Use page 08's Callout/Image syntax.
 
-### 3. Fix every strict finding
+Four tiers share findings and a policy stamp. docs-lint has 31 rules;
+docs-content, docs-maintain and docs-test currently report none. `--only` selects
+tiers. Review exits 0 with no strict findings, 1 with strict findings, 2 for bad input.
 
-Strict findings are not preferences. Correct them in the change you are making. Common ones and their
-fixes are in **07 — Review & Correction**.
+## Locate mode
 
-### 4. Judge the flexible findings
+Use for generalized questions and documentation discovery. **The model judges
+whether the quote answers the question: reviewer judgment.** Term coverage is
+not an answer or a product guarantee.
 
-`sentence-length`, `passive-voice`, `filler`, `filler-please`, `fence-language-unknown`,
-`link-absolute-internal`, `acronym-undefined`, `contractions`, `reference-no-shell`,
-`no-ordered-lists`, `frontmatter-excerpt`, `em-dash` are reported for a human to decide. Fix when the alternative reads better; leave
-otherwise. Do not bulk-apply.
+```shell
+python3 scripts/locate.py "Which identification types are supported for a legal entity?"
+python3 scripts/locate.py "registered agent address" --no-web --no-prs --json
+python3 scripts/locate.py "external_account" --repos ~/work/docs-readme-payments --ref origin/v2.0 --top 5 --days 90
+```
 
-### 5. Review what no checker sees
+Defaults: three `~/work/docs-readme-*` repositories at `origin/v2.0`. Search
+removes stopwords, preserves code tokens/quoted phrases and expands synonyms
+from `config/locate.yaml`. Git grep reads resolved refs, not working trees.
+Passages rank by term coverage with title/heading coverage bonuses, then stable
+path/line tie-breaks; one passage per page is returned. Quotes include
+path, heading, line range, SHA and public URL. URLs use explicit frontmatter
+`slug`, otherwise filename (parent for `index.md`), under shared project prefixes.
+Confirm inferred URLs; a weak hit does not establish the requested behavior.
 
-- **Tense**: present for what happens in Modern Treasury, future for what happens at the bank or
-  outside the platform.
-- **Person**: `we` versus `you` per the project overlay, consistent within each section.
-- **Imperative**: procedural steps open with a verb, one action per step.
+Optional web checks fetch candidate `<url>.md` and project `llms.txt` indexes with
+bounded timeouts. `ok` means the exact quote is present, not that it answers the
+question. Mismatch/unreachable and empty/incomplete indexes are recorded. Index
+completeness is checked against candidate URLs only, not the entire corpus.
 
-Use `references/templates/` for the destination's response shape. Fill every placeholder and run the page templates in draft mode with an explicit project when needed. `small-edit.md` is a patch handoff, not a publishable page. Requests use `curl`, with ReadMe labels allowed; non-request commands use `shell`.
-Apply `references/rubric.md` as **reviewer judgment**, not reported rules. Log each accept/reject decision with `scripts/rubric_label.py` for the Phase 3 adjudication set.
+PR search examines titles, bodies and changed patches of open PRs and PRs merged
+within `--days`, via `gh api`. It reports bounded-search truncation and access
+errors. Missing gh or offline sources do not erase local results. Always report
+the `searched:` list: repositories/SHAs, terms, URLs, PR queries and unavailable
+sources. "Not found" means no local candidate, not that a feature is unsupported.
 
-Then check accuracy — endpoints, field names, enum values, screenshots — against the current product.
+## Draft mode
 
-### 6. Report
+The model writes prose. The script only scaffolds templates and validates.
 
-Group findings by rule, not by line, and quote the rule name from the guide. For an audit of many
-pages use `--format json` and summarize with the `scorecard` object (`strict_failures`,
-`pages_clean`, `by_rule`, `subskills`).
+| Destination | Template |
+|---|---|
+| Small edit | [Quote, replacement, path, heading](references/templates/small-edit.md) |
+| Docs page | [Page](references/templates/docs-page.md) |
+| Integration | [Phases and webhook gate](references/templates/integration-guide.md) |
+| API reference | [Spec-change handoff](references/templates/api-reference-change.md) |
+| Topics page | [Concepts and constraints](references/templates/topics-page.md) |
 
-## Where policy lives
+```yaml
+question: Is registered-agent address behavior documented?
+destination: small-edit
+project: payments
+evidence:
+  - claim: The cited source does not specify registered-agent address support.
+    source: repo path, ref SHA and passage verified by the reviewer
+    verified: true
+target:
+  repo: /path/to/docs-readme-payments
+  path: docs/Customer Onboarding/onboard-a-business/required-fields-for-businesses.md
+  heading: Required Fields for Businesses
+  ref: origin/v2.0
+```
 
-No checker carries a policy decision. Every severity, threshold, word list, scope and exemption is
-read at import from two YAML files, and each has one owner:
+This is a schema example, not verified evidence. Replace it with actually checked
+claims and sources. Each evidence item needs `claim`, `source`, `verified: true`.
+The flag is reviewer testimony, not script verification. Optional `fields` maps
+placeholder names to model-authored strings; missing fields remain placeholders.
+Only small edits require target repo/path/heading; other destinations require
+question, verified evidence, destination and project.
 
-- **`config/policy.yaml`** (this skill) — the vocabulary and the Modern Treasury domain facts:
-  the three severities, the four projects and their URL prefixes, object names and shorthand, `MT`,
-  acronym expansions, currency codes. Shared, because a fact about what our objects are called is as
-  useful to `docs-content` as to `docs-lint`.
-- **`<subskill>/config/rules.yaml`** — the rules that subskill emits, plus the tables only it reads.
-  For `docs-lint` that is 31 rules plus policy tables of prose mechanics: filler words, vague
-  anchors, fence tags, callout emoji, the grammar lists behind `passive-voice`.
+```shell
+python3 scripts/draft.py brief.yaml --out /path/to/draft --max-iterations 5
+python3 scripts/draft.py validate /path/to/draft
+```
 
-A table defined in both files is a refusal, and so is one rule id claimed by two subskills. Every
-report and `--list-rules` stamps a policy id, so a finding can be traced to the policy that decided
-it. The id is computed from the files on every run and never quoted from one, so an edit cannot be
-reported under an id that predates it.
+Model loop:
 
-The id covers what decides a verdict — reported and guide severity, scope, threshold, the tables and
-the exemptions and applicability contexts — and nothing else. Provenance and each table's `why` ride in the files and outside
-the id, because `--list-rules` prints them and no rule reads them. So the stamp answers "would this
-policy have decided my findings differently?" rather than "has anyone touched the guide", and
-rewording an explanation does not re-open the admission gate for 31 rules.
+1. Locate and verify evidence. Do not draft beyond it.
+2. Scaffold into an empty directory; author `candidate.md` in the selected shape.
+3. Validate, read iteration count/findings, edit, repeat until zero strict.
+4. Stop at the configured iteration cap (`config/draft.yaml`), reporting the blocker; do
+   not silently reset state. `--max-iterations` sets the initial cap. Validate can
+   lower it, never extend it. Changed briefs require new evidence-bound drafts.
+5. Apply reviewer judgment and rubric even after mechanical validation succeeds.
 
-Until 2026-09-03 the policy came from Notion through an 832-line sync, with a snapshot captured out
-of band, staleness and tamper detection around the seam. That machinery existed because a database
-cell is untrustworthy input. A reviewed file is not, so it is gone — along with the `Active` gate
-(delete the rule), the `<delete>` sentinel (write `""`), and the separate `exceptions` block (an
-exemption sits beside the value it exempts).
+Small edits remain quote/replacement/path/heading, not a whole page. Validation
+requires one verbatim quote under the target heading at its Git ref. It applies
+the replacement in a temporary copy, runs `review --mode draft` on that page and
+counts findings on added/replaced lines only; unrelated existing failures are
+excluded. The docs repository is never edited.
 
-Consequences worth knowing:
+API reference drafts contain template-derived `instructions.md` and
+`candidate.json`, never generated endpoint Markdown. The envelope is
+`{"target":"reference/modern-treasury-api.json","patch":[...]}` with nonempty
+JSON Patch operations. Validation checks structure only, not applicability to
+the actual spec; correct pointers/fields/product behavior are reviewer judgment.
+Other page destinations receive whole-page draft review.
 
-- A wrong severity or a missing word is an edit to a policy file, reviewed like any other change.
-  Do not edit a checker to change a verdict; there is nothing there to edit.
-- A run reads two local files and opens no socket. A verdict behind a network call cannot be pinned
-  or mutation-tested, and two runs on one commit could disagree.
-- A missing, unreadable, malformed or incomplete policy makes a subskill refuse to run rather than
-  fall back to a default, because a guessed threshold reports a number nobody chose.
-- A table change re-opens the admission gate for the rules that read it.
+`state.json` records counts; each validation attempt consumes an iteration,
+including rejected candidates. `validation.json` records the latest result.
+Exit 1 means editing/cap reached; exit 2 means invalid setup or input.
 
-`--list-rules` prints the authoritative rule table. Judgment rules with no check, enforced in review:
-ambiguous object capitalization (Transaction, Invoice, Return, Counterparty, Document, Event), tense,
-person consistency, imperative steps, UI-label formatting, failure-path coverage, one-sentence field
-descriptions.
+## Sweep mode: scaffold only
 
-## Changing a checker
+```shell
+python3 scripts/sweep.py --top 10
+python3 scripts/sweep.py --repos ~/work/docs-readme-payments --ref origin/v2.0 --top 5
+```
 
-Do not edit a checker from a review. The fixtures, the differential against markdownlint /
-write-good / emoji-regex, the snapshot-to-runtime differential, the mutation harness and the corpus
-the rules were measured on live in the docs-style repo outside this skill; a rule changed without them
-is unverified. Make the change there, run its suites, and copy the result back.
+Sweep snapshots refs into temporary copies and runs corpus-wide review. Ranking
+is strict severity first (all strict), pages affected, then rule id. Page traffic
+is explicitly unknown, a placeholder with no ranking weight. This is not a
+traffic integration or permission for bulk edits. It prints sources and policy
+stamp and never edits docs.
 
-What ships is this directory: `SKILL.md`, `scripts/`, `config/`, `style/` and the umbrella's `references/`. What proves
-it — corpus snapshots, probes, oracles, fixtures, mutation tooling, adjudication — never ships, and no
-shipped file imports from it.
+## Reviewer labels and policy maintenance
 
-## Notes
+The [rubric](references/rubric.md) defines eight candidate ids and the Phase 3
+JSONL schema. Label accept/reject decisions separately:
 
-- The checkers are deliberately disposable. They encode the guide; the guide does not depend on them.
-- The checkers read and report; nothing writes to a page. The rubric helper appends only to an explicitly chosen JSONL label log.
-- Never rewrite a page wholesale to satisfy a checker. Fix findings in what you touch.
-- Corpus-wide cleanups go one rule per change, so the diff stays reviewable.
+```shell
+python3 scripts/rubric_label.py label.json --out phase-3-labels.jsonl
+```
+
+These are not reported rules. Preserve reviewed inputs/evidence for hash checks.
+The helper validates shape, not evidence truth or reviewer identity.
+
+Policy lives in YAML: shared vocabulary/projects in `config/policy.yaml`, and
+severities, scopes, contexts, thresholds, tables/exemptions in subskills'
+`config/rules.yaml`. Hashes cover deciding fields, not explanatory prose. Change
+the guide and matching policy together; reopen the relevant admission gate.
+Do not change a checker merely to silence a finding. Locate synonyms and draft
+iteration defaults are separate mode configuration, not lint policy inputs.
+
+No shipped script imports development code. Corpus probes, fixtures, mutation
+tooling and adjudication infrastructure stay outside the skill.

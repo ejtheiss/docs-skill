@@ -1,0 +1,17 @@
+top: 5
+passage_lines: 9
+timeout_seconds: 8
+pr_limit: 100
+github_owner: Modern-Treasury
+stopwords: [a, an, the, does, do, is, are, was, were, how, what, which, where, whether, can, could, should, would, will, to, of, for, from, into, in, 'on', at, as, by, with, and, or, it, its, this, that, these, those, i, we, you, your, our, be, been, supported, submit, work]
+synonyms:
+  registered agent: [registered_agent, registered-agent]
+  identification: [identifications, identification_type, identification_types, identity]
+  type: [types]
+  legal entity: [legal_entity, legal_entities, legal entities]
+  external account: [external_account, external bank account, external_account_id]
+  end user: [end users, end user's, end-user, end-user's]
+  business: [businesses]
+  address: [addresses, registered_address]
+  ach: [automated clearing house]
+  fbo: [for benefit of, for the benefit of]
