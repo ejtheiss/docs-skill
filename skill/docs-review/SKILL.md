@@ -210,7 +210,7 @@ Model loop:
 
 Small edits remain quote/replacement/path/heading, not a whole page. Validation
 uses only `draft.py validate`, never `review.py` on the fragment.
-requires one verbatim quote under the target heading at its Git ref. It applies
+It requires one verbatim quote under the target heading at its Git ref and applies
 the replacement in a temporary copy, runs `review --mode draft` on that page and
 counts findings on added/replaced lines only; unrelated existing failures are
 excluded. The docs repository is never edited.
