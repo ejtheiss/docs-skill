@@ -73,7 +73,7 @@ Reported flexible: `sentence-length`, `passive-voice`, `filler`, `filler-please`
 `filler` remains flexible in both modes. Guide grades may be stricter. Requests use `curl`, with ReadMe labels
 allowed; `shell` is for non-request commands. Use page 08's Callout/Image syntax.
 
-Four tiers share findings and a policy stamp. docs-lint has 31 rules;
+Four tiers share findings and a policy stamp. docs-lint has 32 rules;
 docs-content, docs-maintain and docs-test currently report none. `--only` selects
 tiers. Review exits 0 with no strict findings, 1 with strict findings, 2 for bad input.
 
@@ -139,6 +139,12 @@ Optional web checks fetch candidate `<url>.md` and project `llms.txt` indexes wi
 bounded timeouts. `ok` means the exact quote is present, not that it answers the
 question. Mismatch/unreachable and empty/incomplete indexes are recorded. Index
 completeness is checked against candidate URLs only, not the entire corpus.
+
+Method finding: ReadMe-hosted blocks can appear only in the `.md` export, not
+the fetched HTML or Git source. Web confirmation appends `.md` to the public
+docs URL; do not substitute the HTML response when checking rendered content.
+The general onboarding/KYB synonyms come from Payments Customer Onboarding
+pages and Legal Entity spec fields, not the evaluation scenarios.
 
 PR search examines titles, bodies and changed patches of open PRs and PRs merged
 within `--days`, from `--prs FILE`, or optionally via `gh api`. It reports bounded-search truncation and access

@@ -83,8 +83,8 @@ def test_locate_ref_only_is_deterministic_and_ignores_working_tree(repo):
 
 
 def test_terms_phrases_code_synonyms_empty_and_bad_ref(repo):
-    groups = locate.terms('Does a registered-agent use `legal_entity` and "postal address"?')
-    assert any('registered_agent' in group for group in groups)
+    groups = locate.terms('Does a beneficial owner use `legal_entity` and "postal address"?')
+    assert any('beneficial_owner' in group for group in groups)
     assert any('legal_entity' in group for group in groups)
     assert ['postal address'] in groups
     assert locate.terms('does the a on') == []
