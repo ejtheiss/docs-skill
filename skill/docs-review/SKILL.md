@@ -86,6 +86,9 @@ GitHub MCP connector's `get_file_contents` on
 Otherwise fetch `https://docs.moderntreasury.com/<project>/docs/<slug>.md` and
 record SHA `live`. Do not invent a SHA or treat live content as a pinned revision.
 The spec is `docs-readme-platform`, path `reference/modern-treasury-api.json`.
+In Cowork, Claude cannot practically move the multi-MB OpenAPI spec through the
+GitHub connector. Do not stall trying to fetch it: `openapi-field-exists` is a
+dev/CI rule there and reports "not run: no spec snapshot". `--spec` remains for CI.
 
 Save pages under `SNAPSHOT/<repo>/<path>` and create `SNAPSHOT/manifest.json`
 with this exact shape (one entry per fetched file):
@@ -206,6 +209,7 @@ Model loop:
 5. Apply reviewer judgment and rubric even after mechanical validation succeeds.
 
 Small edits remain quote/replacement/path/heading, not a whole page. Validation
+uses only `draft.py validate`, never `review.py` on the fragment.
 requires one verbatim quote under the target heading at its Git ref. It applies
 the replacement in a temporary copy, runs `review --mode draft` on that page and
 counts findings on added/replaced lines only; unrelated existing failures are
