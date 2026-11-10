@@ -88,7 +88,8 @@ def definitions(root):
 
 def check_reuse(text, defined, emit):
     for match in re.finditer(r'(?<!\\)<([A-Z][A-Za-z0-9_]*)\b(?:\s[^<>]*?|\s*/?)>', text):
-        if match[1] not in POLICY.words('readme_builtins') and match[1] not in defined:
+        if (match[1] not in POLICY.words('readme_builtins') and match[1] not in defined
+                and match[1] not in POLICY.words('readme_hosted_blocks')):
             emit(text.count('\n', 0, match.start()) + 1, match[1])
 
 

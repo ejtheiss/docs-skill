@@ -71,6 +71,7 @@ class Rule:
     # shipped rule, so the capability is dormant and the policy id is unmoved - see `identity`.
     overrides: dict[str, tuple[str, str]]
     applies_to: tuple[str, ...]
+    reported_by_mode: dict[str, str]
 
     def severity_for(self, project: str | None) -> tuple[str, str]:
         """(reported, guide) for a page in `project` - the override's when one names it."""
@@ -78,8 +79,8 @@ class Rule:
             return self.overrides[project]
         return (self.reported, self.guide_severity)
 
-    def strict_for(self, project: str | None) -> bool:
-        return self.severity_for(project)[0] == "strict"
+    def strict_for(self, project: str | None, mode: str = 'review') -> bool:
+        return self.reported_by_mode.get(mode, self.severity_for(project)[0]) == "strict"
 
     def says(self, key: str = "", **fields: object) -> str:
         """The finding text, with `{name}` placeholders filled from `fields`.
@@ -315,6 +316,12 @@ def _rules(raw: dict, path: Path, projects: tuple[str, ...]) -> dict[str, Rule]:
             raise PolicyError(f"{path}: rule '{rule_id}' is scoped 'all' and also {list(scope)}; "
                               f"'all' already covers them - keep 'all' or list only the projects")
         threshold = row.get("threshold")
+        reported_by_mode = row.get('reported_by_mode', {})
+        if (not isinstance(reported_by_mode, dict) or any(
+                mode not in ('review', 'draft') or severity not in SEVERITIES or
+                SEVERITIES.index(severity) < SEVERITIES.index(guide)
+                for mode, severity in reported_by_mode.items())):
+            raise PolicyError(f"{path}: rule '{rule_id}' has invalid reported_by_mode")
         applies_to = row.get('applies_to', ['always'])
         if (not isinstance(applies_to, list) or not applies_to
                 or any(c not in ('always', 'review', 'draft', 'new', 'touched') for c in applies_to)):
@@ -335,6 +342,7 @@ def _rules(raw: dict, path: Path, projects: tuple[str, ...]) -> dict[str, Rule]:
             messages=_messages(row, rule_id, path),
             overrides=_overrides(row, rule_id, path, projects, scope, reported, guide),
             applies_to=tuple(applies_to),
+            reported_by_mode=reported_by_mode,
         )
     return out
 
@@ -440,6 +448,8 @@ def identity(rules: dict[str, Rule], values: dict, exceptions: dict) -> str:
     # restamp every stored report for a capability nobody is using - the dormant-feature equivalent
     # of the documentation fields this projection exists to keep out.
     for rule_id, rule in rules.items():
+        if rule.reported_by_mode:
+            decisive[rule_id]['reported_by_mode'] = dict(sorted(rule.reported_by_mode.items()))
         if rule.overrides:
             decisive[rule_id]["overrides"] = {
                 project: list(pair) for project, pair in sorted(rule.overrides.items())

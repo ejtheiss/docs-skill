@@ -1,0 +1,294 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'seamlessly'.",
+        "evidence": "Use tools seamlessly.",
+        "fix": "delete the word",
+        "col": 11,
+        "end_col": 20
+      },
+      {
+        "line": 6,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'powerful'.",
+        "evidence": "Use powerful tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 12
+      },
+      {
+        "line": 8,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'robust'.",
+        "evidence": "Use robust tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 10
+      },
+      {
+        "line": 10,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'best-in-class'.",
+        "evidence": "Use best-in-class tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 12,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'battle-tested'.",
+        "evidence": "Use battle-tested tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 14,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 16,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'our SE team'.",
+        "evidence": "Ask our SE team.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 15
+      }
+    ],
+    "lines": [
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ]
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [],
+    "findings": [],
+    "lines": []
+  },
+  {
+    "edge": "leverage noun/verb, code boundaries and mode severity",
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "leverage-noun-verb",
+      "each-new-phrase",
+      "word-boundaries",
+      "code-exclusion",
+      "draft-strict-review-flexible"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools while checking financial leverage.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 6,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Financial leverage matters, so leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 32,
+        "end_col": 39
+      }
+    ],
+    "lines": [
+      4,
+      6
+    ]
+  },
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "edges": [],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'seamlessly'.",
+        "evidence": "Use tools seamlessly.",
+        "fix": "delete the word",
+        "col": 11,
+        "end_col": 20
+      },
+      {
+        "line": 6,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'powerful'.",
+        "evidence": "Use powerful tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 12
+      },
+      {
+        "line": 8,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'robust'.",
+        "evidence": "Use robust tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 10
+      },
+      {
+        "line": 10,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'best-in-class'.",
+        "evidence": "Use best-in-class tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 12,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'battle-tested'.",
+        "evidence": "Use battle-tested tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 14,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 16,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'our SE team'.",
+        "evidence": "Ask our SE team.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 15
+      }
+    ],
+    "lines": [
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ]
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "edges": [],
+    "findings": [],
+    "lines": []
+  },
+  {
+    "edge": "leverage noun/verb, code boundaries and mode severity",
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "edges": [
+      "leverage-noun-verb",
+      "each-new-phrase",
+      "word-boundaries",
+      "code-exclusion",
+      "draft-strict-review-flexible"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools while checking financial leverage.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 6,
+        "rule": "marketing-words",
+        "strict": true,
+        "message": "Cut 'leverage'.",
+        "evidence": "Financial leverage matters, so leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 32,
+        "end_col": 39
+      }
+    ],
+    "lines": [
+      4,
+      6
+    ]
+  }
+]

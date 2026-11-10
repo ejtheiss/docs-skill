@@ -96,6 +96,9 @@ def test_reuse_repository_definitions_exports_and_escaping(tmp_path):
     found = []
     reuse.check_reuse('\\<Escaped>\n<Callout/>\n<Exported />\n<Missing icon="x" />', reuse.definitions(tmp_path), lambda *x: found.append(x))
     assert found == [(4, 'Missing')]
+    found.clear()
+    reuse.check_reuse('<EarlyAccess />\n<SandboxDetails />', set(), lambda *x: found.append(x))
+    assert found == [(2, 'SandboxDetails')]
 
 
 def test_candidate_raw_adjacent_and_registered_address():
