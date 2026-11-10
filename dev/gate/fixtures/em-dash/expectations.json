@@ -1,0 +1,80 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      6
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "em-dash",
+        "strict": false,
+        "message": "Replace the em dash with a comma, colon or separate sentence.",
+        "evidence": "Text — text.",
+        "fix": "",
+        "col": 6,
+        "end_col": 6
+      },
+      {
+        "line": 6,
+        "rule": "em-dash",
+        "strict": false,
+        "message": "Replace the em dash with a comma, colon or separate sentence.",
+        "evidence": "Title — detail",
+        "fix": "",
+        "col": 7,
+        "end_col": 7
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      15
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "code-vs-prose",
+      "tables",
+      "multiline"
+    ],
+    "findings": [
+      {
+        "line": 15,
+        "rule": "em-dash",
+        "strict": false,
+        "message": "Replace the em dash with a comma, colon or separate sentence.",
+        "evidence": "Text continues — here.",
+        "fix": "",
+        "col": 16,
+        "end_col": 16
+      }
+    ],
+    "edge": "code-vs-prose, tables, multiline"
+  }
+]

@@ -1,8 +1,38 @@
 fence-language:
   source: docs-lint/scripts/lint.py
-  functions: [check_fences]
-  boundaries: [empty-tag, canonical-tag, unknown-tag, alias-case-and-info]
+  functions: [check_fences, is_request]
+  boundaries: [empty-tag, canonical-tag, unknown-tag, alias-case-and-info, shell-non-request]
 filler:
   source: docs-lint/scripts/lint.py
   functions: [check_filler, _exempt]
-  boundaries: [exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion]
+  boundaries: [exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion, leverage-noun-verb, each-new-phrase]
+reference-no-shell:
+  source: docs-lint/scripts/lint.py
+  functions: [check_fences, is_request]
+  boundaries: [code-tab-label, shell-non-request, guide-scope]
+callout-emoji:
+  source: docs-lint/scripts/lint.py
+  functions: [check_callouts]
+  boundaries: [theme-mismatch, missing-theme, missing-icon, attribute-order-quotes-selectors, code-exclusion]
+link-absolute-internal:
+  source: docs-lint/scripts/lint.py
+  functions: [check_links]
+  boundaries: [cross-project, relative-path, ref-prefix, index-fragment, platform-guide-vs-reference, ledgers-project]
+em-dash:
+  source: docs-lint/scripts/lint.py
+  functions: [check_em_dash]
+  boundaries: [code-vs-prose, tables, multiline]
+image-alt:
+  targets:
+  - source: docs-lint/scripts/lint.py
+    functions: [check_images]
+  - source: docs-review/scripts/contexts.py
+    functions: [includes, file_context]
+  boundaries: [empty-vs-missing, untouched, touched-multiline, new-file, no-base]
+body-h1:
+  targets:
+  - source: docs-lint/scripts/lint.py
+    functions: [check_body_heading]
+  - source: docs-review/scripts/contexts.py
+    functions: [includes, file_context]
+  boundaries: [existing-review, new-file, no-base, empty-heading]

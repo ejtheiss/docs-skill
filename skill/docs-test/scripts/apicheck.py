@@ -31,6 +31,7 @@ if str(SHARED) not in sys.path:
     sys.path.insert(0, str(SHARED))
 
 import policy as policy_module  # noqa: E402
+from contexts import add_arguments  # noqa: E402
 from findings import (  # noqa: E402
     Finding,
     collect_files,
@@ -55,9 +56,10 @@ RULES: dict[str, tuple[bool, str]] = {}
 PROJECTS = POLICY.projects()
 
 
-def run(files: list[Path], project: str | None, rules: list[str] | None) -> list[Finding]:
+def run(files: list[Path], project: str | None, rules: list[str] | None,
+        mode: str = 'review', base: str | None = None) -> list[Finding]:
     """No findings, and no pretence of any: an empty tier reports nothing."""
-    del files, project, rules
+    del files, project, rules, mode, base
     return []
 
 
@@ -75,6 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--format", choices=("text", "json"), default="text")
     ap.add_argument("--rule", action="append", help="only report these rule ids")
     ap.add_argument("--list-rules", action="store_true", help="print every rule with its provenance")
+    add_arguments(ap)
     return ap
 
 
@@ -94,7 +97,7 @@ def main(argv: list[str] | None = None) -> int:
     if error := input_error(files, args.project, PROJECTS):
         print(error, file=sys.stderr)
         return 2
-    findings = report_order(run(files, args.project, args.rule))
+    findings = report_order(run(files, args.project, args.rule, args.mode, args.base))
     card = scorecard(findings, len(files))
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))

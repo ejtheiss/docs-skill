@@ -1,12 +1,12 @@
 ---
-title: Canonical fences
+title: Fixture
 ---
-```shell
-printf ok
+```curl cURL
+curl https://example.com
 ```
-```javascript
-const a = 1;
+```shell Install
+npm install
 ```
-```text
-example
+```json Response
+{}
 ```

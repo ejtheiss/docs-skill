@@ -1,0 +1,170 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      6,
+      8
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `doc:accounts`.",
+        "evidence": "https://docs.moderntreasury.com/payments/docs/accounts",
+        "fix": "doc:accounts",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `doc:x`.",
+        "evidence": "../x.md",
+        "fix": "doc:x",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 8,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `doc:y`.",
+        "evidence": "./y",
+        "fix": "doc:y",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "reference",
+    "lines": [
+      6,
+      8,
+      10
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "cross-project",
+      "relative-path",
+      "ref-prefix",
+      "index-fragment"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `ref:foo`.",
+        "evidence": "https://docs.moderntreasury.com/platform/reference/foo",
+        "fix": "ref:foo",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 8,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `ref:object#field`.",
+        "evidence": "./object.md#field",
+        "fix": "ref:object#field",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `ref:topic`.",
+        "evidence": "../topic/index.md",
+        "fix": "ref:topic",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "cross-project, relative-path, ref-prefix, index-fragment"
+  },
+  {
+    "file": "platform.md",
+    "kind": "boundary",
+    "project": "platform",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "platform-guide-vs-reference"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `doc:foo`.",
+        "evidence": "https://docs.moderntreasury.com/platform/docs/foo",
+        "fix": "doc:foo",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "platform-guide-vs-reference"
+  },
+  {
+    "file": "ledgers.md",
+    "kind": "boundary",
+    "project": "ledgers",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "ledgers-project"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "link-absolute-internal",
+        "strict": false,
+        "message": "Link within this project needs ReadMe shorthand; use `doc:foo`.",
+        "evidence": "https://docs.moderntreasury.com/ledgers/docs/foo",
+        "fix": "doc:foo",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "ledgers-project"
+  }
+]

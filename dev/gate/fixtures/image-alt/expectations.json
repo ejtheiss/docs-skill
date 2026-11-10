@@ -1,0 +1,178 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      6
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "image-alt",
+        "strict": true,
+        "message": "Image has no alt text.",
+        "evidence": "chart.png",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "image-alt",
+        "strict": true,
+        "message": "Image has no alt text.",
+        "evidence": "chart.png",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      4,
+      6
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "edges": [
+      "empty-vs-missing"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "image-alt",
+        "strict": true,
+        "message": "Image has no alt text.",
+        "evidence": "empty.png",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "image-alt",
+        "strict": true,
+        "message": "Image has no alt text.",
+        "evidence": "missing.png",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "empty-vs-missing"
+  },
+  {
+    "file": "untouched.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "base_content": "---\ntitle: Fixture\n---\n<Image src=\"old.png\" />\n",
+    "edges": [
+      "untouched"
+    ],
+    "findings": [],
+    "edge": "untouched"
+  },
+  {
+    "file": "touched.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "base_content": "---\ntitle: Fixture\n---\n<Image\n src=\"old.png\"\n/>\n\n![](untouched.png)\n",
+    "edges": [
+      "touched-multiline"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "image-alt",
+        "strict": true,
+        "message": "Image has no alt text.",
+        "evidence": "changed.png",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "touched-multiline"
+  },
+  {
+    "file": "new.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "base_content": null,
+    "edges": [
+      "new-file"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "image-alt",
+        "strict": true,
+        "message": "Image has no alt text.",
+        "evidence": "new.png",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "new-file"
+  },
+  {
+    "file": "no-base.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "no-base"
+    ],
+    "findings": [],
+    "edge": "no-base"
+  }
+]

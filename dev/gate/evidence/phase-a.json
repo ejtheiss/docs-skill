@@ -1,0 +1,793 @@
+{
+  "body-h1": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 0,
+          "findings": 0
+        },
+        "firing": null,
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 86,
+            "findings": 86,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 8,
+            "findings": 8,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 38,
+            "findings": 38,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 27,
+            "findings": 27,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 159,
+          "findings": 159
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 4
+    },
+    "mutation": {
+      "generated": 56,
+      "killed": 54,
+      "kill_rate": 0.9642857142857143,
+      "survivors": [
+        {
+          "id": "string-L38-99fc7031ec24",
+          "corpus_silent": true,
+          "by_mode": {
+            "review": true,
+            "draft": true
+          },
+          "error": null,
+          "source": "docs-review/scripts/contexts.py",
+          "line": 38,
+          "operator": "string"
+        },
+        {
+          "id": "boolean-constant-L48-297642e1a8a5",
+          "corpus_silent": true,
+          "by_mode": {
+            "review": true,
+            "draft": true
+          },
+          "error": null,
+          "source": "docs-review/scripts/contexts.py",
+          "line": 48,
+          "operator": "boolean-constant"
+        }
+      ],
+      "repeat_survivors": [
+        [
+          "string-L38-99fc7031ec24",
+          "boolean-constant-L48-297642e1a8a5"
+        ],
+        [
+          "string-L38-99fc7031ec24",
+          "boolean-constant-L48-297642e1a8a5"
+        ]
+      ]
+    }
+  },
+  "callout-emoji": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 8,
+            "findings": 10,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 2,
+            "findings": 3,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 7,
+            "findings": 12,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 6,
+            "findings": 6,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 23,
+          "findings": 31
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Get Started/ledgers-tutorials/marketplace-tutorial.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 8,
+            "findings": 10,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 2,
+            "findings": 3,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 7,
+            "findings": 12,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 6,
+            "findings": 6,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 23,
+          "findings": 31
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Get Started/ledgers-tutorials/marketplace-tutorial.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 2
+    },
+    "mutation": {
+      "generated": 24,
+      "killed": 23,
+      "kill_rate": 0.9583333333333334,
+      "survivors": [
+        {
+          "id": "string-L1004-731d6108c482",
+          "corpus_silent": true,
+          "by_mode": {
+            "review": true,
+            "draft": true
+          },
+          "error": null,
+          "source": "docs-lint/scripts/lint.py",
+          "line": 1004,
+          "operator": "string"
+        }
+      ],
+      "repeat_survivors": [
+        [
+          "string-L1004-731d6108c482"
+        ],
+        [
+          "string-L1004-731d6108c482"
+        ]
+      ]
+    }
+  },
+  "em-dash": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 14,
+            "findings": 25,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 2,
+            "findings": 8,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 5,
+            "findings": 8,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 21,
+          "findings": 41
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-payments/docs/Customer Onboarding/onboard-a-business/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 14,
+            "findings": 25,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 2,
+            "findings": 8,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 5,
+            "findings": 8,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 21,
+          "findings": 41
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-payments/docs/Customer Onboarding/onboard-a-business/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 1
+    },
+    "mutation": {
+      "generated": 8,
+      "killed": 8,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "fence-language": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 24,
+            "findings": 83,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 13,
+            "findings": 78,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 40,
+          "findings": 165
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/currencies/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 24,
+            "findings": 83,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 13,
+            "findings": 78,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 40,
+          "findings": 165
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/currencies/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 1
+    },
+    "mutation": {
+      "generated": 39,
+      "killed": 39,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "filler": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 58,
+            "findings": 86,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 37,
+            "findings": 71,
+            "over_half": true
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 29,
+            "findings": 45,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 26,
+            "findings": 38,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 150,
+          "findings": 240
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 58,
+            "findings": 86,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 37,
+            "findings": 71,
+            "over_half": true
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 29,
+            "findings": 45,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 26,
+            "findings": 38,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 150,
+          "findings": 240
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 1
+    },
+    "mutation": {
+      "generated": 27,
+      "killed": 27,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "image-alt": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 0,
+          "findings": 0
+        },
+        "firing": null,
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 34,
+            "findings": 84,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 7,
+            "findings": 9,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 17,
+            "findings": 83,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 1,
+            "findings": 1,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 59,
+          "findings": 177
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 5
+    },
+    "mutation": {
+      "generated": 53,
+      "killed": 51,
+      "kill_rate": 0.9622641509433962,
+      "survivors": [
+        {
+          "id": "string-L38-99fc7031ec24",
+          "corpus_silent": true,
+          "by_mode": {
+            "review": true,
+            "draft": true
+          },
+          "error": null,
+          "source": "docs-review/scripts/contexts.py",
+          "line": 38,
+          "operator": "string"
+        },
+        {
+          "id": "boolean-constant-L48-297642e1a8a5",
+          "corpus_silent": true,
+          "by_mode": {
+            "review": true,
+            "draft": true
+          },
+          "error": null,
+          "source": "docs-review/scripts/contexts.py",
+          "line": 48,
+          "operator": "boolean-constant"
+        }
+      ],
+      "repeat_survivors": [
+        [
+          "string-L38-99fc7031ec24",
+          "boolean-constant-L48-297642e1a8a5"
+        ],
+        [
+          "string-L38-99fc7031ec24",
+          "boolean-constant-L48-297642e1a8a5"
+        ]
+      ]
+    }
+  },
+  "link-absolute-internal": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 70,
+            "findings": 193,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 28,
+            "findings": 52,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 22,
+            "findings": 54,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 17,
+            "findings": 33,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 137,
+          "findings": 332
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 70,
+            "findings": 193,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 28,
+            "findings": 52,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 22,
+            "findings": 54,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 17,
+            "findings": 33,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 137,
+          "findings": 332
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 3
+    },
+    "mutation": {
+      "generated": 16,
+      "killed": 16,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "reference-no-shell": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 3,
+          "findings": 4
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-platform/reference/Payments/return-object/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 3,
+          "findings": 4
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-platform/reference/Payments/return-object/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 2
+    },
+    "mutation": {
+      "generated": 39,
+      "killed": 39,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  }
+}

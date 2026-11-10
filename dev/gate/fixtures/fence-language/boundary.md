@@ -1,12 +1,18 @@
 ---
-title: Fence boundaries
+title: Fixture
 ---
-```BASH title
-printf ok
+```BASH cURL
+$ curl https://example.com
 ```
 ```
 untagged
 ```
-```unknownlang
+```unknownlang Label
 unknown
+```
+```bash Install
+npm install
+```
+```sh Install
+npm install
 ```

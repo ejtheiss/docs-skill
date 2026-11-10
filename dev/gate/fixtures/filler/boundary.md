@@ -1,5 +1,5 @@
 ---
-title: Filler boundaries
+title: Fixture
 ---
 Run just as before.
 
@@ -23,4 +23,4 @@ Simply create a record in order to proceed.
 
 Run just in case.
 
-## Simply create a record
+Use financial leverage and leverage tools.

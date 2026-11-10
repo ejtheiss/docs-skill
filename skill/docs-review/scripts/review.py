@@ -32,6 +32,7 @@ if str(SHARED) not in sys.path:
     sys.path.insert(0, str(SHARED))
 
 import policy as policy_module  # noqa: E402
+from contexts import add_arguments  # noqa: E402
 from findings import (  # noqa: E402
     Finding,
     collect_files,
@@ -101,6 +102,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--rule", action="append",
                     help="only report these rule ids (the scorecard then covers the filtered set)")
     ap.add_argument("--list-rules", action="store_true", help="print every rule with its provenance")
+    add_arguments(ap)
     return ap
 
 
@@ -118,7 +120,7 @@ def print_rules(modules: dict[str, ModuleType]) -> None:
         for rule, (strict, provenance) in sorted(rules.items()):
             guide = POLICY.rules[rule].guide_severity
             note = f"[guide: {guide}] " if guide != ("strict" if strict else "flexible") else ""
-            print(f"{name:<9} {'STRICT' if strict else 'flex  '} {rule:<26} {note}{provenance}")
+            print(f"{name:<9} {'STRICT' if strict else 'flex  '} {rule:<26} {note}[contexts: {', '.join(POLICY.rules[rule].applies_to)}] {provenance}")
     if orphaned := unimplemented_rules(modules):
         print(f"unimplemented by the selected subskill(s): {', '.join(orphaned)}", file=sys.stderr)
 
@@ -147,8 +149,12 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     findings: list[Finding] = []
-    for module in modules.values():
-        findings.extend(module.run(files, args.project, args.rule))
+    try:
+        for module in modules.values():
+            findings.extend(module.run(files, args.project, args.rule, args.mode, args.base))
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     findings = report_order(findings)
     card = scorecard(findings, len(files))
     card["subskills"] = sorted(modules)

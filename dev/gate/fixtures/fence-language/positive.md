@@ -1,18 +1,18 @@
 ---
-title: Fence aliases
+title: Fixture
 ---
+```shell cURL
+curl https://example.com
+```
 ```bash
-printf ok
-```
-```curl
-curl example.com
-```
-```js
-const a = 1;
+curl https://example.com
 ```
 ```sh
-printf ok
+curl https://example.com
+```
+```js
+const a=1;
 ```
 ```ts
-const a: number = 1;
+const a:number=1;
 ```

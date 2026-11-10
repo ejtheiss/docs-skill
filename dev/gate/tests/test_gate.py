@@ -67,6 +67,24 @@ def test_aggregation_includes_clean_pages_and_deterministic_witnesses():
     assert gate.measure('x', [], [])['total']['pages'] == 0
 
 
+def test_corpus_modes_preserve_passthrough_unless_explicitly_selected():
+    gate = load_gate()
+    assert gate.corpus_modes([], None) == ['review']
+    assert gate.corpus_modes(['--mode', 'draft'], None) == ['draft']
+    assert gate.corpus_modes(['--mode=draft'], ['review', 'draft', 'review']) == ['review', 'draft']
+
+
+def test_evidence_reports_inactive_context_and_both_modes():
+    gate = load_gate()
+    files = [Path('/corpus/docs-readme-payments/a.md')]
+    measurements = {mode: gate.measure('image-alt', files, []) for mode in ('review', 'draft')}
+    mutation = dict(killed=1, generated=1, kill_rate=1, survivors=[])
+    report = gate.render('image-alt', measurements, dict(positive=1, negative=1, boundary=1), mutation)
+    assert '### review' in report and '### draft' in report
+    assert 'none (inactive or corpus-silent)' in report
+    assert 'bar ≥0.950: PASS' in report
+
+
 def test_skill_does_not_reference_dev():
     import re
     skill = Path(os.environ.get('DOCS_GATE_SKILL', ROOT / 'skill'))

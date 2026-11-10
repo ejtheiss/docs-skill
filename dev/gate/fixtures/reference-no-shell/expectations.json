@@ -1,0 +1,134 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "reference",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "curl cURL",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "reference",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "reference",
+    "lines": [
+      4,
+      7
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "code-tab-label",
+      "shell-non-request"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `shell`; use `curl`.",
+        "evidence": "shell cURL",
+        "fix": "```curl",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 4,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "shell cURL",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "reference-no-shell",
+        "strict": false,
+        "message": "Reference pages show `json` bodies; leave request snippets to guides.",
+        "evidence": "text cURL",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "fence-untagged",
+        "strict": true,
+        "message": "Code fence declares no language.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 13,
+        "rule": "fence-language",
+        "strict": true,
+        "message": "Fence tagged `js`; use `javascript`.",
+        "evidence": "js",
+        "fix": "```javascript",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 16,
+        "rule": "fence-language-unknown",
+        "strict": false,
+        "message": "Fence tagged `klingon`, which is not a tag the guide lists.",
+        "evidence": "klingon",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "code-tab-label, shell-non-request"
+  },
+  {
+    "file": "guide.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "guide-scope"
+    ],
+    "findings": [],
+    "edge": "guide-scope"
+  }
+]

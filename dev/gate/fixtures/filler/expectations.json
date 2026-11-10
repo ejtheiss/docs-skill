@@ -10,10 +10,21 @@
       10,
       12,
       14,
-      16
+      16,
+      18,
+      20,
+      22,
+      24,
+      26,
+      28,
+      30,
+      32,
+      34
     ],
-    "edge": "",
-    "edges": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
     "findings": [
       {
         "line": 4,
@@ -84,17 +95,111 @@
         "fix": "delete the word",
         "col": 1,
         "end_col": 6
+      },
+      {
+        "line": 18,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'seamlessly'.",
+        "evidence": "Use tools seamlessly.",
+        "fix": "delete the word",
+        "col": 11,
+        "end_col": 20
+      },
+      {
+        "line": 20,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'powerful'.",
+        "evidence": "Use powerful tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 12
+      },
+      {
+        "line": 22,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'robust'.",
+        "evidence": "Use robust tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 10
+      },
+      {
+        "line": 24,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'best-in-class'.",
+        "evidence": "Use best-in-class tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 26,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'battle-tested'.",
+        "evidence": "Use battle-tested tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 28,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 30,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools while checking financial leverage.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 32,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Financial leverage matters, so leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 32,
+        "end_col": 39
+      },
+      {
+        "line": 34,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'our SE team'.",
+        "evidence": "Ask our SE team.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 15
       }
-    ]
+    ],
+    "edge": ""
   },
   {
     "file": "negative.md",
     "kind": "negative",
     "project": "payments",
     "lines": [],
-    "edge": "",
-    "edges": [],
-    "findings": []
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [],
+    "edge": ""
   },
   {
     "file": "boundary.md",
@@ -103,14 +208,20 @@
     "lines": [
       22,
       22,
-      24
+      24,
+      26
     ],
-    "edge": "exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion",
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
     "edges": [
       "exception-phrases",
       "word-boundaries",
       "code-exclusion",
-      "replacement-and-deletion"
+      "replacement-and-deletion",
+      "leverage-noun-verb",
+      "each-new-phrase"
     ],
     "findings": [
       {
@@ -152,7 +263,18 @@
         "fix": "delete the word",
         "col": 5,
         "end_col": 8
+      },
+      {
+        "line": 26,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Use financial leverage and leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 28,
+        "end_col": 35
       }
-    ]
+    ],
+    "edge": "exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion, leverage-noun-verb, each-new-phrase"
   }
 ]

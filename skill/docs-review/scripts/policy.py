@@ -48,7 +48,7 @@ SEVERITIES = ("strict", "moderate", "flexible")
 # "has anyone touched the guide". Provenance is the counter-example: printed by `--list-rules`,
 # read by no decision, and while it was covered, rewording it re-opened the admission gate for every
 # rule.
-DECISIVE = ("reported", "guide", "scope", "threshold")
+DECISIVE = ("reported", "guide", "scope", "threshold", "applies_to")
 
 
 class PolicyError(Exception):
@@ -70,6 +70,7 @@ class Rule:
     # the overlay wins for that project"; this is that promise, expressible at last. Empty for every
     # shipped rule, so the capability is dormant and the policy id is unmoved - see `identity`.
     overrides: dict[str, tuple[str, str]]
+    applies_to: tuple[str, ...]
 
     def severity_for(self, project: str | None) -> tuple[str, str]:
         """(reported, guide) for a page in `project` - the override's when one names it."""
@@ -314,6 +315,10 @@ def _rules(raw: dict, path: Path, projects: tuple[str, ...]) -> dict[str, Rule]:
             raise PolicyError(f"{path}: rule '{rule_id}' is scoped 'all' and also {list(scope)}; "
                               f"'all' already covers them - keep 'all' or list only the projects")
         threshold = row.get("threshold")
+        applies_to = row.get('applies_to', ['always'])
+        if (not isinstance(applies_to, list) or not applies_to
+                or any(c not in ('always', 'review', 'draft', 'new', 'touched') for c in applies_to)):
+            raise PolicyError(f"{path}: rule '{rule_id}' has invalid applies_to contexts")
         if threshold is not None and (isinstance(threshold, bool) or not isinstance(threshold, int)):
             raise PolicyError(f"{path}: rule '{rule_id}' has a non-integer threshold "
                               f"{threshold!r}; write a whole number or delete the field")
@@ -329,6 +334,7 @@ def _rules(raw: dict, path: Path, projects: tuple[str, ...]) -> dict[str, Rule]:
             provenance=row["provenance"],
             messages=_messages(row, rule_id, path),
             overrides=_overrides(row, rule_id, path, projects, scope, reported, guide),
+            applies_to=tuple(applies_to),
         )
     return out
 
@@ -426,7 +432,8 @@ def identity(rules: dict[str, Rule], values: dict, exceptions: dict) -> str:
     """
     decisive = {
         rule_id: {"reported": rule.reported, "guide": rule.guide_severity,
-                  "scope": list(rule.scope), "threshold": rule.threshold}
+                  "scope": list(rule.scope), "threshold": rule.threshold,
+                  "applies_to": list(rule.applies_to)}
         for rule_id, rule in sorted(rules.items())
     }
     # Only when non-empty. An `overrides: {}` on every rule would change the hashed payload and

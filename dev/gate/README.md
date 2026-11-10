@@ -9,6 +9,7 @@ are required.
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 -m pytest dev/gate/tests -q -p no:cacheprovider
 python3 dev/gate/gate.py --rule fence-language --rule filler --out dev/gate/evidence/existing.md
+python3 dev/gate/gate.py --rule image-alt --rule body-h1 --corpus-mode review --corpus-mode draft --out dev/gate/evidence/contexts.md
 ```
 
 `DOCS_GATE_CORPUS` defaults to `~/work/corpus-head`. Keep the three repo names in
@@ -19,7 +20,13 @@ Arguments reach corpus, fixture, mutant and survivor runs unchanged. Output-form
 and findings-filter flags are refused. The current checker need not support future
 options yet; unsupported arguments fail loudly.
 
-Add rule/function mappings and required boundary names in `rules.yaml`, then
+Repeat `--corpus-mode` to measure review and draft separately in one report.
+Without it, the passthrough mode (or review by default) is preserved. Draft
+activates the `new` context on every corpus page. Fixture-local arguments override
+passthrough arguments so review/no-base and draft boundaries remain testable in
+the same run. `--jobs` (default 4) bounds parallel isolated mutant pytest runs.
+
+Add rule/function mappings (or multiple source/function `targets`) and required boundary names in `rules.yaml`, then
 positive/negative/boundary Markdown and `expectations.json` in `fixtures/<rule>/`.
 Expectations assert target-rule lines and complete findings (without file paths),
 including neighboring rules, so mutations to shared functions are not silently
@@ -29,7 +36,9 @@ thresholds in the two initial rules; fixtures cover table aliases, canonical,
 unknown and empty fence tags; case/info suffixes; every filler entry, replacement,
 deletion, all `just` exception alternatives, word boundaries and code exclusions.
 
-Mutations are single AST edits within mapped functions, including helpers. Every
+Mutations are single AST edits within mapped functions, including helpers. Context
+unit tests run alongside rule fixtures, covering exact changed-line sets, span
+boundaries, missing files, invalid bases, and draft/new behavior. Every
 mutant runs the fixture pytest suite twice with bytecode disabled, against an
 isolated skill copy (the source tree is never rewritten). All generated mutants
 remain in the kill-rate denominator, including equivalent and neighboring-rule
@@ -42,6 +51,10 @@ mutation rates and corpus-silence. Exit 1 means base rate >50%, missing witness 
 mutation rate <0.950; invalid configuration/checker/fixtures abort rather than
 yielding evidence of success. Gates 5 (independent oracles) and 6 (blind labels)
 are explicitly **not established**, so even exit 0 is not full rule admission.
+
+A rule deliberately inactive in review/no-base has no firing witness in that
+mode; the report says so rather than inventing one. At least one firing and one
+non-firing witness must exist across the requested modes.
 
 The isolation test rejects imports and executable references to `dev/`. Existing
 shipped comments, docstrings and YAML provenance already mention the external
