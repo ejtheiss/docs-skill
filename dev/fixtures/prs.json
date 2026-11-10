@@ -1,0 +1,1 @@
+[{"number": 123, "title": "Clarify external_account setup", "body": null, "state": "open", "merged_at": null, "html_url": "https://github.com/Modern-Treasury/docs-readme-payments/pull/123", "repo": "Modern-Treasury/docs-readme-payments", "patch": "+ Use external_account for the example."}]

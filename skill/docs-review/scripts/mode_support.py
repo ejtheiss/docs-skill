@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -14,7 +15,47 @@ PROJECTS = yaml.safe_load((CONFIG / 'policy.yaml').read_text())['projects']
 
 
 def default_repos() -> list[Path]:
-    return [Path.home() / 'work' / name for name in sorted({p['repo'].split('/')[0] for p in PROJECTS.values()})]
+    return [Path(name) for name in sorted({p['repo'].split('/')[0] for p in PROJECTS.values()})]
+
+
+def read_snapshot(root: Path) -> list[dict]:
+    root = root.resolve()
+    try:
+        manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError) as exc:
+        raise ValueError(f'cannot read snapshot manifest.json: {exc}') from exc
+    if not isinstance(manifest, dict) or not isinstance(manifest.get('entries'), list):
+        raise ValueError('snapshot manifest must be an object with an entries array')
+    entries, seen = [], set()
+    known = {p.name for p in default_repos()}
+    for item in manifest['entries']:
+        if not isinstance(item, dict) or any(not isinstance(item.get(k), str) or not item[k] for k in ('repo', 'path', 'sha', 'url')):
+            raise ValueError('snapshot entry requires string repo, path, sha and url')
+        relative = Path(item['path'])
+        if item['repo'] not in known or relative.is_absolute() or '..' in relative.parts or '\\' in item['path']:
+            raise ValueError('snapshot entry must use a known repo and a safe repository-relative path')
+        if relative.suffix.lower() not in ('.md', '.mdx') and item['path'] != 'reference/modern-treasury-api.json':
+            raise ValueError('snapshot entries must be Markdown pages or the OpenAPI spec')
+        if item['sha'] != 'live' and not re.fullmatch(r'(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})', item['sha']):
+            raise ValueError('snapshot sha must be a Git SHA or "live"')
+        if not re.match(r'https://[^/\s]+/', item['url']):
+            raise ValueError('snapshot url must be an absolute https source URL')
+        key = (item['repo'], relative.as_posix())
+        if key in seen:
+            raise ValueError('duplicate snapshot repo/path entry')
+        seen.add(key)
+        filename = (root / item['repo'] / relative).resolve()
+        if not filename.is_relative_to(root) or not filename.is_file():
+            raise ValueError(f'snapshot file missing or outside snapshot: {item["repo"]}/{item["path"]}')
+        entries.append(dict(item, path=relative.as_posix(), filename=str(filename)))
+    return sorted(entries, key=lambda e: (e['repo'], e['path']))
+
+
+def snapshot_source(root: Path, repo: str, path: str) -> tuple[str, dict]:
+    entry = next((e for e in read_snapshot(root) if e['repo'] == repo and e['path'] == path), None)
+    if entry is None:
+        raise ValueError(f'target not listed in snapshot manifest: {repo}/{path}')
+    return Path(entry['filename']).read_text(encoding='utf-8'), {k: v for k, v in entry.items() if k != 'filename'}
 
 
 def git(repo: Path, *args: str, allowed=(0,)) -> str:
