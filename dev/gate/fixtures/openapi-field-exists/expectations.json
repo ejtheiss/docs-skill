@@ -9,7 +9,7 @@
     ],
     "checker_args": [
       "--spec",
-      "dev/gate/fixtures/phase-c-schema.json"
+      "dev/fixtures/openapi.json"
     ],
     "findings": [
       {
@@ -43,7 +43,7 @@
     "lines": [],
     "checker_args": [
       "--spec",
-      "dev/gate/fixtures/phase-c-schema.json"
+      "dev/fixtures/openapi.json"
     ],
     "findings": [],
     "edge": "",
@@ -59,7 +59,7 @@
     ],
     "checker_args": [
       "--spec",
-      "dev/gate/fixtures/phase-c-schema.json"
+      "dev/fixtures/openapi.json"
     ],
     "findings": [
       {

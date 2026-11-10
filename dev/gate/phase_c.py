@@ -13,8 +13,6 @@ import gate
 
 ROOT = gate.ROOT
 RULES = ('openapi-field-exists', 'reuse-undefined-block', 'leak-names', 'leak-internal')
-CORPUS = Path.home() / 'work/corpus-head'
-SPEC = CORPUS / 'docs-readme-platform/reference/modern-treasury-api.json'
 
 
 def oracle(raw, findings):
@@ -37,21 +35,25 @@ def oracle(raw, findings):
 
 
 def supplementary():
+    corpus = gate.corpus_root()
+    source_spec = corpus / 'docs-readme-platform/reference/modern-treasury-api.json'
+    if not source_spec.is_file():
+        raise ValueError(f'Phase C corpus evidence requires a spec snapshot: {source_spec}')
     spec = importlib.util.spec_from_file_location('adjacency', ROOT / 'dev/gate/candidates/code_span_adjacent.py')
     candidate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(candidate)
-    files = sorted(CORPUS.rglob('*.md'))
+    files = sorted(corpus.rglob('*.md'))
     findings = [f for path in files for f in candidate.measure(path)]
-    report = gate.check([CORPUS], ['--mode', 'review'])
+    report = gate.check([corpus], ['--mode', 'review', '--spec', str(source_spec)])
     api = [f for f in report['findings'] if f['rule'] == 'openapi-field-exists']
     names = {}
     for label, name_file in [('empty', 'empty-names.txt'), ('fixture', 'customer-names.txt')]:
         for mode in ('review', 'draft'):
-            checked = gate.check([CORPUS], ['--mode', mode, '--names', str(ROOT / 'dev/gate/fixtures' / name_file)])
+            checked = gate.check([corpus], ['--mode', mode, '--names', str(ROOT / 'dev/gate/fixtures' / name_file), '--spec', str(source_spec)])
             names[label + '-' + mode] = gate.measure('leak-names', files, checked['findings'])
     blocks = [f for f in report['findings'] if f['rule'] == 'reuse-undefined-block']
-    result = dict(oracle=oracle(SPEC.read_text(), api),
-                  spec=dict(path=str(SPEC), sha256=hashlib.sha256(SPEC.read_bytes()).hexdigest()),
+    result = dict(oracle=oracle(source_spec.read_text(), api),
+                  spec=dict(path=str(source_spec), sha256=hashlib.sha256(source_spec.read_bytes()).hexdigest()),
                   adjacent=gate.measure('code-span-adjacent', files, findings), adjacent_findings=findings,
                   candidate_admission='NOT ADMITTED: measurement only; independent semantic oracle and adjudicated precision absent. Adjacent enum/options spans are not inherently errors.',
                   registered_address_caught=bool(candidate.scan('`business_registeredprimary`')),

@@ -9,10 +9,6 @@ rules:
     provenance: 'Phase C: global OpenAPI vocabulary, not endpoint-specific schema validation'
     message: 'JSON {kind} `{value}` is absent from the OpenAPI inventory at {pointer}.'
 tables:
-  openapi_source:
-    why: Archived HEAD spec used for offline checks; --spec pins an alternate snapshot.
-    map:
-      path: ~/work/corpus-head/docs-readme-platform/reference/modern-treasury-api.json
   openapi_scope:
     why: MT examples only; arbitrary JSON and third-party integration payloads are not contracts.
     map:

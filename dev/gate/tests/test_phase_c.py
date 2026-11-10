@@ -26,7 +26,7 @@ lint = load('phase_c_lint', SKILL / 'docs-lint/scripts/lint.py')
 
 
 def test_composed_ref_inventory_and_cycle():
-    schema = json.loads((ROOT / 'dev/gate/fixtures/phase-c-schema.json').read_text())
+    schema = json.loads((ROOT / 'dev/fixtures/openapi.json').read_text())
     schema['components']['schemas']['Shared']['properties'] = {'recursive': {'$ref': '#/components/schemas/Shared'}}
     schema['parameters'] = [{'schema': {'enum': ['unowned']}}]
     keys, enums, free = api.inventory(schema)
@@ -44,8 +44,8 @@ def test_schema_missing_invalid_and_empty_json(tmp_path):
     page = tmp_path / 'page.md'
     page.write_text('---\ntitle: Example\n---\n# Prepare\n')
     missing = tmp_path / 'schema.json'
-    with pytest.raises(ValueError, match='cannot load'):
-        api.run([page], 'payments', None, spec=missing)
+    assert api.run([page], 'payments', None, spec=missing) == []
+    assert api.spec_notes(missing) == ['openapi-field-exists not run: no spec snapshot']
     missing.write_text('null')
     with pytest.raises(ValueError, match='object with paths'):
         api.run([page], 'payments', None, spec=missing)

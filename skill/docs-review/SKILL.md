@@ -86,6 +86,11 @@ GitHub MCP connector's `get_file_contents` on
 Otherwise fetch `https://docs.moderntreasury.com/<project>/docs/<slug>.md` and
 record SHA `live`. Do not invent a SHA or treat live content as a pinned revision.
 The spec is `docs-readme-platform`, path `reference/modern-treasury-api.json`.
+Pass the downloaded file to review with `--spec PATH`, or set
+`DOCS_REVIEW_SPEC=PATH`. The flag takes precedence. Without a snapshot, or if
+the selected file is missing, `openapi-field-exists` reports
+**not run: no spec snapshot** in the log and scorecard; other rules still run
+and determine the exit status. Malformed supplied JSON is an input error.
 
 Save pages under `SNAPSHOT/<repo>/<path>` and create `SNAPSHOT/manifest.json`
 with this exact shape (one entry per fetched file):

@@ -149,9 +149,13 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     findings: list[Finding] = []
+    notes = ['leak-names inactive: no --names list supplied'] if 'lint' in modules and args.names is None else []
     try:
         for name, module in modules.items():
             options = {'names': args.names} if name == 'lint' else {'spec': args.spec} if name == 'test' else {}
+            if name == 'test':
+                options['spec'] = module.resolve_spec(args.spec)
+                notes.extend(module.spec_notes(options['spec'], args.rule))
             findings.extend(module.run(files, args.project, args.rule, args.mode, args.base, **options))
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
@@ -159,12 +163,12 @@ def main(argv: list[str] | None = None) -> int:
     findings = report_order(findings)
     card = scorecard(findings, len(files))
     card["subskills"] = sorted(modules)
-    card['notes'] = ['leak-names inactive: no --names list supplied'] if args.names is None else []
-    if args.names is None and args.format == 'text':
-        print('note: leak-names inactive: no --names list supplied')
+    card['notes'] = notes
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))
     else:
+        for note in notes:
+            print('note: ' + note)
         print(render_text(findings, card, show_flexible=not args.strict_only))
     return 1 if card["strict_failures"] else 0
 

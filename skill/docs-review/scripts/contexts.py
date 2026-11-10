@@ -11,7 +11,7 @@ def add_arguments(parser) -> None:
     parser.add_argument('--mode', choices=('review', 'draft'), default='review')
     parser.add_argument('--base', help='Git ref used to identify new files and touched lines')
     parser.add_argument('--names', type=Path, help='per-run customer names, one per line; # comments')
-    parser.add_argument('--spec', type=Path, help='override the configured OpenAPI JSON snapshot')
+    parser.add_argument('--spec', type=Path, help='OpenAPI JSON snapshot (otherwise DOCS_REVIEW_SPEC; optional)')
 
 
 @dataclass
