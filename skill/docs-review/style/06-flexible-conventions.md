@@ -1,5 +1,3 @@
-<!-- Compiled from Notion by scripts/notion_sync.py. Do not edit; edit https://app.notion.com/p/3c8d6bfc26838011a16ccf4511c8a0c7
-     policy 718466089eff · synced 2026-09-03T21:34:37+00:00 -->
 Where we deliberately allow variation. The rule in every case is the same: **choose once, then stay consistent within the page** (or within the section, where noted). None of these is a defect in review, and none is worth an argument.
 <table header-row="true">
 <tr>
@@ -11,11 +9,6 @@ Where we deliberately allow variation. The rule in every case is the same: **cho
 <td>**Links opening in a new tab**</td>
 <td>Writer's choice</td>
 <td>The page</td>
-</tr>
-<tr>
-<td>**"we" vs "you"**</td>
-<td>Project default (see overlays); a page can use both</td>
-<td>The section</td>
 </tr>
 <tr>
 <td>**Callout frequency**</td>
@@ -39,7 +32,7 @@ Where we deliberately allow variation. The rule in every case is the same: **cho
 </tr>
 <tr>
 <td>**Screenshot vs prose description of the UI**</td>
-<td>Writer's choice; a screenshot needs alt text either way</td>
+<td>Writer's choice; new and touched screenshots require alt text</td>
 <td>The page</td>
 </tr>
 <tr>
@@ -59,16 +52,19 @@ Where we deliberately allow variation. The rule in every case is the same: **cho
 </tr>
 </table>
 ## Not flexible
-These get raised as questions often enough to name explicitly. They are settled in **01 — Base Style**, and are not writer's choice:
-- Heading level of the first heading (h1).
-- Code fence language tags (`shell`, `json`, `sql` — never `curl`, `bash`, `sh`).
-- Callout emoji set (📘, 🚧, 💡).
-- `MT`, and object shorthand such as `LA` or `LT`.
-- Anchor text (never `here`, `learn more`).
-- Currency format within a page.
-- Alt text on images.
-## Needs a decision, not yet settled
-Two items are written as strict rules in this guide but have a backlog cost attached, so the owning team should confirm before enforcement lands on existing pages:
-1. **h1 as the first heading.** Most existing pages start at h2. Applying this is a mechanical heading shift across the corpus.
-2. **Alt text on every image.** Almost no existing image has it. New and edited images comply; the backfill is separate scheduled work.
-Until those are confirmed, the checker reports them, and you fix them in pages you touch rather than opening a corpus-wide cleanup.
+These choices are settled in **01 — Base Style**, subject to their stated contexts:
+- First body heading is h1 on new pages and in draft mode (`body-h1`); no existing-page backfill. Levels never skip (`heading-skip`).
+- Requests use `curl`; payloads use `json`; queries use `sql`. `shell` is only for non-request commands. ReadMe tab labels after the tag are allowed (`fence-language`).
+- Callout components pair 📘 with `info`, 🚧 with `warn`, and 💡 with `default` (`callout-emoji`).
+- Write Modern Treasury and full object names (`mt-shorthand`, `object-shorthand`).
+- Anchor text names the destination (`link-anchor-vague`). Use `doc:`/`ref:` within a project and absolute documentation URLs across projects (`link-absolute-internal`, reported flexible).
+- Currency format is consistent within a page (`currency-mixed`).
+- New and touched images require alt text (`image-alt`).
+- Person follows the overlay, not a corpus majority; field and event names use inline code, not backslash-escaped prose (reviewer judgment).
+
+## Decisions on existing content
+Both backlog questions are decided:
+1. **h1 first:** new pages only, with draft treating every file as new. Do not shift headings on existing pages merely to backfill h1.
+2. **Alt text:** required on new and touched images only. Untouched images are not backfilled.
+
+Review without `--base` does not activate either contextual rule. Use `--base <git-ref>` to identify new files and touched image syntax, or `--mode draft` to check new-page readiness.

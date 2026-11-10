@@ -1,5 +1,3 @@
-<!-- Compiled from Notion by scripts/notion_sync.py. Do not edit; edit https://app.notion.com/p/3c8d6bfc268380708abad5c9b3cb2f4c
-     policy 718466089eff · synced 2026-09-03T21:34:37+00:00 -->
 Applies to every page in every repo. Read this plus the one overlay for your project.
 Each rule is **Strict** (corrected on sight) or **Flexible** (your call, then be consistent). The rule ID in brackets is what the checker reports.
 ---
@@ -28,8 +26,9 @@ A sentence that already names its actor in a `by` phrase satisfies this, and the
 **Don't**
 > The bank balance within a row is populated from the bank Balance Report.
 > The posted balance is used as it represents the reconciled funds in the ledger.<br>→ Reconciliation uses the posted balance because it represents reconciled funds.
-### Second person for the reader's work — **Strict**, first person plural for walkthroughs — **Flexible by project**
+### Person follows the project overlay — **Strict**, reviewer judgment
 `you` is what the reader decides or does outside Modern Treasury. `we` is a worked example we walk through together, and its default differs by project (see overlays). Never switch inside a section.
+The guide and overlay decide the person, not a corpus majority. Ledgers walkthroughs use `we`; Payments and platform tasks address `you`.
 > You will need to calculate total interest due to the loan provider outside of Modern Treasury.
 > We will use Ledger Account Categories to track the overall balance across all our users' wallets.
 ### Sentences stay under about 30 words — **Strict** (`sentence-length` is reported as flexible, judged in review)
@@ -38,8 +37,15 @@ Long sentences are almost always two facts joined by a comma. Split them.
 > When a Virtual Account is debited a `debit` IPD is created, the Virtual Account's Ledger Account will be debited the amount of the outbound payment and the internal account's ledger account will be credited the amount of the outbound payment.
 **Do**
 > Debiting a Virtual Account creates a `debit` Incoming Payment Detail. Modern Treasury debits the Virtual Account's Ledger Account and credits the Internal Account's Ledger Account for the outbound payment amount.
-### No filler, no hedging — **Strict** (`filler`, `filler-please`)
-Banned: `simply`, `just` (as a minimizer), `easily`, `obviously`, `of course`. The checker reports all of these. `just` is exempt in the senses that are not minimizers — `just as`, `just like`, `just in time`.
+### No filler, no hedging — **Flexible** (`filler`, `filler-please`)
+Banned: `simply`, `just` (as a minimizer), `easily`, `obviously`, `of course`. Both filler rules are reported flexible. `just` is exempt in the senses that are not minimizers: `just as`, `just like`, `just in time`.
+
+| Banned wording | Correction |
+|---|---|
+| `seamlessly`, `powerful`, `robust` | State the specific capability, or delete |
+| `best-in-class`, `battle-tested` | Supply a supported fact, or delete |
+| `leverage` as a verb | `use`; noun uses such as `leverage ratio`, `the leverage`, `financial leverage` are exempt |
+| `our SE team` | Name the responsible team or contact |
 Write `to`, not `in order to`.
 Delete `Note that` — state the fact, or make it a 📘 callout.
 `please` only in a direct request to contact someone.
@@ -83,13 +89,17 @@ Never `MT` in prose.
 > The LAS and the EP are now linked together through a common Ledger Transaction.<br>→ The Ledger Account Settlement and the Expected Payment are now linked together through a common Ledger Transaction.
 ### Expand industry acronyms on first use per page — **Strict** (`acronym-undefined` is reported as flexible, judged in review)
 ACH, RTP, EFT, FX, KYC, SDK, IAT, SEPA, BACS, NACHA: *Real-Time Payments (RTP)*, then RTP for the rest of the page. `API` needs no expansion.
-### Endpoints, fields and values are inline code — **Strict**
-`\`POST /ledger_transactions\``, `normal_balance`, `pending\`. Never bold, never quoted.
+### Endpoints, fields, events and values are inline code — **Strict**, reviewer judgment
+Write `POST /ledger_transactions`, `normal_balance`, `pending` and the exact event name in inline code. Never use bold, quotes or backslash escapes in place of inline code.
+
+### No em dashes in prose — **Strict** (`em-dash`, reported flexible)
+Use a comma, colon or separate sentence. Paragraphs, headings and component prose count; frontmatter, code and Markdown or HTML tables do not.
 ---
 ## Structure
-### First heading is h1, and levels never skip — **Strict** (`body-h1`, `heading-skip`)
+### First heading is h1 on new pages; levels never skip — **Strict** (`body-h1`, `heading-skip`)
+The first body heading is h1 in draft mode and on new files. Existing pages are not backfilled, even when edited. Review without a Git base does not infer new files. `heading-skip` remains active on pages opening at h1 or h2.
 h1 → h2 → h3. A subtopic of a heading is one level deeper, never two.
-```plain text
+```text
 # Use Cases
 ## Use Case 1
 ### Use Case 1 Set-Up
@@ -103,24 +113,27 @@ An `Overview` section says something the title does not, or it is deleted.
 Numbered list for a sequence the reader performs in order, or a definite count. Bullets otherwise.
 Which dominates is project-specific.
 ### Every code fence declares a language — **Strict** (`fence-untagged`, `fence-language`)
-`shell` for requests, `json` for payloads and responses, `sql` for queries, then the language name for SDK snippets.
-Not `bash`, not `curl`, not `sh`. The fence info string carries the language only — no captions.
+`curl` for curl requests, `json` for payloads and responses, `sql` for queries, then the language name for SDK snippets. Use `shell` only for non-request commands such as `npm install`, not `bash` or `sh`.
+ReadMe tab labels follow the language: fence info such as `curl cURL` and `json Response` is allowed. Only the first token is the language; consecutive fences form code tabs.
 ### Frontmatter has `title` — **Strict** (`frontmatter-title`); and no `excerpt` — **Flexible** (`frontmatter-excerpt`)
 We do not use excerpts. Do not add one to a new page, and delete the one you find on a page you are already editing.
 The checker reports a *present* excerpt as a deletion, so the pages still carrying one are a cleanup list rather than a wall of failures. Flexible: a page is not wrong to ship while it still has one.
+Templates include only frontmatter fields the page uses. Do not copy empty `metadata` or `next` blocks. See **08 — ReadMe Conventions** for examples.
 ---
 ## Links, callouts, images
 ### Anchor text names the destination — **Strict** (`link-anchor-vague`, `link-anchor-empty`, `link-bare-url`)
 Banned anchors: `here`, `this page`, `this link`, `link`, `click here`, `read more`, `learn more`.
 Never print a bare URL as a link.
 > Read more about this [here](https://app.notion.com/p/moderntreasury/%E2%80%A6). → Read more about [locking on Category balance](https://app.notion.com/p/moderntreasury/%E2%80%A6).
-### Internal links are relative within a repo — **Strict** (`link-absolute-internal` is reported as flexible, judged in review)
-Relative path for a page in the same repo; absolute `docs.moderntreasury.com` URL only when crossing to another docs repo.
-### Callouts use 📘, 🚧 or 💡 — **Strict** (`callout-emoji`)
+### Internal links use project shorthand — **Strict** (`link-absolute-internal` is reported as flexible, judged in review)
+Use `doc:slug` for guides and `ref:slug` for reference within a project. Across projects, use absolute `https://docs.moderntreasury.com` URLs. Do not use relative file paths such as `../x.md` or `./y`. Platform guides and API reference are distinct projects.
+### Callouts use the component and approved pairs — **Strict** (`callout-emoji`)
+Write `<Callout icon="📘" theme="info">`, `<Callout icon="🚧" theme="warn">` or `<Callout icon="💡" theme="default">`, with a closing `</Callout>`. An approved icon also requires its matching theme. Existing blockquote callouts remain recognized; use the component for new content.
 📘 information, 🚧 early access or limitation, 💡 tip in a tutorial or quickstart. ❗️, 👍 and ⚠️ are not ours — map them to 📘 or 🚧.
 How often you use callouts is project-specific.
-### Every image has alt text — **Strict** (`image-alt`)
-Describe what the reader learns from the image, not the file: `![Reconciliation rule matching two values](…)`.
+### New and touched images have alt text — **Strict** (`image-alt`)
+Use ReadMe's `<Image>` component. Describe what the reader learns, not the file: `<Image src="…" alt="Reconciliation rule matching two values" align="center" />`.
+Alt is required for new and touched images, not an existing-image backfill. Draft checks all images; review uses `--base` to identify changed syntax. Markdown images remain recognized.
 Mask customer data and account numbers in screenshots, and refer to a screenshot by what it shows rather than "the image below".
 ### One currency format per page — **Strict** (`currency-mixed`)
 `$` when USD is the only currency on the page.

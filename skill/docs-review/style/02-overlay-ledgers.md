@@ -1,5 +1,3 @@
-<!-- Compiled from Notion by scripts/notion_sync.py. Do not edit; edit https://app.notion.com/p/3c8d6bfc268380beb423e6cce5948e8d
-     policy 718466089eff · synced 2026-09-03T21:34:37+00:00 -->
 `docs-readme-ledgers`. Read with **01 — Base Style**; this page covers only what is specific to Ledgers.
 Ledgers pages teach double-entry accounting to readers who have not modelled it before. They are longer than other pages, built around worked examples, and carry the most code. That is intentional.
 ## **Voice**
@@ -19,8 +17,8 @@ Never describe money moving without saying which account and which side.
 ### **Spell out ledger objects, always — Strict**
 Ledgers is where `LA`, `LT` and `LAS` creep in. Base style bans them; that ban matters most here, because "Account" and "Transaction" both mean something else in this product.
 ## **Formatting**
-### **`shell`**** for requests, ****`json`**** for payloads — Strict**
-Tutorials show the request and the body. Use `shell` and `json`; never `curl` or `bash`.
+### Requests use `curl`; payloads use `json` — Strict (`fence-language`)
+Tutorials show the request and body. Use `curl` and `json`; ReadMe fence info such as `curl cURL` includes an allowed tab label. Reserve `shell` for non-request commands.
 ### **Code carries the lesson — Flexible**
 A Ledgers page can be mostly code. Show the full request and the resulting Ledger Entries rather than describing them in prose.
 ### **Callouts are rare — Flexible**

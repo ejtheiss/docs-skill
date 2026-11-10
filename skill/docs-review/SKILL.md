@@ -19,7 +19,7 @@ runnable:
 
 | Subskill | Needs | Decides | Status |
 |---|---|---|---|
-| `docs-lint` | the file only | frontmatter, headings, fences, JSON bodies, links, object names, currency, prose mechanics | 30 rules |
+| `docs-lint` | the file only | frontmatter, headings, fences, JSON bodies, links, object names, currency, prose mechanics | 31 rules |
 | `docs-content` | corpus norms | continuity, teaching pattern, structure, coverage | no rules yet |
 | `docs-maintain` | all three repos | reuse, duplication, block references, wording drift | no rules yet |
 | `docs-test` | monorepo, network or sandbox | schemas, enums, endpoints, events, states, links | no rules yet |
@@ -45,6 +45,7 @@ Read the base style plus the ONE overlay for the project you are working in.
 | `style/05-overlay-api-reference.md` | Conventions for spec-derived reference pages |
 | `style/06-flexible-conventions.md` | Where we allow variation on purpose |
 | `style/07-review-and-correction.md` | How to validate, verify and correct a page |
+| `style/08-readme-conventions.md` | Corpus-backed ReadMe frontmatter, components, code tabs and links |
 
 These were rendered from Notion until 2026-09-03 and are now edited directly. A rule change is an
 edit here plus the matching edit to a policy file, in one change: the prose explains the rule and the
@@ -74,12 +75,15 @@ python3 scripts/review.py <path> --only lint            # one tier (pre-commit p
 python3 scripts/review.py <path> --only lint --only test
 python3 scripts/review.py <path> --strict-only          # only what must be fixed
 python3 scripts/review.py <path> --format json          # machine-readable
+python3 scripts/review.py <path> --mode draft           # every file is new
+python3 scripts/review.py <path> --base <git-ref>        # review new files and touched images
 python3 scripts/review.py <path> --rule filler --rule mt-shorthand
 python3 scripts/review.py --list-rules                  # every rule, severity, source, policy hash
 ```
 
 Default is all four, because a reviewer who has to remember which tier catches which defect has been
 handed the tool's problem. `--only` is repeatable; the JSON scorecard names the subskills that ran.
+Review is the default mode. Without `--base`, review does not infer new/touched content: `body-h1` and `image-alt` do not fire. Draft checks the first body heading and every image. Existing pages do not require an h1 backfill.
 
 Exit status: 1 when a strict rule fails (so it can gate a commit), 2 for a bad invocation — an unknown
 `--rule`, or a path whose project cannot be inferred with no `--project` given.
@@ -96,7 +100,7 @@ fixes are in **07 — Review & Correction**.
 
 `sentence-length`, `passive-voice`, `filler`, `filler-please`, `fence-language-unknown`,
 `link-absolute-internal`, `acronym-undefined`, `contractions`, `reference-no-shell`,
-`no-ordered-lists` are reported for a human to decide. Fix when the alternative reads better; leave
+`no-ordered-lists`, `frontmatter-excerpt`, `em-dash` are reported for a human to decide. Fix when the alternative reads better; leave
 otherwise. Do not bulk-apply.
 
 ### 5. Review what no checker sees
@@ -105,6 +109,9 @@ otherwise. Do not bulk-apply.
   outside the platform.
 - **Person**: `we` versus `you` per the project overlay, consistent within each section.
 - **Imperative**: procedural steps open with a verb, one action per step.
+
+Use `references/templates/` for the destination's response shape. Fill every placeholder and run the page templates in draft mode with an explicit project when needed. `small-edit.md` is a patch handoff, not a publishable page. Requests use `curl`, with ReadMe labels allowed; non-request commands use `shell`.
+Apply `references/rubric.md` as **reviewer judgment**, not reported rules. Log each accept/reject decision with `scripts/rubric_label.py` for the Phase 3 adjudication set.
 
 Then check accuracy — endpoints, field names, enum values, screenshots — against the current product.
 
@@ -124,7 +131,7 @@ read at import from two YAML files, and each has one owner:
   acronym expansions, currency codes. Shared, because a fact about what our objects are called is as
   useful to `docs-content` as to `docs-lint`.
 - **`<subskill>/config/rules.yaml`** — the rules that subskill emits, plus the tables only it reads.
-  For `docs-lint` that is thirty rules and ten tables of prose mechanics: filler words, vague
+  For `docs-lint` that is 31 rules plus policy tables of prose mechanics: filler words, vague
   anchors, fence tags, callout emoji, the grammar lists behind `passive-voice`.
 
 A table defined in both files is a refusal, and so is one rule id claimed by two subskills. Every
@@ -133,10 +140,10 @@ it. The id is computed from the files on every run and never quoted from one, so
 reported under an id that predates it.
 
 The id covers what decides a verdict — reported and guide severity, scope, threshold, the tables and
-the exemptions — and nothing else. Provenance and each table's `why` ride in the files and outside
+the exemptions and applicability contexts — and nothing else. Provenance and each table's `why` ride in the files and outside
 the id, because `--list-rules` prints them and no rule reads them. So the stamp answers "would this
 policy have decided my findings differently?" rather than "has anyone touched the guide", and
-rewording an explanation does not re-open the admission gate for thirty rules.
+rewording an explanation does not re-open the admission gate for 31 rules.
 
 Until 2026-09-03 the policy came from Notion through an 832-line sync, with a snapshot captured out
 of band, staleness and tamper detection around the seam. That machinery existed because a database
@@ -166,13 +173,13 @@ write-good / emoji-regex, the snapshot-to-runtime differential, the mutation har
 the rules were measured on live in the docs-style repo outside this skill; a rule changed without them
 is unverified. Make the change there, run its suites, and copy the result back.
 
-What ships is this directory: `SKILL.md`, `scripts/`, `config/` and `style/` per subskill. What proves
+What ships is this directory: `SKILL.md`, `scripts/`, `config/`, `style/` and the umbrella's `references/`. What proves
 it — corpus snapshots, probes, oracles, fixtures, mutation tooling, adjudication — never ships, and no
 shipped file imports from it.
 
 ## Notes
 
 - The checkers are deliberately disposable. They encode the guide; the guide does not depend on them.
-- Nothing here writes to a page. The checkers read and report.
+- The checkers read and report; nothing writes to a page. The rubric helper appends only to an explicitly chosen JSONL label log.
 - Never rewrite a page wholesale to satisfy a checker. Fix findings in what you touch.
 - Corpus-wide cleanups go one rule per change, so the diff stays reviewable.

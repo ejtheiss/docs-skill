@@ -1,11 +1,9 @@
-<!-- Compiled from Notion by scripts/notion_sync.py. Do not edit; edit https://app.notion.com/p/3c8d6bfc26838079bbe1f3ef57ef817a
-     policy 718466089eff · synced 2026-09-03T21:34:37+00:00 -->
 How to validate a page against this guide, in what order, and what to do with what you find.
-There is a companion skill — **docs-style-review** — that carries a runnable checker for every strict rule that can be checked mechanically. This page is the procedure; the skill is the tooling.
+There is a companion skill — **docs-review** — that carries a runnable checker for every strict rule that can be checked mechanically. This page is the procedure; the skill is the tooling.
 ## The order of work
 Do the cheap mechanical pass first, so close reading is spent on voice and accuracy.
 1. **Identify the project.** Ledgers, Payments, platform guides, or API reference. Read **01 — Base Style** plus that one overlay.
-2. **Run the checker** on the changed pages. Fix every strict finding.
+2. **Run the checker** on changed pages: review mode with `--base <git-ref>` for new/touched scope, draft mode for new-page readiness. Fix every strict finding. Existing headings and untouched images are not backfilled.
 3. **Read the flexible findings.** Each is a judgment call — long sentences, passive voice, absolute links, acronyms. Fix what is genuinely worse; leave what reads better.
 4. **Read the page for voice.** The three questions the checker cannot answer:
 	- Does the tense match where the action happens — present inside Modern Treasury, future at the bank?
@@ -50,8 +48,8 @@ The corrections that come up most, with the fix:
 <td>Fix</td>
 </tr>
 <tr>
-<td>Fence tagged `curl` or `bash`</td>
-<td>`shell`</td>
+<td>Curl request tagged `shell`, `bash` or `sh`</td>
+<td>`curl`; retain any ReadMe code-tab label. Use `shell` only for non-request commands.</td>
 </tr>
 <tr>
 <td>`MT` in prose</td>
@@ -86,8 +84,8 @@ The corrections that come up most, with the fix:
 <td>Plain heading</td>
 </tr>
 <tr>
-<td>Image with no alt text</td>
-<td>Describe what the image shows</td>
+<td>New or touched image with no alt text</td>
+<td>Use `<Image>` with alt text describing what it shows</td>
 </tr>
 <tr>
 <td>`excerpt` present in frontmatter</td>
@@ -98,8 +96,8 @@ The corrections that come up most, with the fix:
 <td>Split at the comma joining two facts</td>
 </tr>
 <tr>
-<td>Absolute link to a page in the same repo</td>
-<td>Relative path</td>
+<td>Absolute link to a page in the same project, or a relative file link</td>
+<td>`doc:slug` or `ref:slug`; absolute documentation URL across projects</td>
 </tr>
 <tr>
 <td>`$` and ISO codes on one page</td>
