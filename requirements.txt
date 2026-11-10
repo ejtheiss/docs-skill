@@ -1,0 +1,5 @@
+markdown-it-py==4.2.0
+numpy==2.5.2
+PyYAML==6.0.3
+scikit-learn==1.9.0
+spacy==3.8.16

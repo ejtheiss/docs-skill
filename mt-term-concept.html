@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MT Term Concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Terminal theme: MT Web 2026 primitives remapped to a cell grid ─────────── */
+:root{
+  /* surfaces (tone first: black → off-black → gray-4) */
+  --t-bg:#151515;          /* black */
+  --t-pane:#1b1b1a;        /* between black and off-black (gap: no token) */
+  --t-raise:#222220;       /* off-black */
+  --t-rule:#30302E;        /* gray 4 — box-drawing lines */
+  /* text (text/strong · default · dim on dark) */
+  --t-strong:#FFFFFF; --t-fg:#FFFFFFCC; --t-dim:#FFFFFF99; --t-faint:#737371;
+  /* compositional accents */
+  --t-focus:#3A8F73;       /* green/500 — focused pane, cursor, live eval */
+  --t-label:#B19386;       /* brown/400 — field labels / eyebrows */
+  --t-head:#BAE0CF;        /* accent-on-dark (green/200) — pane titles */
+  /* state ramp (always paired with a glyph + word, never color alone) */
+  --s-ok:#5BAC8E;          /* green/400  ● completed / posted */
+  --s-pend:#93C2CD;        /* blue/300   ◐ pending / processing */
+  --s-attn:#C8B4A9;        /* brown/300  ◆ needs review (gap: no amber in system) */
+  --s-rev:#C3A2B7;         /* violet/400 ↺ returned / reversed */
+  --s-err:#FF6B6B;         /* error-red/400 ✕ failed */
+  --s-live:#FF6B6B;        /* LIVE env frame */
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--t-bg);color:var(--t-fg);font:13px/1.45 var(--mono);padding:16px}
+.wrap{max-width:1440px;margin:0 auto}
+.cap{letter-spacing:.04em}
+.dim{color:var(--t-dim)} .faint{color:var(--t-faint)} .strong{color:var(--t-strong)}
+.lbl{color:var(--t-label)} .ok{color:var(--s-ok)} .pend{color:var(--s-pend)}
+.attn{color:var(--s-attn)} .rev{color:var(--s-rev)} .err{color:var(--s-err)} .foc{color:var(--t-focus)}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:pre}
+.intro{color:var(--t-dim);margin:0 0 12px;font-size:12px}
+
+/* ── Shell ─────────────────────────────────────────────────────────────────── */
+.term{border:1px solid var(--t-rule);background:var(--t-bg)}
+.ticker,.cmd,.status{display:flex;gap:0;white-space:nowrap;overflow:hidden}
+.ticker{background:var(--t-raise);border-bottom:1px solid var(--t-rule)}
+.ticker>span{padding:2px 10px;border-right:1px solid var(--t-rule)}
+.env{background:var(--t-focus);color:#fff}
+.cmd{padding:3px 10px;border-bottom:1px solid var(--t-rule);gap:10px}
+.cmd .p{color:var(--t-focus)} .go{background:var(--t-strong);color:var(--t-bg);padding:0 4px}
+.cursor{display:inline-block;width:.6em;background:var(--t-focus);animation:b 1s steps(1) infinite}
+@keyframes b{50%{opacity:0}}
+.status{background:var(--t-raise);border-top:1px solid var(--t-rule)}
+.status>span{padding:2px 10px;border-right:1px solid var(--t-rule)}
+.mode{background:var(--t-strong);color:var(--t-bg)}
+kbd{font:inherit;color:var(--t-strong);background:var(--t-rule);padding:0 3px}
+
+/* ── Panes ─────────────────────────────────────────────────────────────────── */
+.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,.8fr);
+      grid-template-rows:auto auto;gap:0}
+.pane{border-right:1px solid var(--t-rule);border-bottom:1px solid var(--t-rule);min-width:0;position:relative}
+.pane.focus{outline:1px solid var(--t-focus);outline-offset:-1px;z-index:1}
+.ph{display:flex;justify-content:space-between;padding:1px 8px;border-bottom:1px solid var(--t-rule);
+    background:var(--t-pane);white-space:nowrap;overflow:hidden}
+.ph b{font-weight:400;color:var(--t-head)} .focus .ph b{color:var(--t-strong)}
+.ph .k{color:var(--t-faint)}
+.pb{padding:4px 8px;overflow:hidden}
+
+/* editor */
+.code{display:grid;grid-template-columns:3ch minmax(0,1fr) auto;column-gap:1ch}
+.code .ln{color:var(--t-faint);text-align:right}
+.code .src{white-space:pre;overflow:hidden;text-overflow:clip}
+.code .ghost{color:var(--t-faint);white-space:pre;text-align:right}
+.code .act{background:#3A8F7322;box-shadow:inset 2px 0 0 var(--t-focus)}
+.kw{color:var(--t-head)} .fn{color:var(--t-strong)} .str{color:var(--t-label)} .cm{color:var(--t-faint)}
+.mark{background:#3A8F7344;color:#fff;outline:1px solid var(--t-focus)}
+.inline-w{grid-column:2/4;border:1px solid var(--t-rule);margin:2px 0 4px;padding:2px 6px;background:var(--t-pane)}
+
+/* flow graph */
+.flow{white-space:pre;line-height:1.3;font-size:12px}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-weight:400;color:var(--t-label);text-align:left;border-bottom:1px solid var(--t-rule);padding:1px 6px 1px 0;white-space:nowrap}
+td{padding:0 6px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22ch}
+tr.sel td{background:var(--t-raise);color:var(--t-strong)}
+tr.sel td:first-child{box-shadow:inset 2px 0 0 var(--t-focus)}
+th.num,td.num{text-align:right}
+.kv{display:grid;grid-template-columns:auto 1fr;column-gap:2ch;font-size:12px}
+.kv dt{color:var(--t-label)} .kv dd{text-align:right;font-variant-numeric:tabular-nums}
+.bar{display:inline-block;height:.7em;background:var(--t-focus);vertical-align:middle}
+.bar.p{background:var(--s-pend)}
+.tape div{white-space:pre;font-size:12px;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Component sheet ───────────────────────────────────────────────────────── */
+h2{font:400 12px var(--mono);color:var(--t-label);margin:28px 0 8px}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{border:1px solid var(--t-rule);background:var(--t-pane)}
+.card .ph b{color:var(--t-head)}
+.card .pb{padding:8px;display:flex;flex-direction:column;gap:6px;font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{padding:0 5px;border:1px solid currentColor;letter-spacing:.04em}
+.rail{padding:0 5px;background:var(--t-raise);color:var(--t-strong);letter-spacing:.04em}
+.id{color:var(--t-dim)} .id b{font-weight:400;color:var(--t-strong)}
+.sw{display:inline-block;width:2ch;height:1.1em;vertical-align:middle;border:1px solid var(--t-rule)}
+@media (max-width:1000px){.grid{grid-template-columns:1fr}.pane{border-right:0}}
+</style>
+</head>
+<body><div class="wrap">
+
+<p class="intro">Concept · "MT Term" — code-first money-movement workbench. Cell-grid UI (ratatui), MT Web 2026 primitives remapped for a dark terminal. Sandbox data, illustrative only.</p>
+
+<div class="term">
+  <!-- TICKER: env + rail health + cutoffs (the Bloomberg top line) -->
+  <div class="ticker">
+    <span class="env cap">SANDBOX</span>
+    <span class="strong">acme-payroll</span>
+    <span><span class="cap strong">ACH</span> <span class="ok">●</span> <span class="dim">cutoff</span> <span class="num strong">02:14:33</span></span>
+    <span><span class="cap strong">SD-ACH</span> <span class="attn">◆</span> <span class="dim">cutoff</span> <span class="num attn">00:44:10</span></span>
+    <span><span class="cap strong">RTP</span> <span class="ok">●</span> <span class="dim">24/7</span></span>
+    <span><span class="cap strong">FEDNOW</span> <span class="ok">●</span> <span class="dim">24/7</span></span>
+    <span><span class="cap strong">WIRE</span> <span class="ok">●</span> <span class="dim">cutoff</span> <span class="num strong">03:59:02</span></span>
+    <span><span class="dim">ops avail</span> <span class="num strong">$4,912,330.18</span> <span class="ok">▲0.8%</span></span>
+    <span class="dim" style="margin-left:auto">WED 04 NOV 14:15:27 ET</span>
+  </div>
+  <!-- COMMAND LINE: mnemonic + args + <GO> -->
+  <div class="cmd">
+    <span class="p">❯</span><span class="strong">FLOW friday-payroll DRYRUN</span><span class="cursor">&nbsp;</span>
+    <span class="go cap">GO</span>
+    <span class="faint">↹ FLOW · PO · LT · LA · EP · CP · RECON · RAIL · HELP</span>
+  </div>
+
+  <div class="grid">
+    <!-- EDITOR (focused) -->
+    <section class="pane focus" style="grid-row:span 2">
+      <div class="ph"><b>1 EDIT  friday-payroll.flow</b><span class="k">⌃↵ eval block · ⌃⇧↵ eval all · ⌃. stop</span></div>
+      <div class="pb code">
+        <span class="ln">1</span><span class="src cm">// eval a block and it runs against sandbox; ghosts show live results</span><span class="ghost"></span>
+        <span class="ln">2</span><span class="src"><span class="kw">const</span> ops  = <span class="fn">ia</span>(<span class="str">"Operating · JPM ··4410"</span>)</span><span class="ghost">avail $4.91M</span>
+        <span class="ln">3</span><span class="src"><span class="kw">const</span> clr  = <span class="fn">la</span>(<span class="str">"Payroll Clearing"</span>)</span><span class="ghost">bal $0.00</span>
+        <span class="ln">4</span><span class="src"> </span><span class="ghost"></span>
+        <span class="ln">5</span><span class="src"><span class="fn">flow</span>(<span class="str">"friday-payroll"</span>)</span><span class="ghost">v14 · draft</span>
+        <span class="ln">6</span><span class="src">  .<span class="fn">every</span>(<span class="str">"fri 14:00 ET"</span>)</span><span class="ghost">next 06 Nov</span>
+        <span class="ln">7</span><span class="src">  .<span class="fn">fund</span>(ops, <span class="fn">ach.debit</span>(<span class="str">"$412,880.00"</span>).<span class="fn">from</span>(<span class="fn">cp</span>(<span class="str">"Acme Holdco"</span>)))</span><span class="ghost"><span class="ok">● 1 PO</span></span>
+        <span class="ln">8</span><span class="src">  .<span class="fn">ledger</span>(tx =&gt; tx.<span class="fn">dr</span>(cash).<span class="fn">cr</span>(clr))</span><span class="ghost"><span class="ok">● balanced</span></span>
+        <span class="ln act">9</span><span class="src act">  .<span class="fn">fanout</span>(<span class="mark">employees.active()</span>, e =&gt;</span><span class="ghost act"><span class="pend">◐ 214 → 211/3</span></span>
+        <span class="ln act">10</span><span class="src act">     e.net &gt; <span class="str">5_000</span> ? <span class="fn">rtp</span>(e.net) : <span class="fn">ach.sameDay</span>(e.net))</span><span class="ghost act">188 RTP · 26 ACH</span>
+        <span class="ln">11</span><span class="src">  .<span class="fn">reconcile</span>(<span class="fn">expect</span>.<span class="fn">within</span>(<span class="str">"2d"</span>))</span><span class="ghost"><span class="attn">◆ 2 unmatched</span></span>
+        <span class="ln">12</span><span class="src">  .<span class="fn">viz</span>(<span class="str">"volume"</span>)</span><span class="ghost"></span>
+        <div class="inline-w">
+          <div class="row" style="justify-content:space-between"><span class="lbl">volume · 15m buckets</span><span class="dim">peak $96.4k @ 14:05</span></div>
+          <div style="color:var(--t-focus);letter-spacing:-.5px">⣀⣀⣠⣤⣴⣶⣾⣿⣿⣷⣶⣦⣤⣄⣀⣀⣀⣠⣤⣤⣀⣀⡀⠀⠀</div>
+        </div>
+        <span class="ln">13</span><span class="src"> </span><span class="ghost"></span>
+        <span class="ln">14</span><span class="src"><span class="fn">on</span>(<span class="str">"payment_order.returned"</span>, po =&gt;</span><span class="ghost"><span class="rev">↺ 0 today</span></span>
+        <span class="ln">15</span><span class="src">  po.<span class="fn">retry</span>(<span class="fn">via</span>(<span class="str">"ach"</span>)).<span class="fn">notify</span>(<span class="str">"#payroll-ops"</span>))</span><span class="ghost"></span>
+        <span class="ln">16</span><span class="src"> </span><span class="ghost"></span>
+        <span class="ln">17</span><span class="src cm">// :share  → url w/ code + sandbox seed   :ref fanout → docs pane</span><span class="ghost"></span>
+      </div>
+    </section>
+
+    <!-- FLOW GRAPH -->
+    <section class="pane">
+      <div class="ph"><b>2 FLOW  live</b><span class="k">step 3/5 · ⇥ follow</span></div>
+      <div class="pb flow"><span class="dim">┌ Acme Holdco ─────┐</span>          <span class="dim">┌ Operating ··4410 ┐</span>
+<span class="dim">│</span> <span class="strong">$412,880.00</span>      <span class="dim">│</span> <span class="ok">━━ACH━━▶</span> <span class="dim">│</span> <span class="strong">$4,912,330.18</span>    <span class="dim">│</span>
+<span class="dim">└──────────────────┘</span>    <span class="ok">●</span>     <span class="dim">└────────┬─────────┘</span>
+                                       <span class="ok">┃</span> <span class="dim">ledger</span>
+                              <span class="foc">┌ Payroll Clearing ┐</span>
+                              <span class="foc">│</span> <span class="strong">$412,880.00</span>      <span class="foc">│</span>
+                              <span class="foc">└──┬──────────┬────┘</span>
+                        <span class="pend">RTP ◐ 188</span><span class="foc">│</span>          <span class="foc">│</span><span class="ok">ACH ● 26</span>
+                           <span class="dim">┌─────┴────┐</span>  <span class="dim">┌──┴───────┐</span>
+                           <span class="dim">│</span> <span class="strong">185</span><span class="ok">●</span> <span class="strong">3</span><span class="pend">◐</span>  <span class="dim">│</span>  <span class="dim">│</span> <span class="strong">26</span><span class="ok">●</span>      <span class="dim">│</span>
+                           <span class="dim">└──────────┘</span>  <span class="dim">└──────────┘</span></div>
+    </section>
+
+    <!-- LEDGER / BALANCES -->
+    <section class="pane">
+      <div class="ph"><b>3 LT  balances</b><span class="k">pend │ post</span></div>
+      <div class="pb">
+        <dl class="kv">
+          <dt>cash · ops</dt><dd class="strong">4,912,330.18</dd>
+          <dt>payroll clearing</dt><dd>412,880.00</dd>
+          <dt>  ↳ pending</dt><dd class="pend">-18,402.55</dd>
+          <dt>  ↳ posted</dt><dd class="ok">-376,075.30</dd>
+          <dt>employee payable</dt><dd>18,402.55</dd>
+          <dt>fees · rtp</dt><dd class="dim">47.00</dd>
+        </dl>
+        <div style="margin-top:6px;font-size:12px">
+          <div><span class="lbl">settled </span><span class="bar" style="width:62%"></span><span class="bar p" style="width:4%"></span> <span class="dim">95.6%</span></div>
+        </div>
+        <div style="margin-top:6px;font-size:12px" class="dim">Σ dr = Σ cr  <span class="ok">● 0.00</span></div>
+      </div>
+    </section>
+
+    <!-- PAYMENT ORDERS -->
+    <section class="pane">
+      <div class="ph"><b>4 PO  fanout · 214</b><span class="k">/ filter · s sort · ↵ open</span></div>
+      <div class="pb">
+        <table>
+          <tr><th>id</th><th>rail</th><th>cpty</th><th class="num">amount</th><th>state</th><th class="num">age</th></tr>
+          <tr><td class="id">po_<b>8f3a</b>…</td><td class="cap">RTP</td><td>J. Okafor</td><td class="num strong">6,240.00</td><td class="ok cap">● DONE</td><td class="num dim">4s</td></tr>
+          <tr class="sel"><td>po_<b>91c2</b>…</td><td class="cap">RTP</td><td>M. Reyes</td><td class="num">7,105.12</td><td class="pend cap">◐ SENT</td><td class="num dim">9s</td></tr>
+          <tr><td class="id">po_<b>a017</b>…</td><td class="cap">ACH</td><td>D. Chen</td><td class="num strong">3,880.40</td><td class="ok cap">● DONE</td><td class="num dim">12s</td></tr>
+          <tr><td class="id">po_<b>b77e</b>…</td><td class="cap">RTP</td><td>A. Novak</td><td class="num strong">5,410.00</td><td class="attn cap">◆ REVIEW</td><td class="num dim">31s</td></tr>
+          <tr><td class="id">po_<b>c3d9</b>…</td><td class="cap">ACH</td><td>K. Patel</td><td class="num strong">2,950.75</td><td class="err cap">✕ FAIL R03</td><td class="num dim">1m</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAPE -->
+    <section class="pane">
+      <div class="ph"><b>5 TAPE  events</b><span class="k">f freeze · w webhook</span></div>
+      <div class="pb tape">
+        <div><span class="faint">14:15:26</span> <span class="ok">●</span> po.completed  <span class="dim">po_8f3a</span> <span class="strong">6,240.00</span></div>
+        <div><span class="faint">14:15:25</span> <span class="pend">◐</span> po.sent       <span class="dim">po_91c2</span> <span class="strong">7,105.12</span></div>
+        <div><span class="faint">14:15:21</span> <span class="attn">◆</span> po.review     <span class="dim">po_b77e</span> <span class="dim">velocity</span></div>
+        <div><span class="faint">14:15:09</span> <span class="err">✕</span> po.failed     <span class="dim">po_c3d9</span> <span class="err">R03</span></div>
+        <div><span class="faint">14:14:58</span> <span class="ok">●</span> lt.posted     <span class="dim">lt_02ae</span> <span class="dim">balanced</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- STATUS LINE -->
+  <div class="status">
+    <span class="mode cap">EVAL</span>
+    <span>friday-payroll.flow <span class="dim">+3 −1</span></span>
+    <span><kbd>F1</kbd> help <kbd>F2</kbd> po <kbd>F3</kbd> lt <kbd>F4</kbd> ep <kbd>F5</kbd> recon <kbd>⌃K</kbd> palette</span>
+    <span class="dim">key sk_test_··9f</span>
+    <span style="margin-left:auto"><span class="ok">●</span> ws 12ms</span>
+  </div>
+</div>
+
+<!-- ───────────────────────── COMPONENT SHEET ───────────────────────── -->
+<h2>Component kit · atoms → widgets</h2>
+<div class="sheet">
+  <div class="card"><div class="ph"><b>State</b><span class="k">glyph + word + hue</span></div><div class="pb">
+    <div class="row"><span class="ok cap">● COMPLETED</span><span class="pend cap">◐ PENDING</span><span class="attn cap">◆ REVIEW</span></div>
+    <div class="row"><span class="rev cap">↺ RETURNED</span><span class="err cap">✕ FAILED</span><span class="faint cap">○ DRAFT</span></div>
+    <div class="dim">Glyph carries meaning in 16-color & mono terminals; hue is reinforcement.</div>
+  </div></div>
+  <div class="card"><div class="ph"><b>Rail chip</b><span class="k">caps · 4% track</span></div><div class="pb">
+    <div class="row"><span class="rail">ACH</span><span class="rail">SD-ACH</span><span class="rail">RTP</span><span class="rail">FEDNOW</span><span class="rail">WIRE</span><span class="rail">STABLECOINS</span></div>
+    <div class="dim">Ticker variant adds health dot + cutoff countdown.</div>
+  </div></div>
+  <div class="card"><div class="ph"><b>Amount</b><span class="k">tabular · right-aligned</span></div><div class="pb">
+    <div class="num strong">   412,880.00 USD</div>
+    <div class="num pend">   -18,402.55     <span class="dim">pending</span></div>
+    <div class="num dim">         47.00     <span class="dim">fee</span></div>
+    <div class="dim">Always 2dp (minor-unit backed), sign not color, currency on hover/footer.</div>
+  </div></div>
+  <div class="card"><div class="ph"><b>ID</b><span class="k">y copy · ↵ open</span></div><div class="pb">
+    <div><span class="id">po_<b>91c2</b>…e04d</span>  <span class="id">lt_<b>02ae</b>…</span>  <span class="id">cp_<b>acme</b>…</span></div>
+    <div class="dim">Prefix + 4 hex in strong; everything is a link to its inspector.</div>
+  </div></div>
+  <div class="card"><div class="ph"><b>Pane</b><span class="k">n NAME  context · hints</span></div><div class="pb">
+    <div>Header: number (jump key) · mnemonic · scope, right-aligned key hints.</div>
+    <div class="dim">Focus = green outline + white title. No rounded corners, no shadows.</div>
+  </div></div>
+  <div class="card"><div class="ph"><b>Ghost</b><span class="k">inline eval result</span></div><div class="pb">
+    <div><span class="fn">.fanout</span>(…)  <span class="faint">◐ 214 → 211/3</span></div>
+    <div class="dim">Right-gutter result per line; active step gets green left bar (Strudel-style highlight).</div>
+  </div></div>
+  <div class="card"><div class="ph"><b>Micro-viz</b><span class="k">braille · blocks</span></div><div class="pb">
+    <div class="foc">⣀⣠⣤⣴⣶⣾⣿⣷⣶⣤⣀  ▁▂▃▅▇█▆▃▂</div>
+    <div><span class="bar" style="width:40%"></span><span class="bar p" style="width:8%"></span> <span class="dim">settled / pending</span></div>
+  </div></div>
+  <div class="card"><div class="ph"><b>Palette</b></div><div class="pb">
+    <div class="row"><span class="sw" style="background:#151515"></span>bg <span class="sw" style="background:#222220"></span>raise <span class="sw" style="background:#30302E"></span>rule</div>
+    <div class="row"><span class="sw" style="background:#3A8F73"></span>focus <span class="sw" style="background:#B19386"></span>label <span class="sw" style="background:#BAE0CF"></span>head</div>
+    <div class="dim">Green = focus &amp; "it's live" only. Gap: no amber/warn token in Web 2026.</div>
+  </div></div>
+</div>
+</div></body>
+</html>
