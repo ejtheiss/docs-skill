@@ -177,6 +177,7 @@ def test_every_subagent_brief_restates_both_rules():
 
 
 def test_shipped_watching_rows_do_not_consume_draft_cap(tmp_path, monkeypatch):
+    (tmp_path / 'customer-names.md').write_text('# No names\n')
     (tmp_path / 'draft.md').write_text('Use a verified address.\n')
     candidates = [candidate(i) for i in range(4)]
     for i, c in enumerate(candidates):
@@ -262,10 +263,15 @@ def test_digest_quiet_plural_and_row_links():
     assert '1 draft;' in dm and '0 watching items;' in dm
     assert f'{c["question"]} | Needs SME Review | {{{{notion_url:{c["id"]}}}}}' in dm
     assert '2 drafts;' in autopilot.digest([record, record])
-    for stage, noun in [('Watching', 'watching item'), ('Needs Human Answer', 'open question'), ('Shipped elsewhere', 'shipped item')]:
+    for stage, noun in [('Watching', 'watching item'), ('Shipped elsewhere', 'shipped item')]:
         record = autopilot.row(c, autopilot.admit(c, CONFIG), stage, '2026-11-10')
         assert '1 ' + noun in autopilot.digest([record])
         assert '2 ' + noun + 's' in autopilot.digest([record, record])
+    for stage, phrase in [('Needs SME Review', 'SME review'), ('Needs Human Answer', 'a human answer')]:
+        record = autopilot.row(c, autopilot.admit(c, CONFIG), stage, '2026-11-10')
+        assert '1 needs ' + phrase in autopilot.digest([record])
+        assert '2 need ' + phrase in autopilot.digest([record, record])
+    assert 'open questions' not in dm
 
 
 @pytest.mark.parametrize('text,rule', [('Use this — then continue.', 'em-dash'), ('Use our powerful API.', 'marketing-words')])
@@ -286,3 +292,51 @@ def test_generated_text_rejected_before_output(tmp_path, monkeypatch, text, rule
     with pytest.raises(ValueError, match='generated-text check failed.*' + rule):
         autopilot.dry_run({'candidates': [c]}, tmp_path, out, CONFIG)
     assert not out.exists()
+
+
+@pytest.mark.parametrize('empty', [False, True])
+def test_carry_stdout_redacts_accounts_and_evidence(tmp_path, capsys, empty):
+    c = candidate()
+    c['checks']['answer']['evidence'] = [{'claim': 'private-evidence-marker', 'source': 'private-thread-marker'}]
+    c['checks']['signal']['accounts'] = ['private-account-one', 'private-account-two']
+    window = tmp_path / 'window.json'
+    window.write_text(json.dumps({'candidates': [] if empty else [c]}))
+    assert autopilot.main(['carry', str(window)]) == 0
+    output = capsys.readouterr().out
+    assert 'private-' not in output and 'evidence' not in output and 'accounts' not in output
+    assert json.loads(output) == ([] if empty else [dict(id=c['id'], prior_row_id=None, signal_count=2)])
+
+
+def test_a3_blocked_reason_uses_open_question():
+    c = candidate()
+    c['question'] = 'May the reserve-sizing methodology be published?'
+    c['checks']['answer']['complexity'] = 'A3 Open'
+    record = autopilot.row(c, autopilot.admit(c, CONFIG), 'Needs Human Answer', '2026-11-10')
+    body = autopilot.notion_payload(record)['body']
+    reason = body.split('## Why this is blocked\n\n')[1].split('\n\n## ')[0]
+    assert reason == c['question'] and 'Missing documentation' not in reason
+
+
+@pytest.mark.parametrize('stage', ['Needs Human Answer', 'Watching', 'Needs SME Review', 'Shipped elsewhere'])
+@pytest.mark.parametrize('unsafe', ['PrivateCustomer', 'https://team.slack.com/archives/C1/p2'])
+def test_all_generated_rows_pass_leak_gate_before_output(tmp_path, monkeypatch, stage, unsafe):
+    (tmp_path / 'customer-names.md').write_text('PrivateCustomer\n')
+    c = candidate()
+    c['checks']['answer']['complexity'] = 'A3 Open'
+    original = autopilot.notion_payload
+    def payload(record):
+        result = original(record)
+        result['properties']['Stage'] = stage
+        result['properties']['Task name'] = unsafe
+        return result
+    monkeypatch.setattr(autopilot, 'notion_payload', payload)
+    out = tmp_path / 'out'
+    with pytest.raises(ValueError, match='generated row 0 failed generalization: leak-'):
+        autopilot.dry_run({'candidates': [c]}, tmp_path, out, CONFIG)
+    assert not out.exists()
+
+
+def test_gate_does_not_dispatch_review_on_fragments():
+    text = (SKILL / 'scripts/autopilot.py').read_text()
+    assert 'docs-review/scripts/review.py' not in text
+    assert 'docs-lint/scripts/lint.py' in text

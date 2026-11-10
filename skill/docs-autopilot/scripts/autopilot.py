@@ -152,10 +152,10 @@ def render_body(fields, draft=None):
 
 
 def gate(draft, names, project='platform'):
-    checker = HERE.parents[1] / 'docs-review/scripts/review.py'
+    checker = HERE.parents[1] / 'docs-lint/scripts/lint.py'
     if not checker.is_file():
-        raise ValueError('docs-review is not installed beside docs-autopilot; install both skills')
-    result = subprocess.run([sys.executable, str(checker), str(draft), '--project', project, '--mode', 'draft', '--only', 'lint',
+        raise ValueError('docs-lint is not installed beside docs-autopilot; install the checker skills')
+    result = subprocess.run([sys.executable, str(checker), str(draft), '--project', project, '--mode', 'draft',
                              '--rule', 'leak-names', '--rule', 'leak-internal', '--names', str(names), '--format', 'json'], capture_output=True, text=True, timeout=120)
     if result.returncode not in (0, 1):
         raise ValueError('docs-review gate could not run; verify names file and checker installation')
@@ -173,7 +173,8 @@ def generalization(candidate, base, draft=''):
 
 
 def row(candidate, decision, stage, run_date, draft=None):
-    properties = {'Task name': candidate['question'], 'Description': decision['gap'], 'Admission': decision['admission'],
+    reason = candidate['question'] if stage == 'Needs Human Answer' else decision['gap']
+    properties = {'Task name': candidate['question'], 'Description': reason, 'Admission': decision['admission'],
                   'Stage': stage, 'Answer Complexity': candidate['checks']['answer']['complexity'], 'Run Date': run_date,
                   'Signal Count': decision['signal_count'], 'Has Draft': draft is not None, 'Review Passes': 0,
                   'Sources': '\n'.join(candidate.get('sources', [])), 'Target Path': candidate.get('target_path', ''),
@@ -215,21 +216,24 @@ def digest(rows):
         return 'nothing qualified\n'
     counts = [(sum(r.get('draft') is not None for r in rows), 'draft'),
               (sum(r['properties']['Stage'] == 'Watching' for r in rows), 'watching item'),
-              (sum(r['properties']['Stage'] == 'Needs Human Answer' for r in rows), 'open question'),
               (sum(r['properties']['Stage'] == 'Shipped elsewhere' for r in rows), 'shipped item')]
-    summary = '; '.join(f'{count} {noun}{"" if count == 1 else "s"}' for count, noun in counts)
+    parts = [f'{count} {noun}{"" if count == 1 else "s"}' for count, noun in counts]
+    for stage, label in [('Needs SME Review', 'SME review'), ('Needs Human Answer', 'a human answer')]:
+        count = sum(r['properties']['Stage'] == stage for r in rows)
+        parts.insert(-1, f'{count} {"needs" if count == 1 else "need"} {label}')
+    summary = '; '.join(parts)
     items = [f'- {r["properties"]["Task name"]} | {r["properties"]["Stage"]} | {{{{notion_url:{r["id"]}}}}}' for r in rows]
     return 'Docs autopilot: ' + summary + '.\n' + '\n'.join(items) + '\n'
 
 
 def validate_generated(materials):
-    checker = HERE.parents[1] / 'docs-review/scripts/review.py'
+    checker = HERE.parents[1] / 'docs-lint/scripts/lint.py'
     with tempfile.TemporaryDirectory(prefix='docs-autopilot-text-') as directory:
         for label, text in materials:
             path = Path(directory) / 'generated.md'
             path.write_text(text)
             result = subprocess.run([sys.executable, str(checker), str(path), '--project', 'platform',
-                                     '--mode', 'draft', '--only', 'lint', '--rule', 'em-dash',
+                                     '--mode', 'draft', '--rule', 'em-dash',
                                      '--rule', 'marketing-words', '--format', 'json'], capture_output=True, text=True, timeout=120)
             if result.returncode not in (0, 1):
                 raise ValueError(f'generated-text checks could not run for {label}: {result.stderr.strip()}')
@@ -295,6 +299,19 @@ def dry_run(bundle, base, out, config, mode='DRY-RUN'):
         payloads = [notion_payload(r) for r in rows]
         validate_generated([(f'Notion body {i}', p['body']) for i, p in enumerate(payloads)] +
                            [(f'Draft {i}', r['draft']) for i, r in enumerate(rows) if r.get('draft') is not None] + [('DM', dm)])
+        for i, payload in enumerate(payloads):
+            body, separator, signal = payload['body'].partition('## Signal\n')
+            for url in re.findall(r'https?://\S+', payload['properties'].get('Sources', '')):
+                signal = signal.replace(url, '[internal source]')
+            material = '\n'.join([str(value) for key, value in payload['properties'].items() if key != 'Sources'] +
+                                 [body + separator + signal])
+            with tempfile.TemporaryDirectory(prefix='docs-autopilot-row-') as directory:
+                path = Path(directory) / 'row.md'
+                path.write_text(material)
+                checked = gate(path, base / 'customer-names.md')
+            if not checked['passed']:
+                rules = ', '.join(sorted({v['rule'] for v in checked['violations']}))
+                raise ValueError(f'generated row {i} failed generalization: {rules}')
         out.mkdir(parents=True, exist_ok=True)
         (out / 'notion-rows.jsonl').write_text(''.join(json.dumps(p) + '\n' for p in payloads))
         (out / 'dm.txt').write_text(dm)
@@ -333,7 +350,10 @@ def main(argv=None):
             decisions = [admit(c, config) for c in candidates]
             if args.command == 'admit': result = decisions
             elif args.command == 'rank': result = rank(candidates, decisions, config)
-            elif args.command == 'carry': result = carry(candidates, bundle.get('prior_rows', []))
+            elif args.command == 'carry':
+                result = [dict(id=c['id'], prior_row_id=c.get('prior_row_id'),
+                               signal_count=len(set(c.get('checks', {}).get('signal', {}).get('accounts', []))))
+                          for c in carry(candidates, bundle.get('prior_rows', []))]
             elif args.command == 'close-shipped': result = close_shipped(bundle.get('prior_rows', []), bundle.get('merged_prs', []), bundle.get('coverage', []))
             else: result = dry_run(bundle, args.input.parent, args.out, config, 'LIVE-PLAN' if args.live else 'DRY-RUN')
         print(json.dumps(result, indent=2))

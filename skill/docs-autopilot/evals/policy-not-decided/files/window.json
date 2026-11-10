@@ -5,8 +5,8 @@
       "id": "reserve-policy",
       "question": "Is Modern Treasury's reserve-sizing methodology publishable?",
       "topics": [
-        "KYB",
-        "registered agent"
+        "reserve sizing",
+        "publishing policy"
       ],
       "operational_cost": 10,
       "cost_to_fix": 1,

@@ -99,6 +99,12 @@ def autopilot_case(case, files, sandbox):
         assert (row['properties']['Has Draft'] == '__YES__') == ('\n## Draft\n' in '\n' + row['body'])
         assert row['properties']['Task name'] in dm and row['properties']['Stage'] in dm
         assert '{{notion_url:' in dm
+        assert 'open questions' not in dm
+        for stage, label in [('Needs SME Review', 'SME review'), ('Needs Human Answer', 'a human answer')]:
+            count = sum(r['properties']['Stage'] == stage for r in rows)
+            assert f'{count} {"needs" if count == 1 else "need"} {label}' in dm
+        if row['properties']['Stage'] == 'Needs Human Answer':
+            assert row['properties']['Task name'] in row['body'].split('## What was established')[0]
         before_signal = row['body'].split('## Signal\n')[0]
         assert all(url not in before_signal for url in row['properties'].get('Sources', '').splitlines())
     if expected.get('reserve_regex'):

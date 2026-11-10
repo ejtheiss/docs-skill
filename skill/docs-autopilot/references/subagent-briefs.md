@@ -34,12 +34,14 @@ conversations alone cannot authorize publishing undecided company policy.
 Rule 1: never reference the customer.
 Rule 2: Notion is the only write target. Never write to GitHub; never post to Slack channels. The single DM to Eric is the one exception.
 
-Before model drafting, prepare generalized facts/questions plus customer-names.md
+Before drafting or staging any row, prepare generalized facts/questions plus customer-names.md
 (one entity/person/account/KYB identifier or name per line; # comments).
-Run docs-review --mode draft with --rule leak-names and --rule leak-internal,
+Run `autopilot.py gate candidate.md --names customer-names.md` for leak checks,
 then read the full generalized material as a model. Check indirect identifiers,
 unusual architecture and hints not caught by whole-word matching. Failure:
-log only safe rule/line/reason, do not draft. Re-run on the authored candidate.
+log only safe rule/line/reason, do not draft or stage a row. Use this gate for
+every row, including non-draft Needs Human Answer and Watching items, then again
+on the generated row text. Never run `review.py` on a fragment.
 Sources stay internal, never embedded in publishable prose.
 
 ## Draft brief
@@ -50,6 +52,8 @@ Rule 2: Notion is the only write target. Never write to GitHub; never post to Sl
 Read evidence.md; use only VERIFIED, scope-labelled claims. Use docs-review
 draft.py with the destination template; the model writes prose. For small edits
 preserve quote/replacement/path/heading and verify the quote at the target ref.
+The model authors candidate.md from evidence in that template shape; copying
+a fixture is eval behavior only.
 Run draft.py validate, edit, validate until zero strict within the configured
 iteration cap. The autopilot permits only one revision after fresh review.
 Store validation output; never treat fixture VERIFIED evidence as a real fact.

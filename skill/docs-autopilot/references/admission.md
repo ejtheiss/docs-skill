@@ -36,6 +36,8 @@ topics, operational_cost, cost_to_fix and checks:
 
 These are recorded human/model check inputs, not assertions that the script
 queried live systems. Keep raw accounts and conversations in input/evidence only;
+`carry` stdout contains only candidate/prior-row IDs and distinct-account counts,
+like run.json decisions; raw merged candidates stay internal to orchestration.
 Admission emits counts/results, not account identifiers. `sources` supplies
 internal links; `draft_file` is a pre-authored relative Markdown file,
 `model_generalization_passed` records a model read, `validation` records the

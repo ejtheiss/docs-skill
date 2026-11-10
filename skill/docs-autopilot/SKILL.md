@@ -50,19 +50,25 @@ VERIFIED / INFERRED / UNCLEAR / do NOT publish. Use ledger-design-assistant,
 solutions-architect or tam skills when installed. Otherwise record the gap.
 No skill, memory or plausible inference can settle an undecided product policy.
 
-### 6. Generalize before drafting
+### 6. Generalize before staging any row
 Create customer-names.md including entity names, people and identifiers.
-Run the [generalization brief](references/subagent-briefs.md): leak-names,
-leak-internal and a model read. A failure is logged; the item is not drafted.
-Re-run the mechanical gate on the completed handoff. Do not quote private sources.
+For every item that will get a Notion row, drafted or not, run the
+[generalization brief](references/subagent-briefs.md): `autopilot.py gate` and a
+model read. Needs Human Answer titles and descriptions also go to Notion.
+A failure blocks staging. Re-run `autopilot.py gate` on the generated row text
+before writing out/. Internal source URLs belong only in Sources and Signal.
 
 ### 7. Draft
 The model authors; scripts do not. Use the [draft brief](references/subagent-briefs.md)
 and docs-review draft validator loop. Small edits are quote/replacement/path/
 heading handoffs, not replacement pages. Record validation, evidence and iterations.
+For small edits, the model authors candidate.md from the evidence in the
+small-edit template shape. Only the evals copy fixtures; live authoring does not.
 
 ### 8. Fresh review
-A fresh reviewer runs docs-review review, rubric and money-losing mistake yes/no.
+A fresh reviewer uses `draft.py validate` for small edits, never `review.py` on
+a candidate fragment. For whole pages use docs-review review. Apply the rubric
+and record money-losing mistake yes/no.
 Allow one revision, then one fresh re-review. Unresolved means Needs SME Review,
 not Ready to Push. See [subagent briefs](references/subagent-briefs.md).
 
@@ -96,7 +102,8 @@ An existing output directory must be empty.
 
 The guard blocks network connections in the fixture orchestrator and forbids
 live-writer imports, including in checker subprocesses via an environment barrier.
-Only the installed, read-only docs-review leak checker is invoked. The script
+Leak checks use only `autopilot.py gate`, backed by the installed lint checker;
+never run `review.py` on a fragment. The script
 does not implement harvest clients, model authoring or real writers.
 
 ## Live boundary
