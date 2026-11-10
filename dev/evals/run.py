@@ -96,6 +96,11 @@ def autopilot_case(case, files, sandbox):
     for row in rows:
         assert set(row) == {'op', 'properties', 'body'} | ({'page_id'} if row['op'] == 'update' else set())
         assert row['op'] in ('create', 'update') and isinstance(row['body'], str)
+        assert (row['properties']['Has Draft'] == '__YES__') == ('\n## Draft\n' in '\n' + row['body'])
+        assert row['properties']['Task name'] in dm and row['properties']['Stage'] in dm
+        assert '{{notion_url:' in dm
+        before_signal = row['body'].split('## Signal\n')[0]
+        assert all(url not in before_signal for url in row['properties'].get('Sources', '').splitlines())
     if expected.get('reserve_regex'):
         assert not re.search(r'reserve.{0,100}(?:%|percent)|(?:%|percent).{0,100}reserve', serialized, re.I | re.S)
     for prefix in expected.get('validate_edits', []):

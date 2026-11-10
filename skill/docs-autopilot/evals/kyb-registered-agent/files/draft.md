@@ -1,4 +1,4 @@
-FIXTURE EVIDENCE ONLY — real product fact requires SME confirmation.
+FIXTURE EVIDENCE ONLY: real product fact requires SME confirmation.
 
 Path: `docs/Customer Onboarding/onboard-a-business/required-fields-for-businesses.md`
 Heading: Prepare addresses

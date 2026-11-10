@@ -6,7 +6,7 @@ evidence:
   source: "FIXTURE EVIDENCE ONLY: fixture-evidence.md; real fact requires SME confirmation"
   verified: true
 target:
-  repo: FIXTURE_REPO
+  repo: docs-readme-payments
   path: docs/Customer Onboarding/onboard-a-business/index.md
   heading: Prepare addresses
   ref: origin/v2.0

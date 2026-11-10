@@ -23,7 +23,7 @@ Sources is **INTERNAL ONLY**. Never copy Sources into a public draft or Eric DM.
 | Run Date | date |
 | Signal Count | number: distinct accounts |
 | Review Passes | number |
-| Has Draft | checkbox: publishable draft under Draft; not an approval to push |
+| Has Draft | checkbox: true iff body contains a Draft section; not an approval to push |
 | Sources | text, INTERNAL ONLY |
 | Open Questions | text |
 | Target Path | text |
@@ -52,7 +52,7 @@ in the title, description, evidence summary or draft.
 | Watching (proposed) | Admitted but outside top 3; Has Draft=false |
 | Drafted / In Review | Candidate Draft; reviewer state, not permission to publish |
 | Ready to Push | Clean validator + fresh rubric + no money-losing mistake; Has Draft=true |
-| Needs SME Review | Unresolved after one revision, or fixture-only claim; candidate body may exist but Has Draft=false |
+| Needs SME Review | Unresolved after one revision, or fixture-only claim; Has Draft=true when a draft exists |
 | Needs Human Answer | A3; Has Draft=false; no invented policy answer |
 | Not Generalizable | Human-managed existing rows; new bespoke signals create no row |
 | Shipped elsewhere (proposed) | No new draft; merged PR links in Sources/Open Questions, Has Draft=false |
@@ -60,7 +60,56 @@ in the title, description, evidence summary or draft.
 Closing requires an explicit reviewed judgment that the located content answers
 this row. PR #109 does NOT answer the external-account-to-FBO workflow question.
 The substituted identification-types row is covered by platform #176/#192.
-Close-existing is a property patch; preserve unrelated existing row fields.
+Close-existing preserves unrelated existing row properties and supplies a no-draft body.
+
+## Body templates
+
+The script generates bodies from these templates. Draft content uses five
+backticks so MDX and nested triple-backtick fences survive pasting.
+Source URLs appear only in the Sources property and Signal section, never in
+any other section, including the draft. Has Draft is __YES__ iff Draft exists.
+
+``````draft-body
+## Why this exists
+
+{reason}
+
+## Proposed target
+
+{target}
+
+## Draft
+
+`````markdown
+{draft}
+`````
+
+## Review record
+
+Stage: {stage}. Review passes: {passes}.
+
+## Signal
+
+{signal}
+``````
+
+``````blocked-body
+## Why this is blocked
+
+{reason}
+
+## What was established
+
+{established}
+
+## What is needed to unblock
+
+{unblock}
+
+## Signal
+
+{signal}
+``````
 
 ## Export and carry-forward
 
@@ -75,7 +124,7 @@ existing Watching rows as-is. Refresh coverage before carrying a now-shipped row
 Dry-run JSONL is the exact Claude MCP handoff: `op=create|update`, `page_id`
 only for updates, `properties` keyed by the live schema names and `body` as
 Markdown, not a Draft/Evidence object. Updates include only changed properties;
-an empty update body leaves existing page content untouched.
+the body follows the applicable template above.
 MCP properties are flat: title/text/select values are strings, numbers are numbers,
 checkboxes are `__YES__`/`__NO__`, multi-select is a JSON-array string, and dates
 use `date:Run Date:start`, `date:Run Date:end`, `date:Run Date:is_datetime`.

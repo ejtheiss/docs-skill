@@ -7,3 +7,5 @@ Live writes happen only after a dry-run whose out/ was reviewed in the same sess
    Write each row before marking it done in out/run.json. If a write fails, leave the row unmarked and report it.
 3. Slack: send exactly one message, slack_send_message to channel_id U07S0ACCM61 (Eric's DM), with text = out/dm.txt. Never use a channel id. Never send a draft, reaction or thread reply anywhere else.
 4. Never call any GitHub write tool.
+
+Replace `{{notion_url:<row key>}}` placeholders in the DM with the created page URLs (or the existing page URLs for updates) before sending.

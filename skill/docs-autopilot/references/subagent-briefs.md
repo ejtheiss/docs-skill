@@ -62,7 +62,8 @@ span, not a code-span-adjacent finding.
 Rule 1: never reference the customer.
 Rule 2: Notion is the only write target. Never write to GitHub; never post to Slack channels. The single DM to Eric is the one exception.
 
-Review as a fresh agent, not the author. Run docs-review review, inspect the
+Review as a fresh agent, not the author. Small edits are checked only with
+`draft.py validate`, never `review.py` on the fragment. For whole pages, run docs-review review; inspect the
 rubric, verify accuracy/tense/person and record money-losing mistake: yes/no.
 Model judgments are labelled reviewer judgment, not checker findings. Allow
 one revision and one fresh re-review. Unresolved accuracy, strict errors, rubric

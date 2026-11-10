@@ -7,6 +7,7 @@ from contextlib import AbstractContextManager
 from datetime import date
 import json
 import os
+import re
 from pathlib import Path
 import socket
 import subprocess
@@ -126,10 +127,28 @@ def close_shipped(rows, prs, coverage):
         links = [p['url'] for p in prs if proof and p.get('number') in proof.get('pr_numbers', []) and p.get('merged_at') and p.get('url')]
         if links and row.get('properties', {}).get('Stage') != 'Shipped elsewhere':
             existing = row['properties']
-            decisions.append(dict(id=row['id'], properties={'Stage': 'Shipped elsewhere', 'Has Draft': False,
+            decisions.append(dict(id=row['id'], properties={'Task name': existing.get('Task name', 'Documentation coverage'), 'Stage': 'Shipped elsewhere', 'Has Draft': False,
                                   'Sources': '\n'.join(filter(None, [existing.get('Sources'), *links])),
                                   'Open Questions': '\n'.join(filter(None, [existing.get('Open Questions'), 'Covered by merged PR: ' + ', '.join(links)]))}, operation='update'))
     return decisions
+
+
+def render_body(fields, draft=None):
+    contract = (HERE.parent / 'references/notion-contract.md').read_text()
+    kind = 'draft' if draft is not None else 'blocked'
+    template = re.search(r'^``````' + kind + r'-body\n(.*?)\n``````$', contract, re.S | re.M).group(1)
+    sources = fields.get('Sources', '').splitlines()
+    def clean(value):
+        for source in sources:
+            value = value.replace(source, '[source in Signal]')
+        return value
+    return template.format(reason=clean(fields.get('Description') or fields.get('Admission', 'Coverage reviewed.')),
+                           target=clean(fields.get('Target Path') or 'Target not yet established.'),
+                           draft=clean(draft or ''), stage=fields['Stage'],
+                           passes=fields.get('Review Passes', 0),
+                           established=clean(fields.get('Admission', 'Coverage reviewed against merged documentation.')),
+                           unblock=clean(fields.get('Open Questions') or 'Review the recorded evidence and confirm the next action.'),
+                           signal=fields.get('Sources') or 'No source links recorded.')
 
 
 def gate(draft, names, project='platform'):
@@ -156,14 +175,13 @@ def generalization(candidate, base, draft=''):
 def row(candidate, decision, stage, run_date, draft=None):
     properties = {'Task name': candidate['question'], 'Description': decision['gap'], 'Admission': decision['admission'],
                   'Stage': stage, 'Answer Complexity': candidate['checks']['answer']['complexity'], 'Run Date': run_date,
-                  'Signal Count': decision['signal_count'], 'Has Draft': draft is not None and stage == 'Ready to Push', 'Review Passes': 0,
+                  'Signal Count': decision['signal_count'], 'Has Draft': draft is not None, 'Review Passes': 0,
                   'Sources': '\n'.join(candidate.get('sources', [])), 'Target Path': candidate.get('target_path', ''),
                   'Open Questions': '\n'.join(candidate.get('open_questions', [])), 'Destination': 'Docs',
                   'Product Area': candidate.get('product_area', []), 'Model': candidate.get('model', 'Unknown'),
                   'Effort level': candidate.get('effort_level')}
     result = dict(id=candidate.get('prior_row_id', candidate['id']), operation='update' if candidate.get('prior_row_id') else 'create', properties=properties)
-    if draft is not None:
-        result['body'] = {'Draft': draft, 'Evidence': candidate.get('evidence_summary', '')}
+    result['draft'] = draft
     return result
 
 
@@ -180,8 +198,8 @@ def notion_payload(record):
             properties[key] = json.dumps(value)
         else:
             properties[key] = value
-    body = record.get('body', {})
-    markdown = '\n\n'.join('## ' + key + '\n\n' + value for key, value in body.items() if value)
+    markdown = render_body(record['properties'], record.get('draft'))
+    properties['Has Draft'] = '__YES__' if '\n## Draft\n' in '\n' + markdown else '__NO__'
     payload = dict(op=record['operation'], properties=properties, body=markdown)
     if payload['op'] == 'update':
         if not record.get('id'):
@@ -190,6 +208,35 @@ def notion_payload(record):
     elif payload['op'] != 'create':
         raise ValueError('Notion operation must be create or update')
     return payload
+
+
+def digest(rows):
+    if not rows:
+        return 'nothing qualified\n'
+    counts = [(sum(r.get('draft') is not None for r in rows), 'draft'),
+              (sum(r['properties']['Stage'] == 'Watching' for r in rows), 'watching item'),
+              (sum(r['properties']['Stage'] == 'Needs Human Answer' for r in rows), 'open question'),
+              (sum(r['properties']['Stage'] == 'Shipped elsewhere' for r in rows), 'shipped item')]
+    summary = '; '.join(f'{count} {noun}{"" if count == 1 else "s"}' for count, noun in counts)
+    items = [f'- {r["properties"]["Task name"]} | {r["properties"]["Stage"]} | {{{{notion_url:{r["id"]}}}}}' for r in rows]
+    return 'Docs autopilot: ' + summary + '.\n' + '\n'.join(items) + '\n'
+
+
+def validate_generated(materials):
+    checker = HERE.parents[1] / 'docs-review/scripts/review.py'
+    with tempfile.TemporaryDirectory(prefix='docs-autopilot-text-') as directory:
+        for label, text in materials:
+            path = Path(directory) / 'generated.md'
+            path.write_text(text)
+            result = subprocess.run([sys.executable, str(checker), str(path), '--project', 'platform',
+                                     '--mode', 'draft', '--only', 'lint', '--rule', 'em-dash',
+                                     '--rule', 'marketing-words', '--format', 'json'], capture_output=True, text=True, timeout=120)
+            if result.returncode not in (0, 1):
+                raise ValueError(f'generated-text checks could not run for {label}: {result.stderr.strip()}')
+            findings = json.loads(result.stdout)['findings']
+            if findings:
+                rules = ', '.join(sorted({f['rule'] for f in findings}))
+                raise ValueError(f'generated-text check failed for {label}: {rules}')
 
 
 def dry_run(bundle, base, out, config, mode='DRY-RUN'):
@@ -244,12 +291,12 @@ def dry_run(bundle, base, out, config, mode='DRY-RUN'):
             record = row(c, d, stage, run_date, draft_path.read_text())
             record['properties']['Review Passes'] = review.get('passes', 0)
             rows.append(record)
-        dm = 'nothing qualified\n' if not rows else (f'Docs autopilot: {sum(bool(r.get("body", {}).get("Draft")) for r in rows)} drafts; '
-              f'{sum(r["properties"]["Stage"] == "Watching" for r in rows)} Watching; '
-              f'{sum(r["properties"]["Stage"] == "Needs Human Answer" for r in rows)} need human answers; '
-              f'{len(closed)} shipped elsewhere. Review in Notion.\n')
+        dm = digest(rows)
+        payloads = [notion_payload(r) for r in rows]
+        validate_generated([(f'Notion body {i}', p['body']) for i, p in enumerate(payloads)] +
+                           [(f'Draft {i}', r['draft']) for i, r in enumerate(rows) if r.get('draft') is not None] + [('DM', dm)])
         out.mkdir(parents=True, exist_ok=True)
-        (out / 'notion-rows.jsonl').write_text(''.join(json.dumps(notion_payload(r)) + '\n' for r in rows))
+        (out / 'notion-rows.jsonl').write_text(''.join(json.dumps(p) + '\n' for p in payloads))
         (out / 'dm.txt').write_text(dm)
         summary = dict(mode=mode, network_writes=0, live_writers_imported=False, decisions=decisions, ranking=choices,
                        writes=[dict(row=i, done=False) for i in range(len(rows))], dm_sent=False,

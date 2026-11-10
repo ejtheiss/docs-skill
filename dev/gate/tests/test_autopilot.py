@@ -156,7 +156,7 @@ def test_fresh_review_one_revision_limit(tmp_path, passes, expected):
     row = json.loads((out / 'notion-rows.jsonl').read_text())
     assert row['properties']['Stage'] == expected
     assert row['properties']['Review Passes'] == passes
-    assert row['properties']['Has Draft'] == ('__YES__' if expected == 'Ready to Push' else '__NO__')
+    assert row['properties']['Has Draft'] == '__YES__'
 
 
 def test_missing_checker_and_names_are_errors(tmp_path, monkeypatch):
@@ -210,7 +210,7 @@ def test_mcp_payload_is_verbatim_flat_properties_and_markdown():
     assert p['Has Draft'] == '__YES__' and p['Product Area'] == '["Payments"]'
     assert p['date:Run Date:start'] == '2026-11-10' and p['date:Run Date:end'] is None
     assert p['Signal Count'] == 2 and p['Effort level'] == 'Small' and p['Model'] == 'Unknown'
-    assert payload['body'] == '## Draft\n\nCreate a record.'
+    assert '## Draft\n\n`````markdown\nCreate a record.\n`````' in payload['body']
     record.update(operation='update', id='notion-page')
     assert autopilot.notion_payload(record)['page_id'] == 'notion-page'
     record['id'] = ''
@@ -228,3 +228,61 @@ def test_writers_has_no_publish_and_live_cli_has_no_writer_dispatch():
     text = (SKILL / 'scripts/autopilot.py').read_text()
     assert 'writers.publish' not in text and 'spec_from_file_location' not in text
     assert "'LIVE-PLAN' if args.live else 'DRY-RUN'" in text
+
+
+@pytest.mark.parametrize('stage', ['Harvested', 'Researched', 'Drafted', 'In Review', 'Ready to Push',
+                                 'Needs SME Review', 'Needs Human Answer', 'Not Generalizable',
+                                 'Watching', 'Shipped elsewhere'])
+@pytest.mark.parametrize('draft', [None, '', '<Callout>Text</Callout>\n```json\n{}\n```'])
+def test_body_template_and_draft_invariant_for_every_stage(stage, draft):
+    c = candidate()
+    source = 'https://example.invalid/source'
+    c.update(sources=[source], target_path='docs/page.md', open_questions=['Confirm ' + source])
+    decision = autopilot.admit(c, CONFIG)
+    decision['gap'] = 'Missing guidance: ' + source
+    record = autopilot.row(c, decision, stage, '2026-11-10', draft)
+    payload = autopilot.notion_payload(record)
+    body = payload['body']
+    assert (payload['properties']['Has Draft'] == '__YES__') == (draft is not None)
+    assert ('\n## Draft\n' in '\n' + body) == (draft is not None)
+    expected = (['Why this exists', 'Proposed target', 'Draft', 'Review record', 'Signal'] if draft is not None else
+                ['Why this is blocked', 'What was established', 'What is needed to unblock', 'Signal'])
+    assert re.findall(r'^## (.+)$', body, re.M) == expected
+    if draft is not None:
+        assert '`````markdown\n' + draft + '\n`````' in body
+    assert source not in body.split('## Signal\n')[0]
+    assert source in body.split('## Signal\n')[1] and payload['properties']['Sources'] == source
+
+
+def test_digest_quiet_plural_and_row_links():
+    assert autopilot.digest([]) == 'nothing qualified\n'
+    c = candidate()
+    record = autopilot.row(c, autopilot.admit(c, CONFIG), 'Needs SME Review', '2026-11-10', 'Text')
+    dm = autopilot.digest([record])
+    assert '1 draft;' in dm and '0 watching items;' in dm
+    assert f'{c["question"]} | Needs SME Review | {{{{notion_url:{c["id"]}}}}}' in dm
+    assert '2 drafts;' in autopilot.digest([record, record])
+    for stage, noun in [('Watching', 'watching item'), ('Needs Human Answer', 'open question'), ('Shipped elsewhere', 'shipped item')]:
+        record = autopilot.row(c, autopilot.admit(c, CONFIG), stage, '2026-11-10')
+        assert '1 ' + noun in autopilot.digest([record])
+        assert '2 ' + noun + 's' in autopilot.digest([record, record])
+
+
+@pytest.mark.parametrize('text,rule', [('Use this — then continue.', 'em-dash'), ('Use our powerful API.', 'marketing-words')])
+@pytest.mark.parametrize('surface', ['draft', 'body', 'dm'])
+def test_generated_text_rejected_before_output(tmp_path, monkeypatch, text, rule, surface):
+    c = candidate()
+    if surface == 'draft':
+        (tmp_path / 'draft.md').write_text(text)
+        c.update(draft_file='draft.md', model_generalization_passed=True)
+    elif surface == 'body':
+        c['open_questions'] = [text]
+    else:
+        c['question'] = text
+    if surface != 'draft':
+        c['checks']['answer']['complexity'] = 'A3 Open'
+    monkeypatch.setattr(autopilot, 'generalization', lambda *args: dict(passed=True, violations=[]))
+    out = tmp_path / 'out'
+    with pytest.raises(ValueError, match='generated-text check failed.*' + rule):
+        autopilot.dry_run({'candidates': [c]}, tmp_path, out, CONFIG)
+    assert not out.exists()
