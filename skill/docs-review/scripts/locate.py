@@ -223,7 +223,7 @@ def pr_search(repos: list[Path], groups: list[list[str]], days: int) -> dict:
                 return dict(warnings=warnings) if warnings else None
             coverage = len(matched('\n'.join(text for _, text in texts), groups)) / len(groups) if groups else 0
             title_coverage = len(matched(detail['title'], groups))
-            return dict(number=detail['number'], state=detail['state'], merged_at=detail.get('merged_at'),
+            return dict(number=detail['number'], state='merged' if detail.get('merged_at') else detail['state'], merged_at=detail.get('merged_at'),
                         url=detail['html_url'], title=detail['title'], matched_lines=matching[:8],
                         matched_line_count=len(matching), coverage=coverage, title_matches=title_coverage,
                         warnings=warnings, repository=item['repository_url'].split('/repos/')[-1])

@@ -22,7 +22,7 @@ def test_real_checker_fixture(rule, case, tmp_path):
     gate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gate)
     path = GATE / 'fixtures' / rule / case['file']
-    args = json.loads(os.environ.get('DOCS_GATE_ARGS', '[]')) + case.get('checker_args', [])
+    args = ([] if case.get('isolated') else json.loads(os.environ.get('DOCS_GATE_ARGS', '[]'))) + case.get('checker_args', [])
     if 'base_content' in case:
         def git(*tokens):
             subprocess.run(['git', '-C', str(tmp_path), *tokens], check=True, capture_output=True)

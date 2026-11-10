@@ -84,7 +84,7 @@ EMITS = frozenset({
     "heading-skip", "image-alt", "json-parse", "link-absolute-internal", "link-anchor-empty",
     "link-anchor-vague", "link-bare-url", "list-depth", "mt-shorthand", "no-ordered-lists",
     "object-capitalization", "object-shorthand", "passive-voice", "reference-no-shell",
-    "sentence-length", "url-query-separator", "em-dash",
+    "sentence-length", "url-query-separator", "em-dash", 'leak-names', 'leak-internal',
 })
 
 try:
@@ -1203,21 +1203,63 @@ def input_error(files: list[Path], project: str | None) -> str:
 
 
 def run(files: list[Path], project: str | None, rules: list[str] | None,
-        mode: str = 'review', base: str | None = None) -> list[Finding]:
+        mode: str = 'review', base: str | None = None, names: Path | None = None) -> list[Finding]:
     findings: list[Finding] = []
+    customer_names = read_names(names)
     for path in files:
         page = parse_page(path, project)
         page.context = file_context(path, mode, base)
         findings.extend(check(page))
+        raw = path.read_text(encoding='utf-8')
+        def emit(line, rule, value):
+            definition = POLICY.rules[rule]
+            if definition.applies(page.project) and page.context.includes(definition.applies_to, line):
+                fields = {'name': value} if rule == 'leak-names' else {'value': value}
+                findings.append(Finding(str(path), line, rule, definition.strict_for(page.project), definition.says(**fields), value))
+        check_names(raw, customer_names, emit)
+        check_internal(raw, emit)
     if not rules:
         return findings
     wanted = set(rules)
     return [x for x in findings if x.rule in wanted]
 
 
+def read_names(path):
+    if path is None:
+        return []
+    try:
+        return sorted({line.split('#', 1)[0].strip() for line in path.read_text().splitlines()} - {''})
+    except OSError as exc:
+        raise ValueError(f'cannot read names list: {exc}') from exc
+
+
+def check_names(text, names, emit):
+    for name in names:
+        for match in re.finditer(r'(?<!\w)' + re.escape(name) + r'(?!\w)', text, re.I):
+            emit(text.count('\n', 0, match.start()) + 1, 'leak-names', match[0])
+
+
+def check_internal(text, emit):
+    issue = r'(?<![\w-])(?:' + '|'.join(map(re.escape, POLICY.words('internal_issue_prefixes'))) + r')-\d+(?![\w-])'
+    patterns = [*POLICY.words('internal_url_patterns'), issue]
+    for pattern in patterns:
+        for match in re.finditer(pattern.strip(), text):
+            emit(text.count('\n', 0, match.start()) + 1, 'leak-internal', match[0])
+    settings = POLICY.values['salesforce_identifiers']
+    prefix = '|'.join(settings['prefixes'])
+    identifiers = re.finditer(r'(?<!\w)(?:' + prefix + r')[a-zA-Z0-9]{12}(?:[a-zA-Z0-9]{3})?(?!\w)', text)
+    urls = list(re.finditer(settings['url'], text))
+    for match in identifiers:
+        adjacent = text[max(0, match.start() - settings['adjacent_characters']):match.end() + settings['adjacent_characters']]
+        if re.search(settings['context'], adjacent) or any(url.start() <= match.start() and match.end() <= url.end() for url in urls):
+            emit(text.count('\n', 0, match.start()) + 1, 'leak-internal', match[0])
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = build_parser()
     args = ap.parse_args(argv)
+    if args.names is None and not args.list_rules:
+        print('note: leak-names inactive: no --names list supplied', file=sys.stderr)
 
     if args.list_rules:
         print_rules()
@@ -1237,7 +1279,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     try:
-        findings = report_order(run(files, args.project, args.rule, args.mode, args.base))
+        findings = report_order(run(files, args.project, args.rule, args.mode, args.base, args.names))
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2

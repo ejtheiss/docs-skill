@@ -1,0 +1,95 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      6
+    ],
+    "checker_args": [],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "reuse-undefined-block",
+        "strict": true,
+        "message": "Component `MissingBlock` is not a ReadMe built-in or defined in this repository.",
+        "evidence": "MissingBlock",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "",
+    "edges": []
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [],
+    "findings": [],
+    "edge": "",
+    "edges": []
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      6
+    ],
+    "checker_args": [],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "reuse-undefined-block",
+        "strict": true,
+        "message": "Component `MissingBlock` is not a ReadMe built-in or defined in this repository.",
+        "evidence": "MissingBlock",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "policy edge",
+    "edges": [
+      "built-in",
+      "defined",
+      "escaped",
+      "code",
+      "component-attributes"
+    ]
+  },
+  {
+    "file": "first-newline.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      2
+    ],
+    "findings": [
+      {
+        "line": 1,
+        "rule": "frontmatter-title",
+        "strict": true,
+        "message": "Page has no frontmatter title.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 2,
+        "rule": "reuse-undefined-block",
+        "strict": true,
+        "message": "Component `MissingBlock` is not a ReadMe built-in or defined in this repository.",
+        "evidence": "MissingBlock",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "source-start and context isolation"
+  }
+]

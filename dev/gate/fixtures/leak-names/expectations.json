@@ -1,0 +1,167 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      6,
+      6,
+      6
+    ],
+    "checker_args": [
+      "--mode",
+      "draft",
+      "--names",
+      "dev/gate/fixtures/customer-names.txt"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "leak-names",
+        "strict": true,
+        "message": "Customer name `Fractional` appears in the draft; anonymize it.",
+        "evidence": "Fractional",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "leak-names",
+        "strict": true,
+        "message": "Customer name `WYOMING` appears in the draft; anonymize it.",
+        "evidence": "WYOMING",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "leak-names",
+        "strict": true,
+        "message": "Customer name `fReMoNt` appears in the draft; anonymize it.",
+        "evidence": "fReMoNt",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "",
+    "edges": [
+      "case-insensitive"
+    ],
+    "isolated": true
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft",
+      "--names",
+      "dev/gate/fixtures/customer-names.txt"
+    ],
+    "findings": [],
+    "edge": "",
+    "edges": [
+      "whole-word"
+    ],
+    "isolated": true
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      2
+    ],
+    "checker_args": [
+      "--mode",
+      "draft",
+      "--names",
+      "dev/gate/fixtures/customer-names.txt"
+    ],
+    "findings": [
+      {
+        "line": 1,
+        "rule": "frontmatter-title",
+        "strict": true,
+        "message": "Page has no frontmatter title.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 2,
+        "rule": "leak-names",
+        "strict": true,
+        "message": "Customer name `Fremont` appears in the draft; anonymize it.",
+        "evidence": "Fremont",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "policy edge",
+    "edges": [
+      "first-newline",
+      "comments"
+    ],
+    "isolated": true
+  },
+  {
+    "file": "review.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review",
+      "--names",
+      "dev/gate/fixtures/customer-names.txt"
+    ],
+    "findings": [],
+    "edge": "policy edge",
+    "edges": [
+      "review-inactive"
+    ],
+    "isolated": true
+  },
+  {
+    "file": "no-list.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [],
+    "edge": "policy edge",
+    "edges": [
+      "no-list"
+    ],
+    "isolated": true
+  },
+  {
+    "file": "empty-list.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft",
+      "--names",
+      "dev/gate/fixtures/empty-names.txt"
+    ],
+    "findings": [],
+    "edge": "policy edge",
+    "edges": [
+      "empty-list"
+    ],
+    "isolated": true
+  }
+]

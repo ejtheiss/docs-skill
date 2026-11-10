@@ -1,5 +1,31 @@
-# docs-test: no rules yet. Phase 6 of PLAN-phases.md fills this in.
+# docs-test: offline OpenAPI vocabulary comparison.
 
 schema: 1
-rules: {}
-tables: {}
+rules:
+  openapi-field-exists:
+    reported: strict
+    guide: strict
+    applies_to: [always]
+    provenance: 'Phase C: global OpenAPI vocabulary, not endpoint-specific schema validation'
+    message: 'JSON {kind} `{value}` is absent from the OpenAPI inventory at {pointer}.'
+tables:
+  openapi_source:
+    why: Archived HEAD spec used for offline checks; --spec pins an alternate snapshot.
+    map:
+      path: ~/work/corpus-head/docs-readme-platform/reference/modern-treasury-api.json
+  openapi_scope:
+    why: MT examples only; arbitrary JSON and third-party integration payloads are not contracts.
+    map:
+      mt_url: 'https://(?:app|api)\.moderntreasury\.com/api/'
+      exclude_paths: '(?:siem|datadog|scim|saml|web3|snowflake)'
+      exclude_context: '<!--\s*docs-review:\s*non-mt-json\s*-->'
+      schema_free_maps: true
+  openapi_markers:
+    why: Known MT object fields anchor standalone request/response JSON examples.
+    values: [internal_account_id, external_account_id, ledger_account_id, ledger_id, payment_type, counterparty_id, identifications, ledger_transaction_id, ledger_entries, routing_details, account_details]
+  openapi_object_values:
+    why: Explicit MT object discriminators anchor otherwise context-free response snippets.
+    values: [ledger_account, ledger_transaction, ledger_entry, payment_order, incoming_payment_detail, legal_entity, internal_account, external_account, counterparty, return, expected_payment, transaction]
+  openapi_free_keys:
+    why: These values are customer-defined maps, not API field names or enums.
+    values: [metadata]

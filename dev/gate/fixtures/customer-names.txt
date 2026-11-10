@@ -1,0 +1,4 @@
+# Fixture data only: never a shipped or default customer list.
+Fremont
+Wyoming
+Fractional

@@ -1,5 +1,17 @@
-# docs-maintain: no rules yet. Phases 5 and 8 of PLAN-phases.md fill this in.
+# docs-maintain: repository-local component references.
 
 schema: 1
-rules: {}
-tables: {}
+rules:
+  reuse-undefined-block:
+    reported: strict
+    guide: strict
+    applies_to: [always]
+    provenance: 'Phase C: repository-local reusable component inventory'
+    message: 'Component `{name}` is not a ReadMe built-in or defined in this repository.'
+tables:
+  readme_builtins:
+    why: ReadMe runtime components are not repository-local reusable definitions.
+    values: [Callout, Image, Tabs, Tab, Cards, Card, Accordion, Accordions, Columns, Column, Embed, Glossary, Anchor, Recipe, Table, HTMLBlock, Code, CodeGroup, Steps, Step, Video]
+  reuse_directories:
+    why: Repository-local reusable Markdown and component source directories.
+    values: [custom_blocks, components, reusable_content, reusable-content, snippets]

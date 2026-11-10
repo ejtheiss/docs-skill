@@ -72,8 +72,9 @@ Reported flexible: `sentence-length`, `passive-voice`, `filler`, `filler-please`
 `em-dash`. Guide grades may be stricter. Requests use `curl`, with ReadMe labels
 allowed; `shell` is for non-request commands. Use page 08's Callout/Image syntax.
 
-Four tiers share findings and a policy stamp. docs-lint has 31 rules;
-docs-content, docs-maintain and docs-test currently report none. `--only` selects
+Four tiers share findings and a policy stamp. docs-lint has 33 rules;
+docs-maintain checks undefined reuse and docs-test checks the global OpenAPI
+vocabulary. docs-content currently reports none. `--only` selects
 tiers. Review exits 0 with no strict findings, 1 with strict findings, 2 for bad input.
 
 ## Locate mode
@@ -208,3 +209,13 @@ iteration defaults are separate mode configuration, not lint policy inputs.
 
 No shipped script imports development code. Corpus probes, fixtures, mutation
 tooling and adjudication infrastructure stay outside the skill.
+
+Phase C checks: `reuse-undefined-block` compares rendered component names with
+ReadMe built-ins and repository-local definitions. `openapi-field-exists` checks
+MT JSON examples against the configured offline spec snapshot (`--spec` can pin
+another); this is global vocabulary, not endpoint-specific schema validation.
+Metadata/free-form maps and policy-listed third-party examples are excluded.
+`leak-internal` checks internal URLs, allowlisted issue prefixes and contextual
+Salesforce identifiers. `leak-names` is draft-only and requires `--names FILE`
+(one customer name per line, # comments); no list means inactive, with a note.
+These strict checks do not replace verification of scope or product accuracy.

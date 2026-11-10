@@ -12,18 +12,18 @@ duplication by `(occurrences - 1) x length`, and an incremental check of the pag
 against the existing block inventory. The incremental exact-match case is decidable, which is why it
 can ship before the near-duplicate work.
 
-No rules yet. What this tier reports must be a duplication a maintainer would act on, and *what* to do
-about one - merge, trim, or turn into a reusable block - is an editorial decision about SEO and product
-intent that no measurement settles. The measured inventory (2 undefined blocks, 10 orphans, 1 typo-like
-near miss) is evidence, not a rule.
+The shipped check reports undefined component usages against ReadMe built-ins and repository-local
+definitions. Duplication, ownership and near-miss decisions remain editorial judgments.
 
-    python3 maintain.py docs/           # a run that is honestly empty
+    python3 maintain.py docs/
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
+from functools import lru_cache
 import sys
 from pathlib import Path
 
@@ -32,7 +32,8 @@ if str(SHARED) not in sys.path:
     sys.path.insert(0, str(SHARED))
 
 import policy as policy_module  # noqa: E402
-from contexts import add_arguments  # noqa: E402
+from contexts import add_arguments, file_context  # noqa: E402
+from channels import markup, repo_root  # noqa: E402
 from findings import (  # noqa: E402
     Finding,
     collect_files,
@@ -41,11 +42,11 @@ from findings import (  # noqa: E402
     render_text,
     report_order,
     scorecard,
+    detect_project,
 )
 
 SUBSKILL = "maintain"
-# No rule ids yet: what to do about a duplication is an editorial decision, not a measurement.
-EMITS: frozenset[str] = frozenset()
+EMITS = frozenset({'reuse-undefined-block'})
 
 try:
     POLICY = policy_module.load("docs-maintain")
@@ -53,20 +54,48 @@ try:
 except policy_module.PolicyError as exc:  # pragma: no cover - exercised through the CLI
     sys.exit(f"policy error: {exc}")
 
-RULES: dict[str, tuple[bool, str]] = {}
+RULES = {name: (rule.strict, rule.provenance) for name, rule in POLICY.rules.items()}
 PROJECTS = POLICY.projects()
 
 
 def run(files: list[Path], project: str | None, rules: list[str] | None,
         mode: str = 'review', base: str | None = None) -> list[Finding]:
-    """No findings, and no pretence of any: an empty tier reports nothing."""
-    del files, project, rules, mode, base
-    return []
+    if rules and not EMITS.intersection(rules):
+        return []
+    findings = []
+    rule = POLICY.rules['reuse-undefined-block']
+    for path in files:
+        active = detect_project(path, project, PROJECTS)
+        context = file_context(path, mode, base)
+        def emit(line, name):
+            if rule.applies(active) and context.includes(rule.applies_to, line):
+                findings.append(Finding(str(path), line, rule.id, rule.strict_for(active), rule.says(name=name), name))
+        check_reuse(markup(path.read_text()), definitions(repo_root(path)), emit)
+    return findings
+
+
+@lru_cache(maxsize=None)
+def definitions(root):
+    result = set()
+    for directory in POLICY.words('reuse_directories'):
+        for path in (root / directory).rglob('*'):
+            if path.is_file():
+                result.add(path.parent.name if path.stem == 'index' else path.stem)
+                if path.suffix in ('.js', '.jsx', '.ts', '.tsx'):
+                    result.update(re.findall(r'export\s+(?:default\s+)?(?:function|class|const)\s+(\w+)', path.read_text()))
+    return result
+
+
+def check_reuse(text, defined, emit):
+    for match in re.finditer(r'(?<!\\)<([A-Z][A-Za-z0-9_]*)\b(?:\s[^<>]*?|\s*/?)>', text):
+        if match[1] not in POLICY.words('readme_builtins') and match[1] not in defined:
+            emit(text.count('\n', 0, match.start()) + 1, match[1])
 
 
 def print_rules() -> None:
     print(policy_stamp())
-    print(f"{SUBSKILL}: no rules yet")
+    for name, (strict, provenance) in RULES.items():
+        print(f'{name}: strict={strict} contexts={POLICY.rules[name].applies_to} {provenance}')
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -98,7 +127,11 @@ def main(argv: list[str] | None = None) -> int:
     if error := input_error(files, args.project, PROJECTS):
         print(error, file=sys.stderr)
         return 2
-    findings = report_order(run(files, args.project, args.rule, args.mode, args.base))
+    try:
+        findings = report_order(run(files, args.project, args.rule, args.mode, args.base))
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     card = scorecard(findings, len(files))
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))

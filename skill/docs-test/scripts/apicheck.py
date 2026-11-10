@@ -10,19 +10,18 @@ This is the only tier that needs anything outside the docs - the monorepo, the n
 organization - which is what separates it from `docs-lint`'s JSON syntax check: that a body parses is a
 property of the file, that its fields are real is a property of the API.
 
-Probes for all of this exist in `dev/`, and they have already found defects execution catches and
-schema comparison cannot (a `document_type` the spec types as a free string and the code constrains to
-a fixed set). None of it ships yet: a claim about the API is only worth reporting if a second,
-independent implementation re-derives it, and the sandbox path needs credentials handled by the
-skill's config rather than by a checker.
+The shipped check compares the global field and enum vocabulary with a configured offline snapshot.
+It does not prove endpoint-specific validity, runtime behavior or completeness of the snapshot.
 
-    python3 apicheck.py docs/           # a run that is honestly empty
+    python3 apicheck.py docs/ --spec reference/modern-treasury-api.json
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
+import shlex
 import sys
 from pathlib import Path
 
@@ -31,7 +30,8 @@ if str(SHARED) not in sys.path:
     sys.path.insert(0, str(SHARED))
 
 import policy as policy_module  # noqa: E402
-from contexts import add_arguments  # noqa: E402
+from contexts import add_arguments, file_context  # noqa: E402
+from channels import fences  # noqa: E402
 from findings import (  # noqa: E402
     Finding,
     collect_files,
@@ -40,11 +40,11 @@ from findings import (  # noqa: E402
     render_text,
     report_order,
     scorecard,
+    detect_project,
 )
 
 SUBSKILL = "test"
-# No rule ids yet: every claim here needs an independent second implementation first.
-EMITS: frozenset[str] = frozenset()
+EMITS = frozenset({'openapi-field-exists'})
 
 try:
     POLICY = policy_module.load("docs-test")
@@ -52,20 +52,137 @@ try:
 except policy_module.PolicyError as exc:  # pragma: no cover - exercised through the CLI
     sys.exit(f"policy error: {exc}")
 
-RULES: dict[str, tuple[bool, str]] = {}
+RULES = {name: (rule.strict, rule.provenance) for name, rule in POLICY.rules.items()}
 PROJECTS = POLICY.projects()
 
 
 def run(files: list[Path], project: str | None, rules: list[str] | None,
-        mode: str = 'review', base: str | None = None) -> list[Finding]:
-    """No findings, and no pretence of any: an empty tier reports nothing."""
-    del files, project, rules, mode, base
-    return []
+        mode: str = 'review', base: str | None = None, spec: Path | None = None) -> list[Finding]:
+    if rules and not EMITS.intersection(rules):
+        return []
+    spec = (spec or Path(POLICY.values['openapi_source']['path'])).expanduser()
+    try:
+        schema = json.loads(spec.read_text())
+    except (OSError, ValueError) as exc:
+        raise ValueError(f'cannot load OpenAPI snapshot {spec}: {exc}') from exc
+    if not isinstance(schema, dict) or not isinstance(schema.get('paths'), dict):
+        raise ValueError('OpenAPI snapshot must be an object with paths')
+    keys, enums, free = inventory(schema)
+    findings = []
+    rule = POLICY.rules['openapi-field-exists']
+    settings = POLICY.values['openapi_scope']
+    for path in files:
+        if re.search(settings['exclude_paths'], str(path), re.I):
+            continue
+        text = path.read_text()
+        active = detect_project(path, project, PROJECTS)
+        context = file_context(path, mode, base)
+        for line, payload in examples(text):
+            def emit(key, kind, value, pointer):
+                pattern = r'"' + re.escape(key) + r'"\s*:'
+                location = re.search(pattern, payload)
+                number = line + payload.count('\n', 0, location.start()) if location else line
+                if rule.applies(active) and context.includes(rule.applies_to, number):
+                    evidence = json.dumps(dict(kind=kind, value=value, pointer=pointer), sort_keys=True)
+                    findings.append(Finding(str(path), number, rule.id, rule.strict_for(active), rule.says(kind=kind, value=value, pointer=pointer), evidence))
+            check_fields(json.loads(payload), keys, enums, free, emit)
+    return findings
+
+
+def inventory(schema):
+    keys, enums, free, visited, all_values = set(), {}, set(POLICY.words('openapi_free_keys')), set(), set()
+    def visit(node, owner=None):
+        if isinstance(node, list):
+            for child in node:
+                visit(child, owner)
+        elif isinstance(node, dict):
+            identity = (id(node), owner)
+            if identity in visited:
+                return
+            visited.add(identity)
+            if '$ref' in node:
+                if not node['$ref'].startswith('#/'):
+                    raise ValueError('external OpenAPI refs must be bundled into the offline snapshot')
+                target = schema
+                try:
+                    for part in node['$ref'][2:].split('/'):
+                        target = target[part.replace('~1', '/').replace('~0', '~')]
+                except (KeyError, TypeError) as exc:
+                    raise ValueError(f'unresolved OpenAPI ref: {node["$ref"]}') from exc
+                visit(target, owner)
+            if 'enum' in node:
+                strings = {v for v in node['enum'] if isinstance(v, str)}
+                all_values.update(strings)
+                if owner:
+                    enums.setdefault(owner, set()).update(strings)
+            if owner and 'additionalProperties' in node and node['additionalProperties'] is not False and POLICY.values['openapi_scope']['schema_free_maps']:
+                free.add(owner)
+            for key, child in node.get('properties', {}).items():
+                keys.add(key)
+                visit(child, key)
+            for name, child in node.items():
+                if name != 'properties':
+                    visit(child, owner)
+    visit(schema)
+    return keys, {key: all_values for key in enums}, free
+
+
+def examples(text):
+    settings = POLICY.values['openapi_scope']
+    lines = text.splitlines(keepends=True)
+    for token in fences(text):
+        start = token.map[0]
+        context = ''.join(lines[max(0, start - 5):start])
+        if re.search(settings['exclude_context'], context):
+            continue
+        language = token.info.split()[0].lower() if token.info else ''
+        payloads = []
+        if language == 'json':
+            payloads.append((start + 2, token.content))
+        elif re.search(settings['mt_url'], token.content):
+            try:
+                words = shlex.split(token.content)
+            except ValueError:
+                continue
+            for index, word in enumerate(words[:-1]):
+                if word in ('-d', '--data', '--data-raw', '--data-binary'):
+                    payload = words[index + 1]
+                    offset = token.content.find(payload)
+                    payloads.append((start + 2 + token.content.count('\n', 0, max(0, offset)), payload))
+        for line, payload in payloads:
+            try:
+                data = json.loads(payload)
+            except ValueError:
+                continue
+            serialized = json.dumps(data)
+            mt_context = context if language == 'json' else token.content
+            discriminator = isinstance(data, dict) and data.get('object') in POLICY.words('openapi_object_values')
+            if discriminator or re.search(settings['mt_url'], mt_context) or any(re.search(r'"' + re.escape(key) + r'"\s*:', serialized) for key in POLICY.words('openapi_markers')):
+                yield line, payload
+
+
+def check_fields(value, keys, enums, free, emit, pointer=''):
+    if isinstance(value, list):
+        for index, item in enumerate(value):
+            check_fields(item, keys, enums, free, emit, pointer + '/' + str(index))
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            path = pointer + '/' + key.replace('~', '~0').replace('/', '~1')
+            if key not in keys:
+                emit(key, 'field', key, path)
+            if key in free:
+                continue
+            values = item if isinstance(item, list) else [item]
+            for scalar in values:
+                if isinstance(scalar, str) and key in enums and scalar not in enums[key]:
+                    emit(key, 'enum', scalar, path)
+            check_fields(item, keys, enums, free, emit, path)
 
 
 def print_rules() -> None:
     print(policy_stamp())
-    print(f"{SUBSKILL}: no rules yet")
+    for name, (strict, provenance) in RULES.items():
+        print(f'{name}: strict={strict} contexts={POLICY.rules[name].applies_to} {provenance}')
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -97,7 +214,11 @@ def main(argv: list[str] | None = None) -> int:
     if error := input_error(files, args.project, PROJECTS):
         print(error, file=sys.stderr)
         return 2
-    findings = report_order(run(files, args.project, args.rule, args.mode, args.base))
+    try:
+        findings = report_order(run(files, args.project, args.rule, args.mode, args.base, args.spec))
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     card = scorecard(findings, len(files))
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))

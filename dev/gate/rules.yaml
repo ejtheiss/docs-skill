@@ -36,3 +36,19 @@ body-h1:
   - source: docs-review/scripts/contexts.py
     functions: [includes, file_context]
   boundaries: [existing-review, new-file, no-base, empty-heading]
+openapi-field-exists:
+  source: docs-test/scripts/apicheck.py
+  functions: [check_fields]
+  boundaries: [enum-value, metadata, nested-arrays, escaped-pointer, non-mt, curl-data, composition-ref]
+reuse-undefined-block:
+  source: docs-maintain/scripts/maintain.py
+  functions: [check_reuse]
+  boundaries: [built-in, defined, escaped, code, component-attributes]
+leak-names:
+  source: docs-lint/scripts/lint.py
+  functions: [check_names]
+  boundaries: [case-insensitive, whole-word, comments, review-inactive, no-list, empty-list, first-newline]
+leak-internal:
+  source: docs-lint/scripts/lint.py
+  functions: [check_internal]
+  boundaries: [slack-url, gong-url, issue-prefix, standards, salesforce-context, salesforce-length, first-newline]

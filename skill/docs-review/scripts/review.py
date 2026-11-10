@@ -150,14 +150,18 @@ def main(argv: list[str] | None = None) -> int:
 
     findings: list[Finding] = []
     try:
-        for module in modules.values():
-            findings.extend(module.run(files, args.project, args.rule, args.mode, args.base))
+        for name, module in modules.items():
+            options = {'names': args.names} if name == 'lint' else {'spec': args.spec} if name == 'test' else {}
+            findings.extend(module.run(files, args.project, args.rule, args.mode, args.base, **options))
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
     findings = report_order(findings)
     card = scorecard(findings, len(files))
     card["subskills"] = sorted(modules)
+    card['notes'] = ['leak-names inactive: no --names list supplied'] if args.names is None else []
+    if args.names is None and args.format == 'text':
+        print('note: leak-names inactive: no --names list supplied')
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))
     else:

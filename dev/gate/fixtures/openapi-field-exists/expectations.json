@@ -1,0 +1,97 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      7,
+      7
+    ],
+    "checker_args": [
+      "--spec",
+      "dev/gate/fixtures/phase-c-schema.json"
+    ],
+    "findings": [
+      {
+        "line": 7,
+        "rule": "openapi-field-exists",
+        "strict": true,
+        "message": "JSON enum `impossible` is absent from the OpenAPI inventory at /status.",
+        "evidence": "{\"kind\": \"enum\", \"pointer\": \"/status\", \"value\": \"impossible\"}",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "openapi-field-exists",
+        "strict": true,
+        "message": "JSON field `invented_field` is absent from the OpenAPI inventory at /invented_field.",
+        "evidence": "{\"kind\": \"field\", \"pointer\": \"/invented_field\", \"value\": \"invented_field\"}",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "",
+    "edges": []
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--spec",
+      "dev/gate/fixtures/phase-c-schema.json"
+    ],
+    "findings": [],
+    "edge": "",
+    "edges": []
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      7,
+      15
+    ],
+    "checker_args": [
+      "--spec",
+      "dev/gate/fixtures/phase-c-schema.json"
+    ],
+    "findings": [
+      {
+        "line": 7,
+        "rule": "openapi-field-exists",
+        "strict": true,
+        "message": "JSON field `typo/nested~key` is absent from the OpenAPI inventory at /rows/1/typo~1nested~0key.",
+        "evidence": "{\"kind\": \"field\", \"pointer\": \"/rows/1/typo~1nested~0key\", \"value\": \"typo/nested~key\"}",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 15,
+        "rule": "openapi-field-exists",
+        "strict": true,
+        "message": "JSON enum `unknown` is absent from the OpenAPI inventory at /status.",
+        "evidence": "{\"kind\": \"enum\", \"pointer\": \"/status\", \"value\": \"unknown\"}",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "policy edge",
+    "edges": [
+      "enum-value",
+      "metadata",
+      "nested-arrays",
+      "escaped-pointer",
+      "non-mt",
+      "curl-data",
+      "composition-ref"
+    ]
+  }
+]
