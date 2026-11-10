@@ -20,7 +20,8 @@ writes by this subagent.
 Rule 1: never reference the customer.
 Rule 2: Notion is the only write target. Never write to GitHub; never post to Slack channels. The single DM to Eric is the one exception.
 
-Use docs-review locate on refs and inspect quotes; check all three repos'
+Use docs-review locate with task-scoped `--snapshot` and connector `--prs`
+inputs, following its runtime source instructions; inspect quotes and check all three repos'
 open/recently merged PRs and existing Notion rows. Write evidence.md with sections
 VERIFIED, INFERRED, UNCLEAR and do NOT publish. Record source, scope, timestamp and
 claim for each entry. Use ledger-design-assistant, solutions-architect or tam

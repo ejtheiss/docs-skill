@@ -1,6 +1,7 @@
 import importlib.util
 import json
 from pathlib import Path
+import re
 import socket
 import sys
 
@@ -30,6 +31,12 @@ def test_skill_safety_contract():
         assert rule in text
     assert 'DRY-RUN' in text and '--live' in text
     assert sum(line.startswith('### ') for line in text.splitlines()) == 9
+
+
+def test_installed_skills_have_no_machine_local_paths():
+    for path in (ROOT / 'skill').rglob('*'):
+        if path.is_file() and path.suffix in ('.py', '.md', '.yaml', '.json', '.txt'):
+            assert not re.search(r'~/work|/home/ubuntu', path.read_text()), path
 
 
 def test_admission_four_checks_and_unknown_policy():

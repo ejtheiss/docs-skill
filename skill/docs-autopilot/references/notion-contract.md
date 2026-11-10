@@ -1,6 +1,6 @@
 # Notion contract
 
-Source: `~/work/notes/notion-schema.md` inspected during implementation.
+Source: implementation-time Notion schema inspection, reproduced below.
 Target: `collection://3b2d6bfc-2683-80db-8f9c-000b634abb1a`.
 Sources is **INTERNAL ONLY**. Never copy Sources into a public draft or Eric DM.
 

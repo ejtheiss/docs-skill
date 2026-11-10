@@ -1,6 +1,6 @@
 # Deterministic skill evals
 
-Run `PYTHONDONTWRITEBYTECODE=1 python3 dev/evals/run.py --out ~/work/baseline/phase-de-evals`.
+Run `PYTHONDONTWRITEBYTECODE=1 python3 dev/evals/run.py --out /path/to/eval-output`.
 Each skill's eval case has prompt.md, files/, graders/ and case.yaml. The YAML
 records prompt, attached fixtures, deterministic checks and model grader paths.
 This is a file-based skill-creator-style suite, not a claim of model execution.

@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote
 
 import yaml
 
@@ -26,16 +27,16 @@ def command(args, allowed=(0,)):
     return process.stdout
 
 
-def fixture_repo(folder, pages):
+def fixture_snapshot(folder, repo, pages):
     folder.mkdir(parents=True)
-    command(['git', '-C', folder, 'init', '-q', '-b', 'fixture'])
+    entries = []
     for relative, content in pages.items():
-        path = folder / relative
+        path = folder / repo / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
-    command(['git', '-C', folder, 'add', '--', *pages])
-    command(['git', '-C', folder, '-c', 'user.name=Eval fixture', '-c', 'user.email=eval@example.invalid', 'commit', '-qm', 'Fixture only'])
-    command(['git', '-C', folder, 'update-ref', 'refs/remotes/origin/v2.0', 'HEAD'])
+        entries.append(dict(repo=repo, path=relative, sha='live',
+                            url=f'https://example.invalid/fixture/{repo}/{quote(relative, safe="/")}'))
+    (folder / 'manifest.json').write_text(json.dumps(dict(entries=entries)))
     return folder
 
 
@@ -44,20 +45,22 @@ def validate_edit(files, sandbox, prefix=''):
     source_file = files / (prefix + '-source.md' if prefix else 'source.md')
     edit_file = files / (prefix + '-edit.md' if prefix else 'candidate.md')
     brief = yaml.safe_load(brief_file.read_text())
-    repo = fixture_repo(sandbox / ('repo-' + (prefix or 'edit')) / 'docs-readme-payments', {brief['target']['path']: source_file.read_text()})
-    before = command(['git', '-C', repo, 'status', '--porcelain'])
-    brief['target']['repo'] = str(repo)
+    snapshot = fixture_snapshot(sandbox / ('snapshot-' + (prefix or 'edit')), 'docs-readme-payments',
+                                {brief['target']['path']: source_file.read_text()})
+    before = {str(p): p.read_bytes() for p in snapshot.rglob('*') if p.is_file()}
+    brief['target']['repo'] = 'docs-readme-payments'
     brief_file = sandbox / ((prefix or 'edit') + '-brief.yaml')
     brief_file.write_text(yaml.safe_dump(brief))
     out = sandbox / ((prefix or 'edit') + '-validation')
-    command([sys.executable, REVIEW / 'draft.py', brief_file, '--out', out, '--max-iterations', '2'])
+    command([sys.executable, REVIEW / 'draft.py', brief_file, '--snapshot', snapshot, '--out', out, '--max-iterations', '2'])
     (out / 'candidate.md').write_text(edit_file.read_text())
     result = json.loads(command([sys.executable, REVIEW / 'draft.py', 'validate', out]))
     assert result['strict_failures'] == 0, result
     text = (out / 'candidate.md').read_text()
     assert text.startswith('Path: `') and '\nHeading: ' in text and '\nQuote:' in text and '\nReplacement:' in text
     assert not text.startswith('---')
-    assert before == command(['git', '-C', repo, 'status', '--porcelain'])
+    assert result['sha'] == 'live' and result['ref'] == 'snapshot'
+    assert before == {str(p): p.read_bytes() for p in snapshot.rglob('*') if p.is_file()}
     return result
 
 
@@ -93,8 +96,9 @@ def autopilot_case(case, files, sandbox):
     for prefix in expected.get('validate_edits', []):
         validate_edit(files, sandbox, prefix)
     if expected.get('locate'):
-        repo = fixture_repo(sandbox / 'docs-readme-platform', {'reference/Payments/legal-entities/identifications/index.md': (files / 'identifications-source.md').read_text()})
-        located = json.loads(command([sys.executable, REVIEW / 'locate.py', 'Which identification types are supported on a legal entity?', '--repos', repo, '--no-web', '--no-prs', '--json']))
+        snapshot = fixture_snapshot(sandbox / 'snapshot', 'docs-readme-platform',
+                                    {'reference/Payments/legal-entities/identifications/index.md': (files / 'identifications-source.md').read_text()})
+        located = json.loads(command([sys.executable, REVIEW / 'locate.py', 'Which identification types are supported on a legal entity?', '--snapshot', snapshot, '--no-web', '--no-prs', '--json']))
         assert located['candidates'] and 'identification' in located['candidates'][0]['quote'].lower()
         (sandbox / 'locate.json').write_text(json.dumps(located, indent=2))
 

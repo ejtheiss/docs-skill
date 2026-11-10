@@ -11,4 +11,4 @@ model_graders:
 substitution: >-
   The original ACH external-account-to-FBO row is NOT covered by payments PR 109,
   which documents receiving ACH debits on an Internal Account. Use the identification-types
-  row covered by platform PRs 176/192, per ~/work/notes/already-shipped.md.
+  row covered by platform PRs 176/192, as recorded in this case's fixtures.
