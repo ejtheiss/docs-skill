@@ -10,16 +10,7 @@
       10,
       12,
       14,
-      16,
-      18,
-      20,
-      22,
-      24,
-      26,
-      28,
-      30,
-      32,
-      34
+      16
     ],
     "checker_args": [
       "--mode",
@@ -98,7 +89,7 @@
       },
       {
         "line": 18,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'seamlessly'.",
         "evidence": "Use tools seamlessly.",
@@ -108,7 +99,7 @@
       },
       {
         "line": 20,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'powerful'.",
         "evidence": "Use powerful tools.",
@@ -118,7 +109,7 @@
       },
       {
         "line": 22,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'robust'.",
         "evidence": "Use robust tools.",
@@ -128,7 +119,7 @@
       },
       {
         "line": 24,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'best-in-class'.",
         "evidence": "Use best-in-class tools.",
@@ -138,7 +129,7 @@
       },
       {
         "line": 26,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'battle-tested'.",
         "evidence": "Use battle-tested tools.",
@@ -148,7 +139,7 @@
       },
       {
         "line": 28,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'leverage'.",
         "evidence": "Leverage tools.",
@@ -158,7 +149,7 @@
       },
       {
         "line": 30,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'leverage'.",
         "evidence": "Leverage tools while checking financial leverage.",
@@ -168,7 +159,7 @@
       },
       {
         "line": 32,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'leverage'.",
         "evidence": "Financial leverage matters, so leverage tools.",
@@ -178,7 +169,7 @@
       },
       {
         "line": 34,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'our SE team'.",
         "evidence": "Ask our SE team.",
@@ -208,8 +199,7 @@
     "lines": [
       22,
       22,
-      24,
-      26
+      24
     ],
     "checker_args": [
       "--mode",
@@ -266,7 +256,7 @@
       },
       {
         "line": 26,
-        "rule": "filler",
+        "rule": "marketing-words",
         "strict": false,
         "message": "Cut 'leverage'.",
         "evidence": "Use financial leverage and leverage tools.",

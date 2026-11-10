@@ -17,7 +17,7 @@
         "rule": "em-dash",
         "strict": false,
         "message": "Replace the em dash with a comma, colon or separate sentence.",
-        "evidence": "Text — text.",
+        "evidence": "Text \u2014 text.",
         "fix": "",
         "col": 6,
         "end_col": 6
@@ -27,7 +27,7 @@
         "rule": "em-dash",
         "strict": false,
         "message": "Replace the em dash with a comma, colon or separate sentence.",
-        "evidence": "Title — detail",
+        "evidence": "Title \u2014 detail",
         "fix": "",
         "col": 7,
         "end_col": 7
@@ -69,7 +69,95 @@
         "rule": "em-dash",
         "strict": false,
         "message": "Replace the em dash with a comma, colon or separate sentence.",
-        "evidence": "Text continues — here.",
+        "evidence": "Text continues \u2014 here.",
+        "fix": "",
+        "col": 16,
+        "end_col": 16
+      }
+    ],
+    "edge": "code-vs-prose, tables, multiline"
+  },
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      6
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "em-dash",
+        "strict": true,
+        "message": "Replace the em dash with a comma, colon or separate sentence.",
+        "evidence": "Text \u2014 text.",
+        "fix": "",
+        "col": 6,
+        "end_col": 6
+      },
+      {
+        "line": 6,
+        "rule": "body-h1",
+        "strict": true,
+        "message": "First body heading is not h1; start the page with h1.",
+        "evidence": "Title \u2014 detail",
+        "fix": "# Title \u2014 detail",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "em-dash",
+        "strict": true,
+        "message": "Replace the em dash with a comma, colon or separate sentence.",
+        "evidence": "Title \u2014 detail",
+        "fix": "",
+        "col": 7,
+        "end_col": 7
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      15
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "edges": [
+      "code-vs-prose",
+      "tables",
+      "multiline"
+    ],
+    "findings": [
+      {
+        "line": 15,
+        "rule": "em-dash",
+        "strict": true,
+        "message": "Replace the em dash with a comma, colon or separate sentence.",
+        "evidence": "Text continues \u2014 here.",
         "fix": "",
         "col": 16,
         "end_col": 16
