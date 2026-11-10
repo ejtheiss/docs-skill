@@ -31,7 +31,7 @@ def validate_label(label: object) -> dict:
     if label['decision'] not in ('accept', 'reject'):
         raise ValueError('decision must be accept or reject')
     try:
-        timestamp = datetime.fromisoformat(label['timestamp'])
+        timestamp = datetime.fromisoformat(label['timestamp'].removesuffix('Z') + ('+00:00' if label['timestamp'].endswith('Z') else ''))
     except ValueError as exc:
         raise ValueError('timestamp must be an ISO 8601 datetime with a timezone') from exc
     if timestamp.tzinfo is None:
