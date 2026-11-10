@@ -12,7 +12,9 @@ python3 dev/gate/gate.py --rule fence-language --rule filler --out dev/gate/evid
 python3 dev/gate/gate.py --rule image-alt --rule body-h1 --corpus-mode review --corpus-mode draft --out dev/gate/evidence/contexts.md
 ```
 
-`DOCS_GATE_CORPUS` defaults to `~/work/corpus-head`. Keep the three repo names in
+Corpus evidence is opt-in: set `DOCS_CORPUS_ROOT` to a materialized corpus
+directory (`DOCS_GATE_CORPUS` is an explicit compatibility alias). There is no
+home-directory default. Keep the three repo names in
 its paths for project inference; `reference/` is a fourth project, matching the
 checker. The manifest is included in evidence. Add mode/names-file tokens using
 `--checker-arg=--mode --checker-arg=value --checker-arg=--names-file --checker-arg=/path`.
