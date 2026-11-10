@@ -1,4 +1,7 @@
 [
+  {"query": "Run docs autopilot with these clustered signals.", "should_trigger": true},
+  {"query": "Rank the weekly docs autopilot backlog and stage a dry-run digest.", "should_trigger": true},
+  {"query": "Generate local Notion row intents for a docs autopilot dry run.", "should_trigger": true},
   {
     "query": "Run docs autopilot.",
     "should_trigger": true
@@ -16,7 +19,7 @@
     "should_trigger": true
   },
   {
-    "query": "Run docs autopilot with these clustered signals.",
+    "query": "weekly docs gaps from Slack and Gong",
     "should_trigger": true
   },
   {
@@ -28,7 +31,7 @@
     "should_trigger": true
   },
   {
-    "query": "Rank the weekly docs autopilot backlog and stage a dry-run digest.",
+    "query": "what should we document this week",
     "should_trigger": true
   },
   {
@@ -36,7 +39,7 @@
     "should_trigger": true
   },
   {
-    "query": "Generate local Notion row intents for a docs autopilot dry run.",
+    "query": "run the docs pipeline",
     "should_trigger": true
   },
   {

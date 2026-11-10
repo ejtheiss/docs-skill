@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 from contextlib import AbstractContextManager
 from datetime import date
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -159,14 +158,41 @@ def row(candidate, decision, stage, run_date, draft=None):
                   'Stage': stage, 'Answer Complexity': candidate['checks']['answer']['complexity'], 'Run Date': run_date,
                   'Signal Count': decision['signal_count'], 'Has Draft': draft is not None and stage == 'Ready to Push', 'Review Passes': 0,
                   'Sources': '\n'.join(candidate.get('sources', [])), 'Target Path': candidate.get('target_path', ''),
-                  'Open Questions': '\n'.join(candidate.get('open_questions', [])), 'Destination': 'Docs'}
+                  'Open Questions': '\n'.join(candidate.get('open_questions', [])), 'Destination': 'Docs',
+                  'Product Area': candidate.get('product_area', []), 'Model': candidate.get('model', 'Unknown'),
+                  'Effort level': candidate.get('effort_level')}
     result = dict(id=candidate.get('prior_row_id', candidate['id']), operation='update' if candidate.get('prior_row_id') else 'create', properties=properties)
     if draft is not None:
         result['body'] = {'Draft': draft, 'Evidence': candidate.get('evidence_summary', '')}
     return result
 
 
-def dry_run(bundle, base, out, config):
+def notion_payload(record):
+    properties = {}
+    for key, value in record['properties'].items():
+        if key == 'Description':
+            continue
+        if key == 'Run Date':
+            properties.update({'date:Run Date:start': value, 'date:Run Date:end': None, 'date:Run Date:is_datetime': 0})
+        elif key == 'Has Draft':
+            properties[key] = '__YES__' if value else '__NO__'
+        elif key == 'Product Area':
+            properties[key] = json.dumps(value)
+        else:
+            properties[key] = value
+    body = record.get('body', {})
+    markdown = '\n\n'.join('## ' + key + '\n\n' + value for key, value in body.items() if value)
+    payload = dict(op=record['operation'], properties=properties, body=markdown)
+    if payload['op'] == 'update':
+        if not record.get('id'):
+            raise ValueError('Notion updates require page_id')
+        payload['page_id'] = record['id']
+    elif payload['op'] != 'create':
+        raise ValueError('Notion operation must be create or update')
+    return payload
+
+
+def dry_run(bundle, base, out, config, mode='DRY-RUN'):
     if out.exists() and any(out.iterdir()):
         raise ValueError('output directory must be empty; existing runs are never overwritten')
     with WritesGuard():
@@ -223,9 +249,10 @@ def dry_run(bundle, base, out, config):
               f'{sum(r["properties"]["Stage"] == "Needs Human Answer" for r in rows)} need human answers; '
               f'{len(closed)} shipped elsewhere. Review in Notion.\n')
         out.mkdir(parents=True, exist_ok=True)
-        (out / 'notion-rows.jsonl').write_text(''.join(json.dumps(r) + '\n' for r in rows))
+        (out / 'notion-rows.jsonl').write_text(''.join(json.dumps(notion_payload(r)) + '\n' for r in rows))
         (out / 'dm.txt').write_text(dm)
-        summary = dict(mode='DRY-RUN', network_writes=0, live_writers_imported=False, decisions=decisions, ranking=choices,
+        summary = dict(mode=mode, network_writes=0, live_writers_imported=False, decisions=decisions, ranking=choices,
+                       writes=[dict(row=i, done=False) for i in range(len(rows))], dm_sent=False,
                        failures=failures, rows=len(rows), schema_changes_applied=False)
         (out / 'run.json').write_text(json.dumps(summary, indent=2) + '\n')
         return summary
@@ -234,7 +261,7 @@ def dry_run(bundle, base, out, config):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=CONFIG)
-    parser.add_argument('--live', action='store_true', help='reserved live interface; not implemented')
+    parser.add_argument('--live', action='store_true', help='prepare live-run files only; Claude performs reviewed MCP writes')
     sub = parser.add_subparsers(dest='command', required=True)
     for command in ('admit', 'rank', 'carry', 'close-shipped', 'dry-run'):
         p = sub.add_parser(command)
@@ -251,10 +278,6 @@ def main(argv=None):
         if args.live:
             if config.get('slack_dm_recipient', 'REQUIRED-unset') == 'REQUIRED-unset' or not config.get('notion', {}).get('data_source_id'):
                 raise ValueError('live requires complete configuration, including Eric Slack user id; no DM attempted')
-            spec = importlib.util.spec_from_file_location('autopilot_live_writers', HERE / 'writers.py')
-            writers = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(writers)
-            writers.publish(live=True, config=config)
         if args.command == 'gate':
             result = gate(args.draft, args.names, args.project)
         else:
@@ -265,7 +288,7 @@ def main(argv=None):
             elif args.command == 'rank': result = rank(candidates, decisions, config)
             elif args.command == 'carry': result = carry(candidates, bundle.get('prior_rows', []))
             elif args.command == 'close-shipped': result = close_shipped(bundle.get('prior_rows', []), bundle.get('merged_prs', []), bundle.get('coverage', []))
-            else: result = dry_run(bundle, args.input.parent, args.out, config)
+            else: result = dry_run(bundle, args.input.parent, args.out, config, 'LIVE-PLAN' if args.live else 'DRY-RUN')
         print(json.dumps(result, indent=2))
         return 1 if args.command == 'gate' and not result['passed'] else 0
     except (ValueError, OSError, KeyError, TypeError, subprocess.TimeoutExpired) as exc:

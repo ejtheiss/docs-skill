@@ -29,14 +29,14 @@ Sources is **INTERNAL ONLY**. Never copy Sources into a public draft or Eric DM.
 | Target Path | text |
 | Status | status; options not recorded in source |
 
-## Proposed schema changes — Claude applies, not this skill
+## Proposed schema changes — not applied by this skill or a live run
 
 - Add Admission, text.
 - Add Stage options Watching and Shipped elsewhere.
 
 Dry-run outputs may describe these proposed fields/options with
 schema_changes_applied=false. This skill neither creates nor updates schema.
-Claude must apply/confirm them before any future real writer is implemented.
+If the schema does not match, stop and report. Never modify it during a live run.
 
 ## Mapping
 
@@ -72,5 +72,17 @@ Watching candidate without refreshed checks is research-pending, not admitted.
 No row is duplicated; retain prior_row_id for an update, and keep unselected
 existing Watching rows as-is. Refresh coverage before carrying a now-shipped row.
 
-Dry-run JSONL records have id, operation=create|update, properties and optional
-body={Draft,Evidence}. They are simulated intents, not API request payloads.
+Dry-run JSONL is the exact Claude MCP handoff: `op=create|update`, `page_id`
+only for updates, `properties` keyed by the live schema names and `body` as
+Markdown, not a Draft/Evidence object. Updates include only changed properties;
+an empty update body leaves existing page content untouched.
+MCP properties are flat: title/text/select values are strings, numbers are numbers,
+checkboxes are `__YES__`/`__NO__`, multi-select is a JSON-array string, and dates
+use `date:Run Date:start`, `date:Run Date:end`, `date:Run Date:is_datetime`.
+These encodings were confirmed by a read-only fetch of this data source; they
+are not Notion REST property objects. Missing effort is null; missing Product Area
+is `[]`; Model defaults to Unknown. Supply recorded values rather than infer them.
+Admission and the proposed Stage options remain proposals, so live schema
+comparison must stop until they match. Scripts never change the schema.
+`run.json` has a zero-based row index and `done=false` for each pending write,
+and `dm_sent=false`. Only Claude updates completion after successful MCP writes.

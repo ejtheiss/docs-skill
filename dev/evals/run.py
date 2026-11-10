@@ -79,11 +79,11 @@ def autopilot_case(case, files, sandbox):
     if expected.get('admitted'):
         assert any(d['id'] == expected['admitted'] and d['status'] == 'Admitted' for d in run['decisions'])
     if expected.get('closed'):
-        assert rows[0]['id'] == expected['closed'] and '#109' not in json.dumps(rows)
+        assert rows[0]['page_id'] == expected['closed'] and '#109' not in json.dumps(rows)
         assert '/176' in rows[0]['properties']['Sources'] and '/192' in rows[0]['properties']['Sources']
-        assert all(row['id'] != expected['not_closed'] for row in rows)
+        assert all(row.get('page_id') != expected['not_closed'] for row in rows)
     if expected.get('no_draft'):
-        assert all(not row['properties']['Has Draft'] and not row.get('body', {}).get('Draft') for row in rows)
+        assert all(row['properties']['Has Draft'] == '__NO__' and '## Draft\n' not in row['body'] for row in rows)
     if expected.get('quiet'):
         assert dm == 'nothing qualified\n' and not rows
     serialized = '\n'.join(path.read_text() for path in out.iterdir())
@@ -91,6 +91,11 @@ def autopilot_case(case, files, sandbox):
         assert not re.search(re.escape(banned), serialized, re.I), 'customer information leaked'
     for required in expected.get('required', []):
         assert required in serialized, required
+    if expected.get('effort_level'):
+        assert all(row['properties']['Effort level'] == expected['effort_level'] for row in rows)
+    for row in rows:
+        assert set(row) == {'op', 'properties', 'body'} | ({'page_id'} if row['op'] == 'update' else set())
+        assert row['op'] in ('create', 'update') and isinstance(row['body'], str)
     if expected.get('reserve_regex'):
         assert not re.search(r'reserve.{0,100}(?:%|percent)|(?:%|percent).{0,100}reserve', serialized, re.I | re.S)
     for prefix in expected.get('validate_edits', []):
@@ -141,7 +146,7 @@ def run(out, selected=None):
         raise ValueError('no matching eval cases')
     for skill in ('docs-autopilot', 'docs-review'):
         triggers = yaml.safe_load((ROOT / 'skill' / skill / 'evals/triggering.yaml').read_text())
-        assert len([q for q in triggers if q['should_trigger'] is True]) == 10
+        assert len([q for q in triggers if q['should_trigger'] is True]) == (13 if skill == 'docs-autopilot' else 10)
         assert len([q for q in triggers if q['should_trigger'] is False]) == 10
     (out / 'results.json').write_text(json.dumps(results, indent=2) + '\n')
     print('| Case | Deterministic | Model |')
@@ -150,7 +155,7 @@ def run(out, selected=None):
         print(f'| {result["case"]} | {result["deterministic"]} | {result["model"]} |')
         if result['detail']:
             print(result['detail'])
-    print('Triggering sets: 10 positive + 10 near-miss queries per skill; structure verified, model routing unmeasured.')
+    print('Triggering sets: autopilot 13 positive + 10 near misses; review 10 + 10; structure verified, model routing unmeasured.')
     return results
 
 

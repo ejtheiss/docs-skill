@@ -12,7 +12,7 @@ Array of [Addresses](https://docs.moderntreasury.com/platform/reference/address-
 Replacement:
 
 ```text
-For a registered-agent Legal Entity, submit the agent's address as the business registered address.
+Array of [Addresses](https://docs.moderntreasury.com/platform/reference/address-object) - P.O. boxes are not accepted with `address_type` of `business_registered` and `primary` marked as `false`. For a registered-agent Legal Entity, submit the agent's address as the business registered address.
 ```
 
 Path: `docs/Customer Onboarding/onboard-a-business/index.md`

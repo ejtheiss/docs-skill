@@ -1,13 +1,13 @@
 ---
 name: docs-autopilot
-description: Use when asked for a weekly docs autopilot run, to "run docs autopilot", or for a docs autopilot dry run.
+description: Use when asked for a weekly docs autopilot run, to "run docs autopilot", a docs autopilot dry run, "weekly docs gaps from Slack and Gong", "what should we document this week", or "run the docs pipeline".
 ---
 
 # Docs autopilot
 
 Turn recurring, answerable documentation gaps into generalized Notion drafts.
 **DRY-RUN is the default.** Only an explicit `--live` requests live mode;
-the live interface is a stub and cannot publish. Live mode is not tested.
+scripts only produce files even with `--live`. Live mode is not tested.
 Install this directory beside `docs-review/`. No development harness is needed.
 
 ## Non-negotiable rules
@@ -70,7 +70,7 @@ not Ready to Push. See [subagent briefs](references/subagent-briefs.md).
 Use [Notion mapping](references/notion-contract.md) and
 [digest format](references/digest-format.md). Dry-run writes only local planned
 rows and dm.txt; it sends nothing. Quiet week is exactly one line.
-Claude, not this skill, applies proposed schema changes. Never silently create
+Proposed schema changes remain unapplied; stop until the contract matches. Never create
 properties/options. No GitHub writes, Slack channel posts or multiple DMs.
 
 ## Deterministic commands
@@ -90,7 +90,7 @@ window.json contains clustered candidates with recorded checks, prior_rows,
 merged_prs, coverage and run_date. See the normalized input/export contracts in
 [admission](references/admission.md) and [Notion contract](references/notion-contract.md).
 Model-supplied coverage/review judgments are attestations, not script verification.
-Outputs: out/notion-rows.jsonl (planned property/body records), out/dm.txt (unsent),
+Outputs: out/notion-rows.jsonl (exact MCP properties and Markdown body), out/dm.txt (exact unsent text),
 out/run.json (decisions, ranking, redacted failures, write-guard state).
 An existing output directory must be empty.
 
@@ -101,10 +101,12 @@ does not implement harvest clients, model authoring or real writers.
 
 ## Live boundary
 
-Reserved invocation: `python3 scripts/autopilot.py --live dry-run window.json --out out`.
-Eric's Slack id must replace REQUIRED-unset; the Notion collection must be
-configured and proposed schema changes applied by Claude. Even then the interface
-raises NotImplementedError. Do not exercise live mode as a test.
+`python3 scripts/autopilot.py --live dry-run window.json --out out` only produces
+files, with the same writes guard. Claude alone executes [live-run.md](references/live-run.md),
+after reviewing the dry-run out/ in the same session and explicit live authorization.
+Verify the schema first; never change it. Proposed Admission/Stage additions
+remain unapplied and block live writes until the contract matches. Do not exercise
+live mode as a test.
 
 ## Common mistakes
 
@@ -114,7 +116,7 @@ raises NotImplementedError. Do not exercise live mode as a test.
 | “The PR title sounds related” | Inspect content; require explicit coverage. |
 | “The answer seems likely” | A3 → Needs Human Answer; no invented percentages. |
 | “Copy the conversation for context” | Generalize; internal source links stay in Sources. |
-| “Send results to the channel” | Only one Eric DM, and only a future authorized live writer. |
+| “Send results to the channel” | Only one Eric DM, by Claude under the live-run contract. |
 
 Fixture VERIFIED evidence is not a real product contract. The registered-agent
 fixture claim specifically requires real SME confirmation before publication.

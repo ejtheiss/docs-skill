@@ -3,6 +3,8 @@
   "candidates": [
     {
       "id": "registered-agent",
+      "effort_level": "Small",
+      "product_area": ["Onboarding / Legal Entities"],
       "question": "Which address does a registered-agent Legal Entity submit?",
       "topics": [
         "KYB",
@@ -40,7 +42,7 @@
             {
               "label": "VERIFIED",
               "claim": "FIXTURE EVIDENCE ONLY: A registered-agent Legal Entity submits the agent's address as the business registered address.",
-              "source": "fixture-evidence.md"
+              "source": "harvest.txt: compliance team member staff statement in the Slack thread; fixture-evidence.md (fixture only, SME confirmation required)"
             }
           ]
         }

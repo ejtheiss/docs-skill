@@ -156,7 +156,7 @@ def test_fresh_review_one_revision_limit(tmp_path, passes, expected):
     row = json.loads((out / 'notion-rows.jsonl').read_text())
     assert row['properties']['Stage'] == expected
     assert row['properties']['Review Passes'] == passes
-    assert row['properties']['Has Draft'] == (expected == 'Ready to Push')
+    assert row['properties']['Has Draft'] == ('__YES__' if expected == 'Ready to Push' else '__NO__')
 
 
 def test_missing_checker_and_names_are_errors(tmp_path, monkeypatch):
@@ -192,5 +192,39 @@ def test_shipped_watching_rows_do_not_consume_draft_cap(tmp_path, monkeypatch):
     result = autopilot.dry_run(bundle, tmp_path, out, CONFIG)
     rows = [json.loads(line) for line in (out / 'notion-rows.jsonl').read_text().splitlines()]
     assert result['rows'] == 4
-    assert sum(bool(r.get('body', {}).get('Draft')) for r in rows) == CONFIG['draft_cap']
+    assert sum('## Draft\n' in r['body'] for r in rows) == CONFIG['draft_cap']
     assert rows[0]['properties']['Stage'] == 'Shipped elsewhere'
+
+
+def test_mcp_payload_is_verbatim_flat_properties_and_markdown():
+    c = candidate()
+    c.update(effort_level='Small', product_area=['Payments'])
+    decision = autopilot.admit(c, CONFIG)
+    record = autopilot.row(c, decision, 'Ready to Push', '2026-11-10', 'Create a record.')
+    payload = autopilot.notion_payload(record)
+    assert set(payload) == {'op', 'properties', 'body'} and payload['op'] == 'create'
+    p = payload['properties']
+    assert set(p) == {'Task name', 'Stage', 'Signal Count', 'Answer Complexity', 'Destination', 'Target Path',
+                      'Has Draft', 'Open Questions', 'Sources', 'Review Passes', 'Product Area', 'Model', 'Effort level',
+                      'Admission', 'date:Run Date:start', 'date:Run Date:end', 'date:Run Date:is_datetime'}
+    assert p['Has Draft'] == '__YES__' and p['Product Area'] == '["Payments"]'
+    assert p['date:Run Date:start'] == '2026-11-10' and p['date:Run Date:end'] is None
+    assert p['Signal Count'] == 2 and p['Effort level'] == 'Small' and p['Model'] == 'Unknown'
+    assert payload['body'] == '## Draft\n\nCreate a record.'
+    record.update(operation='update', id='notion-page')
+    assert autopilot.notion_payload(record)['page_id'] == 'notion-page'
+    record['id'] = ''
+    with pytest.raises(ValueError, match='page_id'):
+        autopilot.notion_payload(record)
+    record['operation'] = 'delete'
+    with pytest.raises(ValueError, match='operation'):
+        autopilot.notion_payload(record)
+
+
+def test_writers_has_no_publish_and_live_cli_has_no_writer_dispatch():
+    import ast
+    tree = ast.parse((SKILL / 'scripts/writers.py').read_text())
+    assert not any(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) for node in ast.walk(tree))
+    text = (SKILL / 'scripts/autopilot.py').read_text()
+    assert 'writers.publish' not in text and 'spec_from_file_location' not in text
+    assert "'LIVE-PLAN' if args.live else 'DRY-RUN'" in text
