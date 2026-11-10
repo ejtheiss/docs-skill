@@ -79,7 +79,7 @@ from findings import (  # noqa: E402
 # a severity read from nothing.
 EMITS = frozenset({
     "acronym-undefined", "body-h1", "callout-emoji", "contractions", "currency-mixed",
-    "fence-language", "fence-language-unknown", "fence-untagged", "filler", "filler-please",
+    "fence-language", "fence-language-unknown", "fence-untagged", "filler", "filler-please", "marketing-words",
     "frontmatter-excerpt", "frontmatter-title", "heading-formatting", "heading-repeats-title",
     "heading-skip", "image-alt", "json-parse", "link-absolute-internal", "link-anchor-empty",
     "link-anchor-vague", "link-bare-url", "list-depth", "mt-shorthand", "no-ordered-lists",
@@ -125,6 +125,9 @@ FILLER_WORDS = POLICY.mapping("filler_words")
 FILLER_EXCEPTIONS = {word: re.compile(pattern, re.IGNORECASE)
                      for word in FILLER_WORDS
                      if (pattern := POLICY.exception("filler_words", word))}
+MARKETING_WORDS = POLICY.mapping('marketing_words')
+MARKETING_EXCEPTIONS = {word: re.compile(pattern, re.IGNORECASE) for word in MARKETING_WORDS
+                        if (pattern := POLICY.exception('marketing_words', word))}
 PLEASE_WORDS = POLICY.words("filler_please")
 PLEASE_EXCEPTIONS = {word: re.compile(pattern, re.IGNORECASE)
                      for word in PLEASE_WORDS
@@ -722,7 +725,7 @@ def check(page: Page) -> list[Finding]:
         # Severity is per page, not per rule: a rule may carry an override for this page's project
         # ("where an overlay contradicts base style, the overlay wins for that project"). With no
         # override - the state of every shipped rule - this is exactly `RULES[rule][0]`.
-        strict = POLICY.rules[rule].strict_for(page.project)
+        strict = POLICY.rules[rule].strict_for(page.project, page.context.mode)
         findings.append(Finding(rel, line, rule, strict, message, text, fix, col, end_col))
 
     prose = sentences(page)
@@ -734,6 +737,7 @@ def check(page: Page) -> list[Finding]:
         if block.kind != 'heading':
             for offset, sentence in split_sentences(block.text):
                 check_filler(add, block.line_at(offset), sentence)
+                check_marketing(add, block.line_at(offset), sentence)
     for lineno, text in heading_text(page):
         check_terminology(add, lineno, text)
     check_fences(page, add)
@@ -1068,6 +1072,15 @@ def check_filler(add: Add, lineno: int, sentence: str) -> None:
             span=match.span())
 
 
+def check_marketing(add: Add, lineno: int, sentence: str) -> None:
+    for word, replacement in MARKETING_WORDS.items():
+        match = next((m for m in re.finditer(rf"\b{re.escape(word)}\b", sentence, re.IGNORECASE)
+                      if not _exempt(MARKETING_EXCEPTIONS, word, sentence, m.start())), None)
+        if match:
+            add(lineno, 'marketing-words', says('marketing-words', word=word), sentence,
+                fix=f"replace with '{replacement}'" if replacement else 'delete the word', span=match.span())
+
+
 def _exempt(exceptions: dict[str, re.Pattern], word: str, sentence: str,
             offset: int | None = None) -> bool:
     pattern = exceptions.get(word)
@@ -1194,7 +1207,9 @@ def print_rules() -> None:
         guide = POLICY.rules[rule].guide_severity
         reported = "strict" if strict else "flexible"
         note = f"[guide: {guide}] " if guide != reported else ""
-        print(f"{'STRICT' if strict else 'flex  '} {rule:<26} {note}[contexts: {', '.join(POLICY.rules[rule].applies_to)}] {provenance}")
+        modes = POLICY.rules[rule].reported_by_mode
+        grades = f' [reported by mode: {modes}]' if modes else ''
+        print(f"{'STRICT' if strict else 'flex  '} {rule:<26} {note}[contexts: {', '.join(POLICY.rules[rule].applies_to)}]{grades} {provenance}")
 
 
 def input_error(files: list[Path], project: str | None) -> str:

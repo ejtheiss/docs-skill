@@ -120,7 +120,9 @@ def print_rules(modules: dict[str, ModuleType]) -> None:
         for rule, (strict, provenance) in sorted(rules.items()):
             guide = POLICY.rules[rule].guide_severity
             note = f"[guide: {guide}] " if guide != ("strict" if strict else "flexible") else ""
-            print(f"{name:<9} {'STRICT' if strict else 'flex  '} {rule:<26} {note}[contexts: {', '.join(POLICY.rules[rule].applies_to)}] {provenance}")
+            modes = POLICY.rules[rule].reported_by_mode
+            grades = f' [reported by mode: {modes}]' if modes else ''
+            print(f"{name:<9} {'STRICT' if strict else 'flex  '} {rule:<26} {note}[contexts: {', '.join(POLICY.rules[rule].applies_to)}]{grades} {provenance}")
     if orphaned := unimplemented_rules(modules):
         print(f"unimplemented by the selected subskill(s): {', '.join(orphaned)}", file=sys.stderr)
 

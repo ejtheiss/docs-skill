@@ -35,7 +35,7 @@ Read [08 — ReadMe Conventions](08-readme-conventions.md) for component syntax,
 
 ## Policy and reported grades
 The prose is edited directly. Machine-readable policy lives in `docs-review/config/policy.yaml` and each subskill's `config/rules.yaml`. Change prose and matching policy together. A policy hash covers severities, scope, contexts, thresholds, values and exemptions; no Notion sync is involved.
-A rule has two grades: guide severity for review and reported severity for checker output. For example, `em-dash` is strict guidance reported flexible. `--list-rules` prints the authoritative reported rules and contexts. Reviewer judgments are not invented checker findings.
+A rule has two grades: guide severity and reported severity for checker output. `em-dash` and `marketing-words` are bans: strict in draft mode, flexible when reviewing existing text. `filler` remains flexible in both modes. `--list-rules` prints the authoritative reported rules and contexts. Reviewer judgments are not invented checker findings.
 
 ## The four projects
 <table header-row="true">

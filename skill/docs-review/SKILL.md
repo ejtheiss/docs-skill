@@ -69,7 +69,8 @@ Alt text applies to new/touched images. Draft treats every file as new.
 Reported flexible: `sentence-length`, `passive-voice`, `filler`, `filler-please`,
 `fence-language-unknown`, `link-absolute-internal`, `acronym-undefined`,
 `contractions`, `reference-no-shell`, `no-ordered-lists`, `frontmatter-excerpt`,
-`em-dash`. Guide grades may be stricter. Requests use `curl`, with ReadMe labels
+`em-dash`, `marketing-words` in review mode. Both bans are strict in draft mode;
+`filler` remains flexible in both modes. Guide grades may be stricter. Requests use `curl`, with ReadMe labels
 allowed; `shell` is for non-request commands. Use page 08's Callout/Image syntax.
 
 Four tiers share findings and a policy stamp. docs-lint has 31 rules;
