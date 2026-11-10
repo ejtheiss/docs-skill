@@ -9,6 +9,9 @@ rules:
     provenance: 'Phase C: repository-local reusable component inventory'
     message: 'Component `{name}` is not a ReadMe built-in or defined in this repository.'
 tables:
+  readme_hosted_blocks:
+    why: "Renders live as an 'Early Access Feature' callout on platform/reference/reconciliation-rule-object, create-reconciliation-rule and bulk-result-webhooks (checked 2026-11-10 via browser DOM and .md export); ReadMe dashboard-hosted block not synced to git"
+    values: [EarlyAccess]
   readme_builtins:
     why: ReadMe runtime components are not repository-local reusable definitions.
     values: [Callout, Image, Tabs, Tab, Cards, Card, Accordion, Accordions, Columns, Column, Embed, Glossary, Anchor, Recipe, Table, HTMLBlock, Code, CodeGroup, Steps, Step, Video]

@@ -5,3 +5,4 @@ title: Fixture
 
 <Callout icon="📘" theme="info">Information.</Callout>
 <LocalBlock />
+<EarlyAccess />
