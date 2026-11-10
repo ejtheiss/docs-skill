@@ -22,6 +22,16 @@ ROOT = HERE.parents[1]
 PROJECTS = ('payments', 'ledgers', 'platform', 'reference')
 
 
+def corpus_root():
+    root = os.environ.get('DOCS_CORPUS_ROOT') or os.environ.get('DOCS_GATE_CORPUS')
+    if not root:
+        raise ValueError('corpus evidence is opt-in: set DOCS_CORPUS_ROOT to a materialized corpus directory')
+    path = Path(root).expanduser().resolve()
+    if not path.is_dir():
+        raise ValueError(f'corpus directory does not exist: {path}')
+    return path
+
+
 def rule_config(rules):
     config = yaml.safe_load((HERE / 'rules.yaml').read_text())
     missing = set(rules) - config.keys()
@@ -266,7 +276,10 @@ def main():
     parser.add_argument('--jobs', type=int, default=4)
     args = parser.parse_args()
     config = rule_config(args.rule)
-    corpus = Path(os.environ.get('DOCS_GATE_CORPUS', '~/work/corpus-head')).expanduser().resolve()
+    try:
+        corpus = corpus_root()
+    except ValueError as exc:
+        parser.error(str(exc))
     files = sorted(corpus.rglob('*.md'))
     if not files:
         parser.error(f'no corpus markdown: {corpus}')

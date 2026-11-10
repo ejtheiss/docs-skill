@@ -20,6 +20,22 @@ def test_gate_exists():
     assert (GATE / 'gate.py').is_file(), 'gate entry point is missing'
 
 
+def test_corpus_evidence_requires_explicit_environment(monkeypatch, tmp_path):
+    gate = load_gate()
+    monkeypatch.delenv('DOCS_CORPUS_ROOT', raising=False)
+    monkeypatch.delenv('DOCS_GATE_CORPUS', raising=False)
+    with pytest.raises(ValueError, match='opt-in: set DOCS_CORPUS_ROOT'):
+        gate.corpus_root()
+    monkeypatch.setenv('DOCS_CORPUS_ROOT', str(tmp_path / 'missing'))
+    with pytest.raises(ValueError, match='does not exist'):
+        gate.corpus_root()
+    monkeypatch.setenv('DOCS_CORPUS_ROOT', str(tmp_path))
+    assert gate.corpus_root() == tmp_path
+    monkeypatch.delenv('DOCS_CORPUS_ROOT')
+    monkeypatch.setenv('DOCS_GATE_CORPUS', str(tmp_path))
+    assert gate.corpus_root() == tmp_path
+
+
 def test_mutation_operators_are_deterministic():
     gate = load_gate()
     source = 'def target(x):\n    if x > 2 and not x == 3:\n        add(1, "rule", "text")\n    return False\n'
