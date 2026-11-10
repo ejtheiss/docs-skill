@@ -140,7 +140,9 @@ def test_pr_search_patch_only_and_unavailable_sources(repo, monkeypatch):
         raise ValueError('access denied')
     monkeypatch.setattr(locate, 'gh_api', denied)
     report = locate.pr_search([repo], [['identification']], 90)
-    assert not report['matches'] and all('access denied' in note for note in report['notes'])
+    assert not report['matches']
+    assert any('access denied' in note for note in report['notes'])
+    assert 'PR search not run' in report['notes'][-1]
 
 
 def test_registered_agent_small_edit_zero_strict_and_no_repo_writes(brief, repo, tmp_path):
