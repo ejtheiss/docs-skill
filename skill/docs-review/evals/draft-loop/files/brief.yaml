@@ -9,7 +9,7 @@ evidence:
   source: FIXTURE source.md at origin/v2.0
   verified: true
 target:
-  repo: FIXTURE_REPO
+  repo: docs-readme-payments
   path: docs/required-fields-for-businesses.md
   heading: Prepare addresses
   ref: origin/v2.0
