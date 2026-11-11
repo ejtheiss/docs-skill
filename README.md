@@ -10,7 +10,7 @@ Frozen corpus revisions (last commit on or before 2026-03-12):
 |---|---|
 | docs-readme-payments | `1f275577d8bcb9704ae211b3adaa8528b921fd7e` |
 | docs-readme-ledgers | `e6fbd1280d3dbea3851fc9d22c0541e84fee15ce` |
-| docs-readme-platform | `f5453f0cd6aebee27a20fc2506e514c51af62b` |
+| docs-readme-platform | `f5453f0cd6aebebee27a20fc2506e514c51af62b` |
 
 ## Usage
 

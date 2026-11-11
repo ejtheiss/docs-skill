@@ -1,0 +1,129 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      8
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "callout-emoji",
+        "strict": true,
+        "message": "Callout uses 🏦; use 📘 for information, 🚧 for limitations or 💡 in a tutorial.",
+        "evidence": "🏦",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 8,
+        "rule": "callout-emoji",
+        "strict": true,
+        "message": "Callout uses ⚠️; use 📘 for information, 🚧 for limitations or 💡 in a tutorial.",
+        "evidence": "⚠️",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      4,
+      10,
+      14
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "theme-mismatch",
+      "missing-theme",
+      "missing-icon",
+      "attribute-order-quotes-selectors"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "callout-emoji",
+        "strict": true,
+        "message": "Callout icon 📘️ needs theme=\"info\"; found \"warn\".",
+        "evidence": "📘️",
+        "fix": "info",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "callout-emoji",
+        "strict": true,
+        "message": "Callout icon 🚧 needs theme=\"warn\"; found \"\".",
+        "evidence": "🚧",
+        "fix": "warn",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 14,
+        "rule": "callout-emoji",
+        "strict": true,
+        "message": "Callout uses (missing); use 📘 for information, 🚧 for limitations or 💡 in a tutorial.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "theme-mismatch, missing-theme, missing-icon, attribute-order-quotes-selectors"
+  },
+  {
+    "file": "code.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "code-exclusion"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "fence-language-unknown",
+        "strict": false,
+        "message": "Fence tagged `md`, which is not a tag the guide lists.",
+        "evidence": "md",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "code-exclusion"
+  }
+]

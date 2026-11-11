@@ -17,13 +17,17 @@ rules:
   body-h1:
     reported: strict
     guide: strict
-    provenance: ReadMe renders the frontmatter title as h1; a body h1 duplicates it (markdownlint MD025)
-    message: Body heading is h1; ReadMe renders the frontmatter title as h1.
+    applies_to: [draft, new]
+    threshold: 1
+    provenance: 'Eric 2026-11-10 decision 6: first body heading is h1 on new pages only'
+    message: First body heading is not h1; start the page with h1.
   callout-emoji:
     reported: strict
     guide: strict
     provenance: Modern Treasury policy over ReadMe's callout emoji set (rdmd themes map)
-    message: Callout uses {emoji}; use {sanctioned}.
+    messages:
+      icon: 'Callout uses {emoji}; use {sanctioned}.'
+      theme: 'Callout icon {emoji} needs theme="{expected}"; found "{theme}".'
   contractions:
     reported: flexible
     guide: flexible
@@ -55,6 +59,18 @@ rules:
     reported: flexible
     guide: flexible
     provenance: Google style guide word list, Vale Microsoft.Adverbs, proselint greylist
+    message: Cut '{word}'.
+  em-dash:
+    reported: flexible
+    reported_by_mode: {draft: strict, review: flexible}
+    guide: strict
+    provenance: 'Eric 2026-11-10 decision 9: no em dashes in prose'
+    message: Replace the em dash with a comma, colon or separate sentence.
+  marketing-words:
+    reported: flexible
+    reported_by_mode: {draft: strict, review: flexible}
+    guide: strict
+    provenance: 'Eric 2026-11-10 decision 9: no marketing language in authored documentation'
     message: Cut '{word}'.
   filler-please:
     reported: flexible
@@ -91,6 +107,7 @@ rules:
     guide: strict
     provenance: markdownlint MD045; WAI decorative-image exemption honoured
     message: Image has no alt text.
+    applies_to: [draft, new, touched]
   json-parse:
     reported: strict
     guide: strict
@@ -100,8 +117,8 @@ rules:
   link-absolute-internal:
     reported: flexible
     guide: strict
-    provenance: 'Modern Treasury policy: relative links inside a repo'
-    message: Absolute URL to a page in this repo; use a relative path.
+    provenance: 'Eric 2026-11-10 decision 5: ReadMe shorthand within a project; absolute URLs across projects'
+    message: 'Link within this project needs ReadMe shorthand; use `{target}`.'
   link-anchor-empty:
     reported: strict
     guide: strict
@@ -186,6 +203,18 @@ tables:
       simply: null
     exceptions:
       just: just (as|like|in time)
+  marketing_words:
+    why: Decision 9 marketing additions, separate from the original flexible filler list.
+    map:
+      seamlessly: null
+      powerful: null
+      robust: null
+      best-in-class: null
+      battle-tested: null
+      leverage: use
+      our SE team: null
+    exceptions:
+      leverage: '\b(?:leverage\s+ratio|(?:the|financial)\s+leverage)\b'
   filler_please:
     why: '`please` belongs only in a direct request to contact someone.'
     values:
@@ -260,6 +289,7 @@ tables:
     why: The fence tags we allow. Modern Treasury policy, not ReadMe's supported set, which is far larger.
     values:
     - csv
+    - curl
     - diff
     - go
     - html
@@ -269,7 +299,6 @@ tables:
     - json
     - python
     - ruby
-    - shell
     - sql
     - text
     - typescript
@@ -280,10 +309,48 @@ tables:
       Treasury decision; the allowlist they map into, above, is.
     map:
       bash: shell
-      curl: shell
       js: javascript
       sh: shell
       ts: typescript
+  request_fences:
+    why: 'Eric decision 1: curl requests use curl, independent of code-tab labels.'
+    map:
+      shell: curl
+      bash: curl
+      sh: curl
+  request_patterns:
+    why: A curl command at the start of a shell command line, optionally with a prompt.
+    values:
+    - '(?m)^\s*(?:\$\s*)?curl\b'
+  non_request_fences:
+    why: Keep non-request shell commands allowed pending Eric's decision.
+    values: [shell]
+  reference_request_tags:
+    why: Request examples belong in guides, including the canonical curl tag.
+    values: [curl]
+  em_dash_characters:
+    why: Em dashes are disallowed in prose, not in code or tables.
+    values: ['—']
+  em_dash_channels:
+    why: Paragraphs and headings are prose; table cells and code are excluded.
+    values: [paragraph, heading]
+  link_shorthand:
+    why: ReadMe navigation namespaces for each documentation project.
+    map:
+      payments: 'doc:'
+      ledgers: 'doc:'
+      platform: 'doc:'
+      reference: 'ref:'
+  internal_link_hosts:
+    why: Documentation links eligible for project-local ReadMe shorthand.
+    values: [docs.moderntreasury.com]
+  project_link_prefixes:
+    why: Platform guides and API reference are distinct ReadMe projects.
+    map:
+      payments: /payments/
+      ledgers: /ledgers/
+      platform: /platform/docs/
+      reference: /platform/reference/
   json_fence_languages:
     why: Fence tags that mean 'this body is JSON', so the JSON rules know what to parse.
     values:
@@ -312,5 +379,11 @@ tables:
     - 💡
     - 📘
     - 🚧
+  callout_themes:
+    why: 'Eric 2026-11-10 decision 4: approved icon/theme pairs.'
+    map:
+      📘: info
+      🚧: warn
+      💡: default
 includes:
 - language.yaml

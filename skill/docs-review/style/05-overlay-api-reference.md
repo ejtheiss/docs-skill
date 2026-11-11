@@ -1,5 +1,3 @@
-<!-- Compiled from Notion by scripts/notion_sync.py. Do not edit; edit https://app.notion.com/p/3c8d6bfc268380f2b548f4b2a934973f
-     policy 718466089eff · synced 2026-09-03T21:34:37+00:00 -->
 `docs-readme-platform/reference`. Read with **01 — Base Style**; this page covers only what is specific to the API reference.
 Reference pages define objects, fields and behavior. They do not teach workflows — guides do that. These pages track the OpenAPI specification, so a wording fix belongs at the source of truth (`platform/swagger/v1/swagger.yaml` in the monorepo) or it will be overwritten.
 ## **Voice**
@@ -23,5 +21,5 @@ Show request and response bodies as `json` and leave language-specific request e
 The page opens with the object name, and section headings follow the established pattern: `Working with X`, `Initiating X`, `X Object`.
 ### **No ****`excerpt`**** — Flexible**
 Base style applies here unchanged: reference pages carry no excerpt either. Delete the one you find on a page you are editing — ReadMe builds the search snippet from the page body. Flexible for the same reason as base style: removal is cleanup, not a condition a page must meet to ship.
-### **Relative links within the platform repo — Strict**
-Absolute `docs.moderntreasury.com` URLs only when pointing at the ledgers or payments docs.
+### Project shorthand within API reference — Strict (`link-absolute-internal`, reported flexible)
+Use `ref:slug` within reference. Use absolute `https://docs.moderntreasury.com` URLs across projects, including links to platform guides, Ledgers and Payments. Generated endpoint pages change through `reference/modern-treasury-api.json`, not direct Markdown edits; coordinate upstream spec changes with the monorepo source of truth.

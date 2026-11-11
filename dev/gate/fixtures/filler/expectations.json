@@ -1,0 +1,270 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'easily'.",
+        "evidence": "Easily create a record.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 6,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'in order to'.",
+        "evidence": "Use this in order to create a record.",
+        "fix": "replace with 'to'",
+        "col": 10,
+        "end_col": 20
+      },
+      {
+        "line": 8,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'just'.",
+        "evidence": "Just create a record.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 4
+      },
+      {
+        "line": 10,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'note that'.",
+        "evidence": "Note that records exist.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 9
+      },
+      {
+        "line": 12,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'obviously'.",
+        "evidence": "Obviously records exist.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 9
+      },
+      {
+        "line": 14,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'of course'.",
+        "evidence": "Of course records exist.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 9
+      },
+      {
+        "line": 16,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'simply'.",
+        "evidence": "Simply create a record.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 18,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'seamlessly'.",
+        "evidence": "Use tools seamlessly.",
+        "fix": "delete the word",
+        "col": 11,
+        "end_col": 20
+      },
+      {
+        "line": 20,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'powerful'.",
+        "evidence": "Use powerful tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 12
+      },
+      {
+        "line": 22,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'robust'.",
+        "evidence": "Use robust tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 10
+      },
+      {
+        "line": 24,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'best-in-class'.",
+        "evidence": "Use best-in-class tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 26,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'battle-tested'.",
+        "evidence": "Use battle-tested tools.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 17
+      },
+      {
+        "line": 28,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 30,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Leverage tools while checking financial leverage.",
+        "fix": "replace with 'use'",
+        "col": 1,
+        "end_col": 8
+      },
+      {
+        "line": 32,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Financial leverage matters, so leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 32,
+        "end_col": 39
+      },
+      {
+        "line": 34,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'our SE team'.",
+        "evidence": "Ask our SE team.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 15
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      22,
+      22,
+      24
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "exception-phrases",
+      "word-boundaries",
+      "code-exclusion",
+      "replacement-and-deletion",
+      "leverage-noun-verb",
+      "each-new-phrase"
+    ],
+    "findings": [
+      {
+        "line": 20,
+        "rule": "filler-please",
+        "strict": false,
+        "message": "'please' belongs only in a direct request to contact someone.",
+        "evidence": "Please create a record.",
+        "fix": "",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 22,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'in order to'.",
+        "evidence": "Simply create a record in order to proceed.",
+        "fix": "replace with 'to'",
+        "col": 24,
+        "end_col": 34
+      },
+      {
+        "line": 22,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'simply'.",
+        "evidence": "Simply create a record in order to proceed.",
+        "fix": "delete the word",
+        "col": 1,
+        "end_col": 6
+      },
+      {
+        "line": 24,
+        "rule": "filler",
+        "strict": false,
+        "message": "Cut 'just'.",
+        "evidence": "Run just in case.",
+        "fix": "delete the word",
+        "col": 5,
+        "end_col": 8
+      },
+      {
+        "line": 26,
+        "rule": "marketing-words",
+        "strict": false,
+        "message": "Cut 'leverage'.",
+        "evidence": "Use financial leverage and leverage tools.",
+        "fix": "replace with 'use'",
+        "col": 28,
+        "end_col": 35
+      }
+    ],
+    "edge": "exception-phrases, word-boundaries, code-exclusion, replacement-and-deletion, leverage-noun-verb, each-new-phrase"
+  }
+]

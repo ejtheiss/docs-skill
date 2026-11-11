@@ -1,0 +1,269 @@
+{
+  "em-dash": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 14,
+            "findings": 25,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 2,
+            "findings": 8,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 5,
+            "findings": 8,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 21,
+          "findings": 41
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-payments/docs/Customer Onboarding/onboard-a-business/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 14,
+            "findings": 25,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 2,
+            "findings": 8,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 5,
+            "findings": 8,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 21,
+          "findings": 41
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-payments/docs/Customer Onboarding/onboard-a-business/index.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 2,
+      "negative": 2,
+      "boundary": 2
+    },
+    "mutation": {
+      "generated": 8,
+      "killed": 8,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "filler": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 56,
+            "findings": 83,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 35,
+            "findings": 67,
+            "over_half": true
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 28,
+            "findings": 41,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 26,
+            "findings": 36,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 145,
+          "findings": 227
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 56,
+            "findings": 83,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 35,
+            "findings": 67,
+            "over_half": true
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 28,
+            "findings": 41,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 26,
+            "findings": 36,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 145,
+          "findings": 227
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 1
+    },
+    "mutation": {
+      "generated": 27,
+      "killed": 27,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "marketing-words": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 3,
+            "findings": 3,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 1,
+            "findings": 2,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 10,
+          "findings": 13
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Get Started/ledgers-tutorials/digital-wallet-event-handler.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 3,
+            "findings": 3,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 3,
+            "findings": 4,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 1,
+            "findings": 2,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 10,
+          "findings": 13
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Get Started/ledgers-tutorials/digital-wallet-event-handler.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+      }
+    },
+    "fixtures": {
+      "positive": 2,
+      "negative": 2,
+      "boundary": 2
+    },
+    "mutation": {
+      "generated": 18,
+      "killed": 18,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+---
+title: Fixture
+---
+Text - text.

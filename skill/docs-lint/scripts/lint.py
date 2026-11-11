@@ -37,6 +37,7 @@ from dataclasses import dataclass, field
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Callable
+from urllib.parse import urlsplit, unquote
 
 SHARED = Path(__file__).resolve().parents[2] / "docs-review" / "scripts"
 if str(SHARED) not in sys.path:
@@ -45,10 +46,12 @@ if str(SHARED) not in sys.path:
 try:
     import yaml
     from markdown_it import MarkdownIt
+    from markdown_it.rules_inline import image as parse_image
 except ModuleNotFoundError as exc:  # pragma: no cover - environment guard
     sys.exit(f"missing dependency: {exc.name}. Run: pip install markdown-it-py PyYAML")
 
 import policy as policy_module  # noqa: E402
+from contexts import Context, add_arguments, file_context  # noqa: E402
 from findings import (  # noqa: E402
     EVIDENCE_LIMIT,
     Finding,
@@ -76,12 +79,12 @@ from findings import (  # noqa: E402
 # a severity read from nothing.
 EMITS = frozenset({
     "acronym-undefined", "body-h1", "callout-emoji", "contractions", "currency-mixed",
-    "fence-language", "fence-language-unknown", "fence-untagged", "filler", "filler-please",
+    "fence-language", "fence-language-unknown", "fence-untagged", "filler", "filler-please", "marketing-words",
     "frontmatter-excerpt", "frontmatter-title", "heading-formatting", "heading-repeats-title",
     "heading-skip", "image-alt", "json-parse", "link-absolute-internal", "link-anchor-empty",
     "link-anchor-vague", "link-bare-url", "list-depth", "mt-shorthand", "no-ordered-lists",
     "object-capitalization", "object-shorthand", "passive-voice", "reference-no-shell",
-    "sentence-length", "url-query-separator",
+    "sentence-length", "url-query-separator", "em-dash",
 })
 
 try:
@@ -122,6 +125,9 @@ FILLER_WORDS = POLICY.mapping("filler_words")
 FILLER_EXCEPTIONS = {word: re.compile(pattern, re.IGNORECASE)
                      for word in FILLER_WORDS
                      if (pattern := POLICY.exception("filler_words", word))}
+MARKETING_WORDS = POLICY.mapping('marketing_words')
+MARKETING_EXCEPTIONS = {word: re.compile(pattern, re.IGNORECASE) for word in MARKETING_WORDS
+                        if (pattern := POLICY.exception('marketing_words', word))}
 PLEASE_WORDS = POLICY.words("filler_please")
 PLEASE_EXCEPTIONS = {word: re.compile(pattern, re.IGNORECASE)
                      for word in PLEASE_WORDS
@@ -131,6 +137,17 @@ VAGUE_ANCHORS = POLICY.words("vague_anchors")
 
 STANDARD_FENCE_LANGS = set(POLICY.words("fence_languages"))
 FENCE_LANG_FIXES = POLICY.mapping("fence_language_fixes")
+REQUEST_FENCES = POLICY.mapping('request_fences')
+REQUEST_PATTERNS = [re.compile(p) for p in POLICY.words('request_patterns')]
+NON_REQUEST_FENCES = POLICY.words('non_request_fences')
+REFERENCE_REQUEST_TAGS = POLICY.words('reference_request_tags')
+CALLOUT_THEMES = POLICY.mapping('callout_themes')
+LINK_SHORTHAND = POLICY.mapping('link_shorthand')
+PROJECT_LINK_PREFIX = POLICY.mapping('project_link_prefixes')
+INTERNAL_LINK_HOSTS = POLICY.words('internal_link_hosts')
+FIRST_HEADING_LEVEL = POLICY.threshold('body-h1')
+EM_DASH_CHARACTERS = POLICY.words('em_dash_characters')
+EM_DASH_CHANNELS = POLICY.words('em_dash_channels')
 # Acronym -> pattern matching its expansion. A regex rather than initials matching: several of these
 # are not initialisms of their expansion (FX, IAT, KYC/KYB), so deriving the expansion from the
 # letters reported "Foreign Exchange (FX)" as undefined.
@@ -406,6 +423,10 @@ class Page:
     links: list[tuple[int, str, str]] = field(default_factory=list)
     images: list[tuple[int, str, str]] = field(default_factory=list)
     callouts: list[tuple[int, str]] = field(default_factory=list)
+    component_callouts: list[tuple[int, str, str]] = field(default_factory=list)
+    image_ends: dict[int, int] = field(default_factory=dict)
+    html_prose: list[Block] = field(default_factory=list)
+    context: Context = field(default_factory=Context)
     list_items: list[tuple[int, int, bool]] = field(default_factory=list)  # line, depth, ordered
 
 
@@ -417,6 +438,10 @@ class HtmlChannels(HTMLParser):
         self.base_line = base_line
         self.links: list[tuple[int, str, str]] = []
         self.images: list[tuple[int, str, str]] = []
+        self.callouts: list[tuple[int, str, str]] = []
+        self.image_ends: dict[int, int] = {}
+        self.prose: list[tuple[int, str]] = []
+        self._excluded: list[str] = []
         self._open_link: tuple[int, str] | None = None
         self._link_text: list[str] = []
 
@@ -424,12 +449,17 @@ class HtmlChannels(HTMLParser):
         return self.base_line + self.getpos()[0] - 1
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in ('table', 'pre', 'code', 'script', 'style'):
+            self._excluded.append(tag)
         values = {k.lower(): (v or "") for k, v in attrs}
-        if tag == "img":
+        if tag in ('img', 'image'):
             alt = values.get("alt", "")
             if values.get("aria-hidden") == "true" or values.get("role") == "presentation":
                 alt = alt or DECORATIVE
             self.images.append((self._line(), alt, values.get("src", "")))
+            self.image_ends[self._line()] = self._line() + (self.get_starttag_text() or '').count('\n')
+        elif tag == 'callout':
+            self.callouts.append((self._line(), values.get('icon', ''), values.get('theme', '')))
         elif tag == "a":
             self._open_link = (self._line(), values.get("href", ""))
             self._link_text = []
@@ -440,8 +470,12 @@ class HtmlChannels(HTMLParser):
     def handle_data(self, data: str) -> None:
         if self._open_link:
             self._link_text.append(data)
+        if not self._excluded:
+            self.prose.append((self._line(), data))
 
     def handle_endtag(self, tag: str) -> None:
+        if tag in self._excluded:
+            self._excluded.remove(tag)
         if tag == "a" and self._open_link:
             line, href = self._open_link
             self.links.append((line, "".join(self._link_text).strip(), href))
@@ -473,6 +507,22 @@ def split_frontmatter(text: str) -> tuple[dict, int, str]:
     return _yaml_mapping("\n".join(lines[1:end])), end + 2, "\n".join(lines[end + 1:])
 
 
+def image_with_lines(state, silent: bool) -> bool:
+    start = state.pos
+    if not parse_image(state, silent):
+        return False
+    if not silent:
+        state.tokens[-1].meta['lines'] = (state.src[:start].count('\n'),
+                                         state.src[:state.pos].count('\n'))
+    return True
+
+
+def markdown_parser() -> MarkdownIt:
+    parser = MarkdownIt('commonmark').enable('table')
+    parser.inline.ruler.at('image', image_with_lines)
+    return parser
+
+
 def _inline_channels(page: Page, token, base_line: int, kind: str) -> None:
     """Walk an inline token, collecting prose text plus links, images and offset->line mapping."""
     text_parts: list[str] = []
@@ -502,7 +552,10 @@ def _inline_channels(page: Page, token, base_line: int, kind: str) -> None:
             offsets.append((length, line))
         elif child.type == "image":
             alt = "".join(c.content for c in (child.children or []) if c.type == "text")
-            page.images.append((line, alt, child.attrGet("src") or ""))
+            start, end = child.meta.get('lines', (line - base_line, line - base_line))
+            page.images.append((base_line + start, alt, child.attrGet("src") or ""))
+            page.image_ends[base_line + start] = base_line + end
+            line = base_line + end
         elif child.type == "link_open":
             link_stack.append((line, child.attrGet("href") or "", length, []))
         elif child.type == "link_close" and link_stack:
@@ -524,6 +577,12 @@ def _feed_html(page: Page, html: str, line: int) -> None:
     parser.feed(html)
     page.links.extend(parser.links)
     page.images.extend(parser.images)
+    page.image_ends.update(parser.image_ends)
+    page.component_callouts.extend(parser.callouts)
+    for start, text in parser.prose:
+        fragment = Page(page.path, page.project, {}, '')
+        _walk_tokens(fragment, markdown_parser().parse(text), start)
+        page.html_prose.extend(fragment.blocks)
 
 
 def _record_callout(page: Page, blocks_before: int) -> None:
@@ -545,10 +604,15 @@ def _walk_tokens(page: Page, tokens: list, body_start: int) -> None:
     ordered_stack: list[bool] = []
     heading_line = heading_level = 0
     pending_callout = False  # set on blockquote_open, so it also means "inside a blockquote"
+    in_table = False
 
     for token in tokens:
         line = body_start + (token.map[0] if token.map else 0)
-        if token.type == "fence":
+        if token.type == 'table_open':
+            in_table = True
+        elif token.type == 'table_close':
+            in_table = False
+        elif token.type == "fence":
             page.fences.append((line, (token.info or "").strip()))
             page.code.append((line, (token.info or "").strip(), token.content or ""))
         elif token.type == "heading_open":
@@ -567,7 +631,7 @@ def _walk_tokens(page: Page, tokens: list, body_start: int) -> None:
             _feed_html(page, token.content, line)
         elif token.type == "inline":
             before = len(page.blocks)
-            _inline_channels(page, token, line, "heading" if heading_level else "paragraph")
+            _inline_channels(page, token, line, 'table' if in_table else "heading" if heading_level else "paragraph")
             if heading_level:
                 page.headings.append((heading_line, heading_level, token.content.strip()))
                 heading_level = 0
@@ -585,7 +649,7 @@ def parse_page(path: Path, project_override: str | None = None) -> Page:
         frontmatter=frontmatter,
         title=str(frontmatter.get("title") or "").strip(),
     )
-    _walk_tokens(page, MarkdownIt("commonmark").enable("table").parse(body), body_start)
+    _walk_tokens(page, markdown_parser().parse(body), body_start)
     return page
 
 
@@ -654,16 +718,26 @@ def check(page: Page) -> list[Finding]:
             span: tuple[int, int] | None = None) -> None:
         if not applies(rule, page.project):
             return
+        end = page.image_ends.get(line, line) if rule == 'image-alt' else line
+        if not page.context.includes(POLICY.rules[rule].applies_to, line, end):
+            return
         text, col, end_col = clip_evidence(evidence, span)
         # Severity is per page, not per rule: a rule may carry an override for this page's project
         # ("where an overlay contradicts base style, the overlay wins for that project"). With no
         # override - the state of every shipped rule - this is exactly `RULES[rule][0]`.
-        strict = POLICY.rules[rule].strict_for(page.project)
+        strict = POLICY.rules[rule].strict_for(page.project, page.context.mode)
         findings.append(Finding(rel, line, rule, strict, message, text, fix, col, end_col))
 
     prose = sentences(page)
     check_frontmatter(page, add)
     check_headings(page, add)
+    check_body_heading(page, add)
+    check_em_dash(page, add)
+    for block in page.blocks:
+        if block.kind != 'heading':
+            for offset, sentence in split_sentences(block.text):
+                check_filler(add, block.line_at(offset), sentence)
+                check_marketing(add, block.line_at(offset), sentence)
     for lineno, text in heading_text(page):
         check_terminology(add, lineno, text)
     check_fences(page, add)
@@ -691,13 +765,9 @@ def check_frontmatter(page: Page, add: Add) -> None:
 
 
 def check_headings(page: Page, add: Add) -> None:
-    """ReadMe renders the frontmatter title as the page h1, so body headings start at h2 and the
-    title counts as the level above them (markdownlint MD025 + MD001 with front_matter_title)."""
+    """ReadMe's rendered title supplies the preceding level for skipped-heading checks."""
     previous = 1
     for lineno, level, text in page.headings:
-        if level == 1:
-            add(lineno, "body-h1", says("body-h1"),
-                text, fix=f"## {text}")
         if level > previous + 1:
             add(lineno, "heading-skip", says("heading-skip", previous=previous, level=level), text)
         previous = level
@@ -710,18 +780,45 @@ def check_headings(page: Page, add: Add) -> None:
             add(lineno, "heading-repeats-title", says("heading-repeats-title"), text)
 
 
+def check_body_heading(page: Page, add: Add) -> None:
+    if page.headings:
+        lineno, level, text = page.headings[0]
+        if level != FIRST_HEADING_LEVEL:
+            add(lineno, 'body-h1', says('body-h1'), text, fix=f'{"#" * FIRST_HEADING_LEVEL} {text}')
+
+
+def check_em_dash(page: Page, add: Add) -> None:
+    for block in [*page.blocks, *page.html_prose]:
+        if block.kind not in EM_DASH_CHANNELS:
+            continue
+        for offset, character in enumerate(block.text):
+            if character in EM_DASH_CHARACTERS:
+                add(block.line_at(offset), 'em-dash', says('em-dash'), block.text,
+                    span=(offset, offset + len(character)))
+
+
+def is_request(content: str) -> bool:
+    return any(pattern.search(content) for pattern in REQUEST_PATTERNS)
+
+
 def check_fences(page: Page, add: Add) -> None:
-    for lineno, info in page.fences:
+    for lineno, info, content in page.code:
         lang = info.split()[0].lower() if info else ""
         if not lang:
             add(lineno, "fence-untagged", says("fence-untagged"))
             continue
-        if lang in FENCE_LANG_FIXES:
+        request = is_request(content)
+        if request and lang in REQUEST_FENCES:
+            target = REQUEST_FENCES[lang]
+            add(lineno, 'fence-language', says('fence-language', lang=lang, target=target), info, fix=f'```{target}')
+        elif not request and lang in NON_REQUEST_FENCES:
+            pass
+        elif lang in FENCE_LANG_FIXES:
             target = FENCE_LANG_FIXES[lang]
             add(lineno, "fence-language", says("fence-language", lang=lang, target=target), info, fix=f"```{target}")
         elif lang not in STANDARD_FENCE_LANGS:
             add(lineno, "fence-language-unknown", says("fence-language-unknown", lang=lang), info)
-        if FENCE_LANG_FIXES.get(lang, lang) == "shell":
+        if request or lang in REFERENCE_REQUEST_TAGS:
             add(lineno, "reference-no-shell",
                 says("reference-no-shell"), info)
 
@@ -854,11 +951,19 @@ def check_lists(page: Page, add: Add) -> None:
 def check_links(page: Page, add: Add) -> None:
     for lineno, text, href in page.links:
         check_anchor_text(add, lineno, text, href)
-        if "docs.moderntreasury.com" not in href:
-            continue
-        if PROJECT_URL_PREFIX[page.project] in href:
+        parsed = urlsplit(href)
+        own = PROJECT_LINK_PREFIX[page.project]
+        absolute_own = parsed.hostname in INTERNAL_LINK_HOSTS and parsed.path.startswith(own)
+        relative = not parsed.scheme and not parsed.netloc and bool(parsed.path)
+        if absolute_own or relative:
+            slug = Path(unquote(parsed.path)).stem
+            if slug == 'index':
+                slug = Path(unquote(parsed.path)).parent.name
+            target = LINK_SHORTHAND[page.project] + slug
+            if parsed.fragment:
+                target += '#' + parsed.fragment
             add(lineno, "link-absolute-internal",
-                says("link-absolute-internal"), href)
+                says("link-absolute-internal", target=target), href, fix=target)
 
 
 def check_anchor_text(add: Add, lineno: int, text: str, href: str) -> None:
@@ -900,16 +1005,22 @@ def sanctioned_callouts() -> str:
 
 
 def check_callouts(page: Page, add: Add) -> None:
-    sanctioned = [s.rstrip("\uFE0F") for s in SANCTIONED_CALLOUTS]
+    sanctioned = [s.removesuffix("\uFE0F") for s in SANCTIONED_CALLOUTS]
     for lineno, emoji in page.callouts:
-        if emoji.rstrip("\uFE0F") in sanctioned:
+        if emoji.removesuffix("\uFE0F") in sanctioned:
             continue
-        add(lineno, "callout-emoji", says("callout-emoji", emoji=emoji, sanctioned=sanctioned_callouts()), emoji)
+        add(lineno, "callout-emoji", says("callout-emoji", 'icon', emoji=emoji, sanctioned=sanctioned_callouts()), emoji)
+    for lineno, icon, theme in page.component_callouts:
+        normalized = icon.removesuffix('\uFE0F')
+        if normalized not in CALLOUT_THEMES:
+            add(lineno, 'callout-emoji', says('callout-emoji', 'icon', emoji=icon or '(missing)', sanctioned=sanctioned_callouts()), icon)
+        elif theme != CALLOUT_THEMES[normalized]:
+            add(lineno, 'callout-emoji', says('callout-emoji', 'theme', emoji=icon,
+                expected=CALLOUT_THEMES[normalized], theme=theme), icon, fix=CALLOUT_THEMES[normalized])
 
 
 def check_sentence(add: Add, lineno: int, sentence: str) -> None:
     check_terminology(add, lineno, sentence)
-    check_filler(add, lineno, sentence)
     check_readability(add, lineno, sentence)
 
 
@@ -945,8 +1056,9 @@ def check_object_capitalization(add: Add, lineno: int, sentence: str) -> None:
 def check_filler(add: Add, lineno: int, sentence: str) -> None:
     """A filler word, unless its policy exception describes the use in this sentence."""
     for word, replacement in FILLER_WORDS.items():
-        match = re.search(rf"\b{re.escape(word)}\b", sentence, re.IGNORECASE)
-        if not match or _exempt(FILLER_EXCEPTIONS, word, sentence):
+        match = next((m for m in re.finditer(rf"\b{re.escape(word)}\b", sentence, re.IGNORECASE)
+                      if not _exempt(FILLER_EXCEPTIONS, word, sentence, m.start())), None)
+        if not match:
             continue
         add(lineno, "filler", says("filler", word=word), sentence,
             fix=f"replace with '{replacement}'" if replacement else "delete the word",
@@ -960,9 +1072,20 @@ def check_filler(add: Add, lineno: int, sentence: str) -> None:
             span=match.span())
 
 
-def _exempt(exceptions: dict[str, re.Pattern], word: str, sentence: str) -> bool:
+def check_marketing(add: Add, lineno: int, sentence: str) -> None:
+    for word, replacement in MARKETING_WORDS.items():
+        match = next((m for m in re.finditer(rf"\b{re.escape(word)}\b", sentence, re.IGNORECASE)
+                      if not _exempt(MARKETING_EXCEPTIONS, word, sentence, m.start())), None)
+        if match:
+            add(lineno, 'marketing-words', says('marketing-words', word=word), sentence,
+                fix=f"replace with '{replacement}'" if replacement else 'delete the word', span=match.span())
+
+
+def _exempt(exceptions: dict[str, re.Pattern], word: str, sentence: str,
+            offset: int | None = None) -> bool:
     pattern = exceptions.get(word)
-    return bool(pattern and pattern.search(sentence))
+    return bool(pattern and any(offset is None or m.start() <= offset < m.end()
+                                for m in pattern.finditer(sentence)))
 
 
 def agent_span(sentence: str, passive: tuple[int, int] | None) -> tuple[int, int] | None:
@@ -1068,6 +1191,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--rule", action="append",
                     help="only report these rule ids (the scorecard then covers the filtered set)")
     ap.add_argument("--list-rules", action="store_true", help="print every rule with its provenance")
+    add_arguments(ap)
     return ap
 
 
@@ -1083,7 +1207,9 @@ def print_rules() -> None:
         guide = POLICY.rules[rule].guide_severity
         reported = "strict" if strict else "flexible"
         note = f"[guide: {guide}] " if guide != reported else ""
-        print(f"{'STRICT' if strict else 'flex  '} {rule:<26} {note}{provenance}")
+        modes = POLICY.rules[rule].reported_by_mode
+        grades = f' [reported by mode: {modes}]' if modes else ''
+        print(f"{'STRICT' if strict else 'flex  '} {rule:<26} {note}[contexts: {', '.join(POLICY.rules[rule].applies_to)}]{grades} {provenance}")
 
 
 def input_error(files: list[Path], project: str | None) -> str:
@@ -1091,10 +1217,13 @@ def input_error(files: list[Path], project: str | None) -> str:
     return _input_error(files, project, PROJECTS)
 
 
-def run(files: list[Path], project: str | None, rules: list[str] | None) -> list[Finding]:
+def run(files: list[Path], project: str | None, rules: list[str] | None,
+        mode: str = 'review', base: str | None = None) -> list[Finding]:
     findings: list[Finding] = []
     for path in files:
-        findings.extend(check(parse_page(path, project)))
+        page = parse_page(path, project)
+        page.context = file_context(path, mode, base)
+        findings.extend(check(page))
     if not rules:
         return findings
     wanted = set(rules)
@@ -1122,7 +1251,11 @@ def main(argv: list[str] | None = None) -> int:
         print(error, file=sys.stderr)
         return 2
 
-    findings = report_order(run(files, args.project, args.rule))
+    try:
+        findings = report_order(run(files, args.project, args.rule, args.mode, args.base))
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
     card = scorecard(findings, len(files))
     if args.format == "json":
         print(json.dumps({"scorecard": card, "findings": [vars(x) for x in findings]}, indent=2))

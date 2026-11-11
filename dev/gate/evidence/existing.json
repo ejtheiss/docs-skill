@@ -1,0 +1,106 @@
+{
+  "fence-language": {
+    "measurement": {
+      "projects": {
+        "payments": {
+          "pages": 179,
+          "fired": 36,
+          "findings": 81,
+          "over_half": false
+        },
+        "ledgers": {
+          "pages": 69,
+          "fired": 14,
+          "findings": 51,
+          "over_half": false
+        },
+        "platform": {
+          "pages": 103,
+          "fired": 1,
+          "findings": 1,
+          "over_half": false
+        },
+        "reference": {
+          "pages": 358,
+          "fired": 0,
+          "findings": 0,
+          "over_half": false
+        }
+      },
+      "total": {
+        "pages": 709,
+        "fired": 51,
+        "findings": 133
+      },
+      "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/currencies/use-multiple-currencies.md",
+      "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 1
+    },
+    "mutation": {
+      "generated": 27,
+      "killed": 27,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "filler": {
+    "measurement": {
+      "projects": {
+        "payments": {
+          "pages": 179,
+          "fired": 56,
+          "findings": 83,
+          "over_half": false
+        },
+        "ledgers": {
+          "pages": 69,
+          "fired": 35,
+          "findings": 67,
+          "over_half": true
+        },
+        "platform": {
+          "pages": 103,
+          "fired": 28,
+          "findings": 41,
+          "over_half": false
+        },
+        "reference": {
+          "pages": 358,
+          "fired": 25,
+          "findings": 35,
+          "over_half": false
+        }
+      },
+      "total": {
+        "pages": 709,
+        "fired": 144,
+        "findings": 226
+      },
+      "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Accounts/account-reconciliation/balances-used-in-account-reconciliation.md",
+      "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/custom_pages/support.md"
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 1
+    },
+    "mutation": {
+      "generated": 23,
+      "killed": 23,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  }
+}

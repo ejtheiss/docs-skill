@@ -1,0 +1,114 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "body-h1",
+        "strict": true,
+        "message": "First body heading is not h1; start the page with h1.",
+        "evidence": "Start",
+        "fix": "# Start",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": ""
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [],
+    "edge": ""
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "existing-review"
+    ],
+    "base_content": "---\ntitle: Fixture\n---\n## Existing\n",
+    "findings": [],
+    "edge": "existing-review"
+  },
+  {
+    "file": "new.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      4
+    ],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "base_content": null,
+    "edges": [
+      "new-file"
+    ],
+    "findings": [
+      {
+        "line": 4,
+        "rule": "body-h1",
+        "strict": true,
+        "message": "First body heading is not h1; start the page with h1.",
+        "evidence": "New",
+        "fix": "# New",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "new-file"
+  },
+  {
+    "file": "no-base.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "edges": [
+      "no-base"
+    ],
+    "findings": [],
+    "edge": "no-base"
+  },
+  {
+    "file": "empty.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "edges": [
+      "empty-heading"
+    ],
+    "findings": [],
+    "edge": "empty-heading"
+  }
+]

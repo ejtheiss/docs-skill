@@ -1,5 +1,3 @@
-<!-- Compiled from Notion by scripts/notion_sync.py. Do not edit; edit https://app.notion.com/p/3c8d6bfc268380cbac39fda788c7e4b0
-     policy 718466089eff · synced 2026-09-03T21:34:37+00:00 -->
 `docs-readme-payments`. Read with **01 — Base Style**; this page covers only what is specific to Payments.
 Payments pages are for someone moving money in production. They are short-sentenced, addressed directly to that reader, and organized by rail.
 ## **Voice**
@@ -14,9 +12,9 @@ Everything happening inside Modern Treasury still takes present tense and active
 Any page describing an origination or a return says what happens when it fails, and what the reader does about it. Name the state and the code in inline code (`returned`, `R01`).
 ## **Formatting**
 ### **Payload first, then the request — Flexible**
-The reader's first question is usually which fields to send, so lead with the `json` body and follow with the `shell` request. Reverse it when the page is about the call itself.
-### **`shell`**** for requests, ****`json`**** for payloads — Strict**
-Never `curl`.
+The reader's first question is usually which fields to send, so lead with the `json` body and follow with the `curl` request. Reverse it when the page is about the call itself.
+### Requests use `curl`; payloads use `json` — Strict (`fence-language`)
+ReadMe fence info such as `curl cURL` includes an allowed tab label. Reserve `shell` for non-request commands.
 ### **Rails, codes and statuses are written exactly — Strict**
 Rails as the industry names them: ACH, RTP, Wire, Check, EFT, SEPA, BACS. Expand on first use per page per base style. Return codes, statuses and enum values are inline code, never bold prose.
 ### **Numbered steps for anything operational — Strict**
