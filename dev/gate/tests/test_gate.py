@@ -20,6 +20,36 @@ def test_gate_exists():
     assert (GATE / 'gate.py').is_file(), 'gate entry point is missing'
 
 
+@pytest.mark.parametrize('rule', ['leak-names', 'leak-internal', 'filler'])
+def test_fixture_witness_waiver_is_scoped_and_preserves_other_gates(rule):
+    gate = load_gate()
+    measurement = dict(firing=None, non_firing='clean.md', projects={'payments': dict(over_half=False)})
+    result = dict(measurements={'draft': measurement}, mutation=dict(kill_rate=1),
+                  fixtures=dict(positive=1, negative=1, boundary=1))
+    entry = dict(fixture_witness_admission='admitted on fixture witnesses, 2026-11-11, by Eric')
+    assert gate.gate_failed(rule, result, {})
+    assert gate.gate_failed(rule, result, entry) == (rule == 'filler')
+    result['mutation']['kill_rate'] = .94
+    assert gate.gate_failed(rule, result, entry)
+    result['mutation']['kill_rate'] = 1
+    measurement['projects']['payments']['over_half'] = True
+    assert gate.gate_failed(rule, result, entry)
+    measurement['projects']['payments']['over_half'] = False
+    measurement['non_firing'] = None
+    assert gate.gate_failed(rule, result, entry)
+    measurement['non_firing'] = 'clean.md'
+    result['fixtures']['positive'] = 0
+    assert gate.gate_failed(rule, result, entry)
+
+
+def test_config_rejects_waiver_for_other_rules(tmp_path, monkeypatch):
+    gate = load_gate()
+    (tmp_path / 'rules.yaml').write_text('filler:\n  fixture_witness_admission: not authorized\n')
+    monkeypatch.setattr(gate, 'HERE', tmp_path)
+    with pytest.raises(ValueError, match='not permitted'):
+        gate.rule_config(['filler'])
+
+
 def test_corpus_evidence_requires_explicit_environment(monkeypatch, tmp_path):
     gate = load_gate()
     monkeypatch.delenv('DOCS_CORPUS_ROOT', raising=False)
