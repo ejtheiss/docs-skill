@@ -6,7 +6,7 @@ rules:
     reported: strict
     guide: strict
     applies_to: [always]
-    provenance: 'Phase C: global OpenAPI vocabulary, not endpoint-specific schema validation'
+    provenance: 'Phase C: global OpenAPI vocabulary, not endpoint-specific schema validation; decided by Eric 2026-11-11: strict in review and draft; reason: the 47% (18/38) precision sample'
     message: 'JSON {kind} `{value}` is absent from the OpenAPI inventory at {pointer}.'
 tables:
   openapi_scope:

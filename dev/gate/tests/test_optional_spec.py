@@ -63,12 +63,12 @@ def test_invalid_provided_spec_is_an_input_error(script, content, message, tmp_p
 
 def test_no_spec_does_not_suppress_other_strict_failures(tmp_path):
     page = tmp_path / 'page.md'
-    page.write_text('---\ntitle: Example\n---\n# Prepare\n\nENG-123\n')
+    page.write_text('---\ntitle: Example\n---\n# Prepare\n\nhttps://example.com/reference\n')
     result = check(REVIEW, page, args=['--format', 'json'])
     assert result.returncode == 1, result.stderr
     report = json.loads(result.stdout)
     assert report['scorecard']['strict_failures'] == 1
-    assert report['findings'][0]['rule'] == 'leak-internal'
+    assert report['findings'][0]['rule'] == 'link-bare-url'
     assert 'openapi-field-exists not run: no spec snapshot' in report['scorecard']['notes']
     result = check(REVIEW, page, args=['--only', 'lint', '--format', 'json'])
     assert not any('no spec snapshot' in note for note in json.loads(result.stdout)['scorecard']['notes'])

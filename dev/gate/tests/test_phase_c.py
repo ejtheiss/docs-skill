@@ -25,6 +25,22 @@ reuse = load('phase_c_reuse', SKILL / 'docs-maintain/scripts/maintain.py')
 lint = load('phase_c_lint', SKILL / 'docs-lint/scripts/lint.py')
 
 
+@pytest.mark.parametrize('mode', ['review', 'draft'])
+def test_openapi_remains_strict_in_both_modes(mode):
+    assert api.POLICY.rules['openapi-field-exists'].strict_for('payments', mode)
+
+
+@pytest.mark.parametrize('mode', ['review', 'draft'])
+def test_leak_rules_are_strict_and_draft_only(tmp_path, mode):
+    page = tmp_path / 'page.md'
+    page.write_text('PrivateFixture https://team.slack.com/archives/C1/p2\n')
+    names = tmp_path / 'names.txt'
+    names.write_text('PrivateFixture\n')
+    found = lint.run([page], 'payments', ['leak-names', 'leak-internal'], mode=mode, names=names)
+    assert {f.rule for f in found} == ({'leak-names', 'leak-internal'} if mode == 'draft' else set())
+    assert all(f.strict for f in found)
+
+
 def test_composed_ref_inventory_and_cycle():
     schema = json.loads((ROOT / 'dev/fixtures/openapi.json').read_text())
     schema['components']['schemas']['Shared']['properties'] = {'recursive': {'$ref': '#/components/schemas/Shared'}}
