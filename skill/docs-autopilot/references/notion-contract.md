@@ -10,7 +10,8 @@ Sources is **INTERNAL ONLY**. Never copy Sources into a public draft or Eric DM.
 |---|---|
 | Task name | title |
 | Description | text |
-| Stage | select: Harvested, Researched, Drafted, In Review, Ready to Push, Needs SME Review, Needs Human Answer, Not Generalizable |
+| Admission | text |
+| Stage | select: Harvested, Researched, Drafted, In Review, Ready to Push, Needs SME Review, Needs Human Answer, Not Generalizable, Watching, Shipped elsewhere |
 | Answer Complexity | select: A1 Known, A2 Synthesis, A3 Open, N/A |
 | Destination | select: Sample App, Integration Guide, API Reference, Docs |
 | Model | select: PSP, BYOB, Both, Unknown |
@@ -29,13 +30,13 @@ Sources is **INTERNAL ONLY**. Never copy Sources into a public draft or Eric DM.
 | Target Path | text |
 | Status | status; options not recorded in source |
 
-## Proposed schema changes — not applied by this skill or a live run
+## Live schema additions (2026-11-11)
 
-- Add Admission, text.
-- Add Stage options Watching and Shipped elsewhere.
+- Admission, text, is added.
+- Stage options Watching and Shipped elsewhere are added. Nothing else changed.
 
-Dry-run outputs may describe these proposed fields/options with
-schema_changes_applied=false. This skill neither creates nor updates schema.
+These additions are live per Eric's 2026-11-11 decision.
+Dry-run outputs retain schema_changes_applied=false because this skill neither creates nor updates schema.
 If the schema does not match, stop and report. Never modify it during a live run.
 
 ## Mapping
@@ -49,13 +50,13 @@ in the title, description, evidence summary or draft.
 |---|---|
 | Harvested | Internal evidence only; not a publishable draft |
 | Researched | evidence.md labels and provenance |
-| Watching (proposed) | Admitted but outside top 3; Has Draft=false |
+| Watching | Admitted but outside top 3; Has Draft=false |
 | Drafted / In Review | Candidate Draft; reviewer state, not permission to publish |
 | Ready to Push | Clean validator + fresh rubric + no money-losing mistake; Has Draft=true |
 | Needs SME Review | Unresolved after one revision, or fixture-only claim; Has Draft=true when a draft exists |
 | Needs Human Answer | A3; Has Draft=false; no invented policy answer |
 | Not Generalizable | Human-managed existing rows; new bespoke signals create no row |
-| Shipped elsewhere (proposed) | No new draft; merged PR links in Sources/Open Questions, Has Draft=false |
+| Shipped elsewhere | No new draft; merged PR links in Sources/Open Questions, Has Draft=false |
 
 Closing requires an explicit reviewed judgment that the located content answers
 this row. PR #109 does NOT answer the external-account-to-FBO workflow question.
@@ -131,7 +132,7 @@ use `date:Run Date:start`, `date:Run Date:end`, `date:Run Date:is_datetime`.
 These encodings were confirmed by a read-only fetch of this data source; they
 are not Notion REST property objects. Missing effort is null; missing Product Area
 is `[]`; Model defaults to Unknown. Supply recorded values rather than infer them.
-Admission and the proposed Stage options remain proposals, so live schema
-comparison must stop until they match. Scripts never change the schema.
+Admission, Watching and Shipped elsewhere are live. Compare the live schema
+before writes and stop on any mismatch. Scripts never change the schema.
 `run.json` has a zero-based row index and `done=false` for each pending write,
 and `dm_sent=false`. Only Claude updates completion after successful MCP writes.

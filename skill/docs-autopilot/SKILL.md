@@ -76,7 +76,7 @@ not Ready to Push. See [subagent briefs](references/subagent-briefs.md).
 Use [Notion mapping](references/notion-contract.md) and
 [digest format](references/digest-format.md). Dry-run writes only local planned
 rows and dm.txt; it sends nothing. Quiet week is exactly one line.
-Proposed schema changes remain unapplied; stop until the contract matches. Never create
+Admission and the Watching/Shipped elsewhere Stage options are live; stop on any schema mismatch. Never create
 properties/options. No GitHub writes, Slack channel posts or multiple DMs.
 
 ## Deterministic commands
@@ -111,8 +111,8 @@ does not implement harvest clients, model authoring or real writers.
 `python3 scripts/autopilot.py --live dry-run window.json --out out` only produces
 files, with the same writes guard. Claude alone executes [live-run.md](references/live-run.md),
 after reviewing the dry-run out/ in the same session and explicit live authorization.
-Verify the schema first; never change it. Proposed Admission/Stage additions
-remain unapplied and block live writes until the contract matches. Do not exercise
+Verify the schema first; never change it. Admission/Stage additions are live;
+stop on any mismatch with the contract. Do not exercise
 live mode as a test.
 
 ## Common mistakes

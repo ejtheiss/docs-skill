@@ -1,6 +1,6 @@
 # Admission contract
 
-Record four text results in the proposed Admission property. Never replace an
+Record four text results in the live Admission property. Never replace an
 unchecked predicate with PASS.
 
 1. **Signal:** at least two distinct accounts, not bespoke architecture.
