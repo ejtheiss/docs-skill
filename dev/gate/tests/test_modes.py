@@ -133,6 +133,7 @@ def test_pr_search_patch_only_and_unavailable_sources(repo, monkeypatch):
     monkeypatch.setattr(locate, 'gh_api', api)
     report = locate.pr_search([repo], [['identification', 'identification_types']], 90)
     assert report['matches'][0]['number'] == 176
+    assert report['matches'][0]['state'] == 'merged'
     assert report['matches'][0]['matched_lines'] == ['reference/spec.json: + identification_types: ad_nrt']
     assert any('incomplete PR search' in note for note in report['notes'])
     assert any('incomplete patches' in note for note in report['notes'])

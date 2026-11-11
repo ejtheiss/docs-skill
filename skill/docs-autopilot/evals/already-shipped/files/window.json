@@ -1,0 +1,61 @@
+{
+  "run_date": "2026-11-10",
+  "candidates": [],
+  "prior_rows": [
+    {
+      "id": "identifications",
+      "properties": {
+        "Task name": "Which identification types are supported on a legal entity?",
+        "Stage": "Needs SME Review",
+        "Sources": "",
+        "Open Questions": ""
+      }
+    },
+    {
+      "id": "ach-original",
+      "properties": {
+        "Task name": "How does an ACH debit from an end user's external bank account into your FBO actually work?",
+        "Stage": "Needs SME Review"
+      }
+    }
+  ],
+  "merged_prs": [
+    {
+      "number": 176,
+      "repo": "docs-readme-platform",
+      "merged_at": "2026-09-04T20:50:58Z",
+      "url": "https://github.com/Modern-Treasury/docs-readme-platform/pull/176"
+    },
+    {
+      "number": 192,
+      "repo": "docs-readme-platform",
+      "merged_at": "2026-09-24T23:31:31Z",
+      "url": "https://github.com/Modern-Treasury/docs-readme-platform/pull/192"
+    },
+    {
+      "number": 109,
+      "repo": "docs-readme-payments",
+      "merged_at": "2026-11-05T18:05:05Z",
+      "url": "https://github.com/Modern-Treasury/docs-readme-payments/pull/109"
+    }
+  ],
+  "coverage": [
+    {
+      "row_id": "identifications",
+      "reviewed": true,
+      "answers_question": true,
+      "pr_numbers": [
+        176,
+        192
+      ]
+    },
+    {
+      "row_id": "ach-original",
+      "reviewed": true,
+      "answers_question": false,
+      "pr_numbers": [
+        109
+      ]
+    }
+  ]
+}

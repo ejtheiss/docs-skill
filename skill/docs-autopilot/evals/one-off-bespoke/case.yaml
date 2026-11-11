@@ -1,0 +1,10 @@
+id: one-off-bespoke
+skill: docs-autopilot
+prompt: prompt.md
+files: files/
+kind: autopilot
+expect: {"rows":0,"quiet":true}
+deterministic_checks:
+- command: python3 dev/evals/run.py --case one-off-bespoke --out OUTPUT_DIR
+model_graders:
+- graders/model.md

@@ -1,0 +1,12 @@
+question: Which address does a registered-agent Legal Entity submit?
+destination: small-edit
+project: payments
+evidence:
+- claim: "For a registered-agent Legal Entity, submit the agent's address as the business registered address."
+  source: "FIXTURE EVIDENCE ONLY: fixture-evidence.md; real fact requires SME confirmation"
+  verified: true
+target:
+  repo: docs-readme-payments
+  path: docs/Customer Onboarding/onboard-a-business/required-fields-for-businesses.md
+  heading: Prepare addresses
+  ref: origin/v2.0

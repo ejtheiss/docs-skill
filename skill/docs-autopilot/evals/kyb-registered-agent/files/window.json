@@ -1,0 +1,78 @@
+{
+  "run_date": "2026-11-10",
+  "candidates": [
+    {
+      "id": "registered-agent",
+      "effort_level": "Small",
+      "product_area": ["Onboarding / Legal Entities"],
+      "question": "Which address does a registered-agent Legal Entity submit?",
+      "topics": [
+        "KYB",
+        "registered agent"
+      ],
+      "operational_cost": 10,
+      "cost_to_fix": 1,
+      "checks": {
+        "signal": {
+          "accounts": [
+            "fixture-account-a",
+            "fixture-account-b"
+          ],
+          "staff_conceded": true,
+          "bespoke": false
+        },
+        "locate": {
+          "searched": true,
+          "judgment": "not_answered"
+        },
+        "in_flight": {
+          "repos": [
+            "docs-readme-payments",
+            "docs-readme-ledgers",
+            "docs-readme-platform"
+          ],
+          "notion_checked": true,
+          "open_prs": [],
+          "recent_merged_prs": [],
+          "notion_past_harvested": []
+        },
+        "answer": {
+          "complexity": "A1 Known",
+          "evidence": [
+            {
+              "label": "VERIFIED",
+              "claim": "FIXTURE EVIDENCE ONLY: A registered-agent Legal Entity submits the agent's address as the business registered address.",
+              "source": "harvest.txt: compliance team member staff statement in the Slack thread; fixture-evidence.md (fixture only, SME confirmation required)"
+            }
+          ]
+        }
+      },
+      "fixture_evidence_only": true,
+      "model_generalization_passed": true,
+      "draft_file": "draft.md",
+      "sources": [
+        "https://example.slack.com/archives/CFAKE/p111",
+        "https://app.gong.io/call?id=fixture"
+      ],
+      "target_path": "docs/Customer Onboarding/onboard-a-business/required-fields-for-businesses.md; docs/Customer Onboarding/onboard-a-business/index.md",
+      "open_questions": [
+        "Reviewer judgment: business_registeredprimary is one concatenated code span; verify the field/primary split.",
+        "FIXTURE EVIDENCE ONLY: the real registered-agent product fact requires SME confirmation."
+      ],
+      "evidence_summary": "VERIFIED fixture evidence only. Real product fact requires SME confirmation.",
+      "validation": {
+        "strict_failures": 0
+      },
+      "review": {
+        "strict_failures": 0,
+        "rubric_passed": true,
+        "money_losing_mistake": false,
+        "fresh_reviewer": true,
+        "passes": 1
+      }
+    }
+  ],
+  "prior_rows": [],
+  "merged_prs": [],
+  "coverage": []
+}

@@ -1,0 +1,15 @@
+question: Is a registered agent's address supported?
+destination: small-edit
+project: payments
+evidence:
+- claim: P.O. boxes are not accepted.
+  source: FIXTURE source.md at origin/v2.0
+  verified: true
+- claim: The source does not specify registered-agent support.
+  source: FIXTURE source.md at origin/v2.0
+  verified: true
+target:
+  repo: docs-readme-payments
+  path: docs/required-fields-for-businesses.md
+  heading: Prepare addresses
+  ref: origin/v2.0

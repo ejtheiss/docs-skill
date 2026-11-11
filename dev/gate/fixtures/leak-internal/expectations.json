@@ -1,0 +1,379 @@
+[
+  {
+    "file": "positive.md",
+    "kind": "positive",
+    "project": "payments",
+    "lines": [
+      6,
+      7,
+      8,
+      8,
+      9,
+      10
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `https://modern-treasury.slack.com/archives/C123/p123` appears in documentation; remove it.",
+        "evidence": "https://modern-treasury.slack.com/archives/C123/p123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://modern-treasury.slack.com/archives/C123/p123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `https://app.gong.io/call?id=123` appears in documentation; remove it.",
+        "evidence": "https://app.gong.io/call?id=123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://app.gong.io/call?id=123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 8,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `ENG-123` appears in documentation; remove it.",
+        "evidence": "ENG-123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 8,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `FLOW-456` appears in documentation; remove it.",
+        "evidence": "FLOW-456",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 9,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `001AbcDefGhiJkl` appears in documentation; remove it.",
+        "evidence": "001AbcDefGhiJkl",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `003AbcDefGhiJklMno` appears in documentation; remove it.",
+        "evidence": "003AbcDefGhiJklMno",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://example.lightning.force.com/lightning/r/Account/003AbcDefGhiJklMno/view",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "",
+    "edges": []
+  },
+  {
+    "file": "negative.md",
+    "kind": "negative",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "acronym-undefined",
+        "strict": false,
+        "message": "'ACH' is used before it is expanded.",
+        "evidence": "ISO-8601 ACH-123 SHA-256 UTF-8 ISO-20022 NOTENG-12 ENG-12abc X-42 001AbcDefGhiJkl 00QAbcDefGhiJklMno https://example.com/archives/123 https://slack.com/help",
+        "fix": "",
+        "col": 10,
+        "end_col": 12
+      },
+      {
+        "line": 8,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://example.com/archives/123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 9,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://slack.com/help",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "",
+    "edges": []
+  },
+  {
+    "file": "boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      2,
+      3,
+      3,
+      3,
+      3,
+      5,
+      6
+    ],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
+    "findings": [
+      {
+        "line": 1,
+        "rule": "frontmatter-title",
+        "strict": true,
+        "message": "Page has no frontmatter title.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 2,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `ENG-1` appears in documentation; remove it.",
+        "evidence": "ENG-1",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 3,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `001AbcDefGhiJkl` appears in documentation; remove it.",
+        "evidence": "001AbcDefGhiJkl",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 3,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `006AbcDefGhiJklMno` appears in documentation; remove it.",
+        "evidence": "006AbcDefGhiJklMno",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 3,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `00QAbcDefGhiJkl` appears in documentation; remove it.",
+        "evidence": "00QAbcDefGhiJkl",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 3,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `500AbcDefGhiJkl` appears in documentation; remove it.",
+        "evidence": "500AbcDefGhiJkl",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 5,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `https://team.slack.com/archives/C1/p2` appears in documentation; remove it.",
+        "evidence": "https://team.slack.com/archives/C1/p2",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 5,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://team.slack.com/archives/C1/p2",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `https://gong.io/call/456` appears in documentation; remove it.",
+        "evidence": "https://gong.io/call/456",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 6,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://gong.io/call/456",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "policy edge",
+    "edges": [
+      "slack-url",
+      "gong-url",
+      "issue-prefix",
+      "standards",
+      "salesforce-context",
+      "salesforce-length",
+      "first-newline"
+    ]
+  },
+  {
+    "file": "context-boundary.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [
+      1
+    ],
+    "findings": [
+      {
+        "line": 1,
+        "rule": "frontmatter-title",
+        "strict": true,
+        "message": "Page has no frontmatter title.",
+        "evidence": "",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 1,
+        "rule": "leak-internal",
+        "strict": true,
+        "message": "Internal reference `001AbcDefGhiJkl` appears in documentation; remove it.",
+        "evidence": "001AbcDefGhiJkl",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 3,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://example.salesforce.com/help",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "source-start and context isolation",
+    "checker_args": [
+      "--mode",
+      "draft"
+    ]
+  },
+  {
+    "file": "positive.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://modern-treasury.slack.com/archives/C123/p123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://app.gong.io/call?id=123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://example.lightning.force.com/lightning/r/Account/003AbcDefGhiJklMno/view",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "review-inactive",
+    "edges": [
+      "review-inactive"
+    ],
+    "isolated": true
+  }
+]

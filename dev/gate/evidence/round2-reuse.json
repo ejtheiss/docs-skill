@@ -1,0 +1,130 @@
+{
+  "reuse-undefined-block": {
+    "measurements": {
+      "review": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 1,
+            "findings": 1,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 1,
+          "findings": 1
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Get Started/ledgers-sandbox-overview.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-platform/reference/Payments/reconciliation-rule-object/create-reconciliation-rule.md"
+      },
+      "draft": {
+        "projects": {
+          "payments": {
+            "pages": 179,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "ledgers": {
+            "pages": 69,
+            "fired": 1,
+            "findings": 1,
+            "over_half": false
+          },
+          "platform": {
+            "pages": 103,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          },
+          "reference": {
+            "pages": 358,
+            "fired": 0,
+            "findings": 0,
+            "over_half": false
+          }
+        },
+        "total": {
+          "pages": 709,
+          "fired": 1,
+          "findings": 1
+        },
+        "firing": "/home/ubuntu/work/corpus-head/docs-readme-ledgers/docs/Get Started/ledgers-sandbox-overview.md",
+        "non_firing": "/home/ubuntu/work/corpus-head/docs-readme-platform/reference/Payments/reconciliation-rule-object/create-reconciliation-rule.md"
+      }
+    },
+    "fixtures": {
+      "positive": 1,
+      "negative": 1,
+      "boundary": 2
+    },
+    "mutation": {
+      "generated": 23,
+      "killed": 23,
+      "kill_rate": 1.0,
+      "survivors": [],
+      "repeat_survivors": [
+        [],
+        []
+      ]
+    }
+  },
+  "original_page_paths": [
+    {
+      "path": "docs-readme-ledgers/docs/Get Started/ledgers-sandbox-overview.md",
+      "component": "SandboxDetails"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/create-reconciliation-rule.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/delete-reconciliation-rule.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/get-reconciliation-rule.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/index.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/list-reconciliation-rules.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/move-reconciliation-rule.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Payments/reconciliation-rule-object/update-reconciliation-rule.md",
+      "component": "EarlyAccess"
+    },
+    {
+      "path": "docs-readme-platform/reference/Topics/webhooks/bulk-result-webhooks.md",
+      "component": "EarlyAccess"
+    }
+  ],
+  "hosted_block_confirmation": "Eric supplied the 2026-11-10 browser DOM and .md export observation; not independently repeated in this run."
+}

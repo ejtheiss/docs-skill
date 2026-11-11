@@ -1,5 +1,31 @@
 # Admission-gate stand-in
 
+## Phase C
+
+```sh
+export DOCS_CORPUS_ROOT=/path/to/materialized-corpus
+PYTHONDONTWRITEBYTECODE=1 python3 dev/gate/gate.py \
+  --rule openapi-field-exists --rule reuse-undefined-block \
+  --rule leak-names --rule leak-internal \
+  --corpus-mode review --corpus-mode draft \
+  --checker-arg=--names --checker-arg=dev/gate/fixtures/customer-names.txt \
+  --checker-arg=--spec --checker-arg="$DOCS_CORPUS_ROOT/docs-readme-platform/reference/modern-treasury-api.json" \
+  --out dev/gate/evidence/phase-c.md --jobs 8
+PYTHONDONTWRITEBYTECODE=1 python3 dev/gate/phase_c.py dev/gate/evidence/phase-c.md
+```
+
+The supplement independently checks raw spec keys and enum arrays, measures empty
+and fixture names lists, confirms undefined-block counts, and measures the
+development-only adjacent-code-span candidate. It records the spec SHA256.
+Both commands require an explicit corpus root. Ordinary pytest uses only
+vendored fixtures and does not run these corpus-scale measurements.
+Mutation mappings cover verdict functions; direct/integration tests cover the
+extractors and inventory loaders. Neither oracle agreement nor the strict grade
+establishes runtime API correctness or blind-adjudicated precision. A zero-rate
+leak rule has no real corpus firing witness; its positives are fixture witnesses.
+Fixture cases marked `isolated` replace run-level checker arguments so that
+no-list/empty-list behavior remains testable during a names-enabled corpus run.
+
 Self-contained development harness for PLAN-subskills §3 and PLAN-phases' rule gate.
 The original `dev/tests`, adjudication and mutation harness was not pushed; this
 uses only `dev/gate` and never becomes a shipped dependency. Python 3.12+, the

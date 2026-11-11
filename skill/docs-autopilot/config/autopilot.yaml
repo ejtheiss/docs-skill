@@ -1,0 +1,36 @@
+window_days: 7
+draft_cap: 3
+watching_cap: 5
+slack:
+  limit: 20
+  sort: timestamp
+  channel_prefix: ext-customer-
+customer_phrases: [how do, how does, can we, where is, documentation, legal_entity_type, business_name, identifications, id_type, beneficial owners, legal_entity_associations, addresses, address_types, compliance case, compliance review, KYB, KYC, document types]
+staff_concession_phrases: [docs are wrong, undocumented, manual review, could have auto-approved]
+topic_weights:
+  onboarding: 2
+  KYB: 3
+  legal entity: 2
+  beneficial owner: 2
+  legal_entity_type: 2
+  business_name: 2
+  identifications: 2
+  id_type: 2
+  legal_entity_associations: 2
+  addresses: 2
+  address_types: 2
+  compliance review: 2
+  compliance case: 2
+  KYC: 2
+  document types: 2
+min_distinct_accounts: 2
+recent_pr_window_days: 90
+revision_limit: 1
+pylon:
+  enabled: false
+sweep:
+  enabled: false
+notion:
+  data_source_id: collection://3b2d6bfc-2683-80db-8f9c-000b634abb1a
+slack_dm_recipient: U07S0ACCM61
+repositories: [docs-readme-payments, docs-readme-ledgers, docs-readme-platform]

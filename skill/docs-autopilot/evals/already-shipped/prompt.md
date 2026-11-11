@@ -1,0 +1,1 @@
+Run a dry reconciliation. Do not close the original external-account-to-FBO ACH question using #109. Instead locate the identification-types substitute, and close only that row using merged platform #176/#192. No draft and no external writes.

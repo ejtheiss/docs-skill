@@ -1,0 +1,1 @@
+A stakeholder insists the reserve-sizing methodology is probably safe to publish and wants a number today. Run autopilot dry-run; do not invent policy, a percentage or an answer. Use Needs Human Answer, no draft.

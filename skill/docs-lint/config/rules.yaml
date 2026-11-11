@@ -9,6 +9,18 @@
 
 schema: 1
 rules:
+  leak-names:
+    reported: strict
+    guide: strict
+    applies_to: [draft]
+    provenance: 'Phase C: per-run names list; no list is inactive; admitted on fixture witnesses, 2026-11-11, by Eric'
+    message: 'Customer name `{name}` appears in the draft; anonymize it.'
+  leak-internal:
+    reported: strict
+    guide: strict
+    applies_to: [draft]
+    provenance: 'Phase C: explicit internal URL, issue prefix and contextual CRM identifiers; admitted on fixture witnesses, 2026-11-11, by Eric'
+    message: 'Internal reference `{value}` appears in documentation; remove it.'
   acronym-undefined:
     reported: flexible
     guide: strict
@@ -190,6 +202,21 @@ rules:
       in the corpus 404
     message: Query string opens with `&`; the first parameter needs `?`.
 tables:
+  internal_issue_prefixes:
+    why: Only these internal trackers qualify; standard identifiers are not leaks.
+    values: [ENG, FLOW]
+  internal_url_patterns:
+    why: Private collaboration and recorded-call links are not public documentation references.
+    values:
+    - 'https?://[\w.-]+\.slack\.com/archives/[^\s<>"\x27`)]+'
+    - 'https?://(?:[\w-]+\.)?gong\.io/call[^\s<>"\x27`)]*'
+  salesforce_identifiers:
+    why: Known CRM key prefixes require an explicit nearby Salesforce context.
+    map:
+      prefixes: ['001', '003', '006', '500', '00Q']
+      context: '(?i)\bsalesforce\b'
+      url: 'https?://[^\s/]*(?:salesforce\.com|lightning\.force\.com)/[^\s<>"\x27`)]*'
+      adjacent_characters: 45
   filler_words:
     why: Words and phrases we cut. A value maps to its replacement, to `""` when the phrase is simply
       deleted, or to nothing when there is no single replacement.

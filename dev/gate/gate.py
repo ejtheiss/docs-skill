@@ -304,6 +304,10 @@ def main():
     baselines = {mode: check([corpus], [*args.checker_arg, '--mode', mode])
                  for mode in corpus_modes(args.checker_arg, args.corpus_mode)}
     baseline = next(iter(baselines.values()))
+    if 'openapi-field-exists' in config and any(
+            'openapi-field-exists not run: no spec snapshot' in b['scorecard'].get('notes', [])
+            for b in baselines.values()):
+        parser.error('OpenAPI evidence requires --checker-arg=--spec --checker-arg=PATH or DOCS_REVIEW_SPEC')
     if any(b['scorecard']['pages'] != len(files) for b in baselines.values()):
         raise ValueError('checker and harness disagree on corpus page count')
     args.out.parent.mkdir(parents=True, exist_ok=True)

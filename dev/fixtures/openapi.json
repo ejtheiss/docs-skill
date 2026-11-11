@@ -1,0 +1,14 @@
+{
+  "openapi": "3.0.0",
+  "components": {"schemas": {
+    "Base": {"type": "object", "properties": {
+      "internal_account_id": {"type": "string"},
+      "status": {"type": "string", "enum": ["pending", "completed"]},
+      "metadata": {"type": "object", "additionalProperties": true},
+      "rows": {"type": "array", "items": {"$ref": "#/components/schemas/Entry"}}
+    }},
+    "Entry": {"allOf": [{"$ref": "#/components/schemas/Shared"}, {"properties": {"amount": {"type": "integer"}}}]},
+    "Shared": {"oneOf": [{"properties": {"currency": {"enum": ["USD", "EUR"]}}}, {"anyOf": [{"properties": {"description": {"type": "string"}}}]}]}
+  }},
+  "paths": {"/example": {"post": {"requestBody": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Base"}}}}}}}
+}

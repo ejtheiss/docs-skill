@@ -1,6 +1,6 @@
 ---
 name: docs-test
-description: Verify that a Modern Treasury docs page's technical claims are true — request and response examples against the OpenAPI schema, endpoint paths, enum and constrained-string values, webhook event names, documented state transitions, and links. Reports nothing yet; needs the monorepo, the network, or an approved sandbox org.
+description: Check Modern Treasury JSON examples against a supplied offline OpenAPI field and enum inventory. Snapshot absence is not proof of a documentation error; endpoint validity, runtime behavior and other technical claims need independent verification.
 ---
 
 # docs-test
@@ -12,12 +12,15 @@ these rules need no adjudication — a wrong field name is not a matter of taste
 Part of `docs-review`; runs as `docs-review --only test`. Excluded from a pre-commit run by default,
 because it is the tier that can be slow or offline.
 
-## Status: no rules
+## Offline snapshot
 
-Loads its policy, accepts every flag, reports nothing. The probes exist in the development harness and
-the defect classes are measured; none has been admitted as a shipped rule yet.
+`openapi-field-exists` compares scoped MT JSON examples with an offline inventory.
+Supply `--spec PATH` or `DOCS_REVIEW_SPEC` (the flag wins). No snapshot or a missing
+file reports `not run: no spec snapshot` in the log and scorecard, without
+blocking other review rules. Malformed supplied JSON is an input error. There
+is no default path, network fetch, clone or authentication requirement.
 
-What the measurement found, and what each becomes:
+Other probes remain future work. What the measurement found:
 
 - **Constrained strings the spec leaves free** — `"document_type": "proof_of_addres"` is published and
   the API returns 422, while swagger types the field as a bare nullable string. The real domain is a
@@ -47,8 +50,9 @@ not `.env`, and never written into a report:
 ## Run
 
 ```bash
-python3 scripts/apicheck.py <path>           # a run that is honestly empty
-python3 scripts/apicheck.py --list-rules     # empty table, with the policy hash
+python3 scripts/apicheck.py <path> --spec snapshot.json
+python3 scripts/apicheck.py --list-rules
 ```
 
-Flags match `docs-lint`. Exit status 0, because no strict rule can fail.
+Flags match `docs-review`. Exit 0 with no strict findings, 1 with strict findings,
+2 for invalid input. This inventory does not validate examples against individual endpoints.

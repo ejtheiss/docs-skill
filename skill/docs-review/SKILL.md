@@ -73,8 +73,9 @@ Reported flexible: `sentence-length`, `passive-voice`, `filler`, `filler-please`
 `filler` remains flexible in both modes. Guide grades may be stricter. Requests use `curl`, with ReadMe labels
 allowed; `shell` is for non-request commands. Use page 08's Callout/Image syntax.
 
-Four tiers share findings and a policy stamp. docs-lint has 32 rules;
-docs-content, docs-maintain and docs-test currently report none. `--only` selects
+Four tiers share findings and a policy stamp. docs-lint has 34 rules;
+docs-maintain checks undefined reuse and docs-test checks the global OpenAPI
+vocabulary. docs-content currently reports none. `--only` selects
 tiers. Review exits 0 with no strict findings, 1 with strict findings, 2 for bad input.
 
 ## Runtime: getting sources
@@ -86,6 +87,11 @@ GitHub MCP connector's `get_file_contents` on
 Otherwise fetch `https://docs.moderntreasury.com/<project>/docs/<slug>.md` and
 record SHA `live`. Do not invent a SHA or treat live content as a pinned revision.
 The spec is `docs-readme-platform`, path `reference/modern-treasury-api.json`.
+Pass the downloaded file to review with `--spec PATH`, or set
+`DOCS_REVIEW_SPEC=PATH`. The flag takes precedence. Without a snapshot, or if
+the selected file is missing, `openapi-field-exists` reports
+**not run: no spec snapshot** in the log and scorecard; other rules still run
+and determine the exit status. Malformed supplied JSON is an input error.
 In Cowork, Claude cannot practically move the multi-MB OpenAPI spec through the
 GitHub connector. Do not stall trying to fetch it: `openapi-field-exists` is a
 dev/CI rule there and reports "not run: no spec snapshot". `--spec` remains for CI.
@@ -261,3 +267,13 @@ iteration defaults are separate mode configuration, not lint policy inputs.
 
 No shipped script imports development code. Corpus probes, fixtures, mutation
 tooling and adjudication infrastructure stay outside the skill.
+
+Phase C checks: `reuse-undefined-block` compares rendered component names with
+ReadMe built-ins and repository-local definitions. `openapi-field-exists` checks
+MT JSON examples against the configured offline spec snapshot (`--spec` can pin
+another); this is global vocabulary, not endpoint-specific schema validation.
+Metadata/free-form maps and policy-listed third-party examples are excluded.
+`leak-internal` is draft-only and checks internal URLs, allowlisted issue prefixes and contextual
+Salesforce identifiers. `leak-names` is draft-only and requires `--names FILE`
+(one customer name per line, # comments); no list means inactive, with a note.
+These strict checks do not replace verification of scope or product accuracy.
