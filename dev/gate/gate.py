@@ -37,6 +37,9 @@ def rule_config(rules):
     missing = set(rules) - config.keys()
     if missing:
         raise ValueError(f'unmapped rules: {sorted(missing)}')
+    for rule, entry in config.items():
+        if entry.get('fixture_witness_admission') and rule not in ('leak-names', 'leak-internal'):
+            raise ValueError(f'{rule}: fixture-witness admission is not permitted')
     return {r: config[r] for r in sorted(set(rules))}
 
 
@@ -245,7 +248,16 @@ def mutation_run(rule, config, checker_args, corpus, baselines, work, jobs=4):
                 survivors=details, repeat_survivors=sets)
 
 
-def render(rule, measurements, counts, mutation):
+def gate_failed(rule, result, entry):
+    fixture_witness = (rule in ('leak-names', 'leak-internal') and entry.get('fixture_witness_admission')
+                       and all(result['fixtures'].get(kind, 0) for kind in ('positive', 'negative', 'boundary')))
+    return (result['mutation']['kill_rate'] < .95 or
+            any(p['over_half'] for m in result['measurements'].values() for p in m['projects'].values()) or
+            not (fixture_witness or any(m['firing'] for m in result['measurements'].values())) or
+            not any(m['non_firing'] for m in result['measurements'].values()))
+
+
+def render(rule, measurements, counts, mutation, admission=None):
     rows = [f'## {rule}', '']
     for mode, measurement in measurements.items():
         rows += [f'### {mode}', '', '| Project | Pages fired / pages | Findings | Gate 1 |',
@@ -263,7 +275,9 @@ def render(rule, measurements, counts, mutation):
              'Two bytecode-disabled runs: identical survivor sets.', '', 'Survivors:']
     rows += [f'- `{m["id"]}`: corpus-silent **{m["corpus_silent"]}** ({m["by_mode"]})' + (f'; error: {m["error"]}' if m['error'] else '') for m in mutation['survivors']] or ['- None.']
     rows += ['', 'Gate 5 (independent oracle): NOT ESTABLISHED by this harness.',
-             'Gate 6 (blind adjudication): NOT ESTABLISHED by this harness. No admission claim.', '']
+             'Gate 6 (blind adjudication): NOT ESTABLISHED by this harness.' + ('' if admission else ' No admission claim.'), '']
+    if admission:
+        rows += [f'Admission: {admission}. Waiver covers only the corpus firing witness; all other checks remain required.', '']
     return '\n'.join(rows)
 
 
@@ -305,7 +319,11 @@ def main():
         measured = {mode: measure(rule, files, b['findings']) for mode, b in baselines.items()}
         mutation = mutation_run(rule, entry, args.checker_arg, corpus, baselines, rule_work, args.jobs)
         results[rule] = dict(measurements=measured, fixtures=counts, mutation=mutation)
-        rows.append(render(rule, measured, counts, mutation))
+        admission = entry.get('fixture_witness_admission')
+        if admission:
+            results[rule]['fixture_witness_admission'] = admission
+        results[rule]['passed'] = not gate_failed(rule, results[rule], entry)
+        rows.append(render(rule, measured, counts, mutation, admission))
     manifest = corpus / 'MANIFEST.txt'
     if manifest.exists():
         rows += ['## Corpus manifest', '', '```text', manifest.read_text().strip(), '```']
@@ -313,11 +331,7 @@ def main():
     args.out.with_suffix('.json').write_text(json.dumps(results, indent=2) + '\n')
     print(args.out.read_text())
     print(f'Mutation fixture logs: {work}')
-    return int(any(v['mutation']['kill_rate'] < .95 or
-                   any(p['over_half'] for m in v['measurements'].values() for p in m['projects'].values()) or
-                   not any(m['firing'] for m in v['measurements'].values()) or
-                   not any(m['non_firing'] for m in v['measurements'].values())
-                   for v in results.values()))
+    return int(any(not v['passed'] for v in results.values()))
 
 
 if __name__ == '__main__':
