@@ -13,13 +13,13 @@ rules:
     reported: strict
     guide: strict
     applies_to: [draft]
-    provenance: 'Phase C: per-run names list; no list is inactive'
+    provenance: 'Phase C: per-run names list; no list is inactive; admitted on fixture witnesses, 2026-11-11, by Eric'
     message: 'Customer name `{name}` appears in the draft; anonymize it.'
   leak-internal:
     reported: strict
     guide: strict
-    applies_to: [always]
-    provenance: 'Phase C: explicit internal URL, issue prefix and contextual CRM identifiers'
+    applies_to: [draft]
+    provenance: 'Phase C: explicit internal URL, issue prefix and contextual CRM identifiers; admitted on fixture witnesses, 2026-11-11, by Eric'
     message: 'Internal reference `{value}` appears in documentation; remove it.'
   acronym-undefined:
     reported: flexible

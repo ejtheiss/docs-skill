@@ -11,7 +11,10 @@
       9,
       10
     ],
-    "checker_args": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
     "findings": [
       {
         "line": 6,
@@ -112,7 +115,10 @@
     "kind": "negative",
     "project": "payments",
     "lines": [],
-    "checker_args": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
     "findings": [
       {
         "line": 6,
@@ -161,7 +167,10 @@
       5,
       6
     ],
-    "checker_args": [],
+    "checker_args": [
+      "--mode",
+      "draft"
+    ],
     "findings": [
       {
         "line": 1,
@@ -314,6 +323,57 @@
         "end_col": 0
       }
     ],
-    "edge": "source-start and context isolation"
+    "edge": "source-start and context isolation",
+    "checker_args": [
+      "--mode",
+      "draft"
+    ]
+  },
+  {
+    "file": "positive.md",
+    "kind": "boundary",
+    "project": "payments",
+    "lines": [],
+    "checker_args": [
+      "--mode",
+      "review"
+    ],
+    "findings": [
+      {
+        "line": 6,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://modern-treasury.slack.com/archives/C123/p123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 7,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://app.gong.io/call?id=123",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      },
+      {
+        "line": 10,
+        "rule": "link-bare-url",
+        "strict": true,
+        "message": "Bare URL printed as a link.",
+        "evidence": "https://example.lightning.force.com/lightning/r/Account/003AbcDefGhiJklMno/view",
+        "fix": "",
+        "col": 0,
+        "end_col": 0
+      }
+    ],
+    "edge": "review-inactive",
+    "edges": [
+      "review-inactive"
+    ],
+    "isolated": true
   }
 ]

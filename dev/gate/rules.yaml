@@ -49,10 +49,12 @@ reuse-undefined-block:
   functions: [check_reuse]
   boundaries: [built-in, defined, escaped, code, component-attributes]
 leak-names:
+  fixture_witness_admission: 'admitted on fixture witnesses, 2026-11-11, by Eric'
   source: docs-lint/scripts/lint.py
   functions: [check_names]
   boundaries: [case-insensitive, whole-word, comments, review-inactive, no-list, empty-list, first-newline]
 leak-internal:
+  fixture_witness_admission: 'admitted on fixture witnesses, 2026-11-11, by Eric'
   source: docs-lint/scripts/lint.py
   functions: [check_internal]
-  boundaries: [slack-url, gong-url, issue-prefix, standards, salesforce-context, salesforce-length, first-newline]
+  boundaries: [slack-url, gong-url, issue-prefix, standards, salesforce-context, salesforce-length, first-newline, review-inactive]

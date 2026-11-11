@@ -273,7 +273,7 @@ ReadMe built-ins and repository-local definitions. `openapi-field-exists` checks
 MT JSON examples against the configured offline spec snapshot (`--spec` can pin
 another); this is global vocabulary, not endpoint-specific schema validation.
 Metadata/free-form maps and policy-listed third-party examples are excluded.
-`leak-internal` checks internal URLs, allowlisted issue prefixes and contextual
+`leak-internal` is draft-only and checks internal URLs, allowlisted issue prefixes and contextual
 Salesforce identifiers. `leak-names` is draft-only and requires `--names FILE`
 (one customer name per line, # comments); no list means inactive, with a note.
 These strict checks do not replace verification of scope or product accuracy.
